@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TrampoFácil</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f6fa;color:#18243a}
+header{background:#172b55;color:white;padding:22px;text-align:center}
+header h1{margin:0;font-size:30px}
+header p{margin:8px 0 0}
+main{max-width:520px;margin:55px auto;padding:20px;text-align:center}
+h2{font-size:27px}
+p{line-height:1.6}
+.card{background:white;border-radius:18px;padding:28px 20px;box-shadow:0 5px 20px #0001}
+button{display:block;width:100%;padding:17px;margin-top:15px;border:0;border-radius:12px;font-size:17px;font-weight:bold;cursor:pointer}
+.cliente{background:#1769e0;color:white}
+.profissional{background:#19a36b;color:white}
+#mensagem{margin-top:20px;font-weight:bold}
+footer{text-align:center;padding:25px;color:#666}
+</style>
+</head>
+<body>
+<header>
+<h1>TrampoFácil</h1>
+<p>Conectando pessoas e profissionais</p>
+</header>
+<main>
+<div class="card">
+<h2>Bem-vindo ao TrampoFácil!</h2>
+<p>Encontre profissionais ou ofereça seus serviços de maneira simples e rápida.</p>
+<button class="cliente" onclick="escolher('cliente')">Sou Cliente</button>
+<button class="profissional" onclick="escolher('profissional')">Sou Profissional</button>
+<p id="mensagem"></p>
+</div>
+</main>
+<footer>© 2026 TrampoFácil</footer>
+<script>
+function escolher(tipo){
+document.getElementById('mensagem').textContent =
+tipo==='cliente'?'Área do cliente: em construção.':'Área do profissional: em construção.';
+}
+</script>
+</body>
+</html>
