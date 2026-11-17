@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -6,40 +7,82 @@
 <title>TrampoFácil</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f4f6fa;color:#18243a}
-header{background:#172b55;color:white;padding:22px;text-align:center}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#17243b}
+header{background:#123b76;color:white;text-align:center;padding:25px 15px}
 header h1{margin:0;font-size:30px}
-header p{margin:8px 0 0}
-main{max-width:520px;margin:55px auto;padding:20px;text-align:center}
-h2{font-size:27px}
-p{line-height:1.6}
-.card{background:white;border-radius:18px;padding:28px 20px;box-shadow:0 5px 20px #0001}
-button{display:block;width:100%;padding:17px;margin-top:15px;border:0;border-radius:12px;font-size:17px;font-weight:bold;cursor:pointer}
-.cliente{background:#1769e0;color:white}
-.profissional{background:#19a36b;color:white}
-#mensagem{margin-top:20px;font-weight:bold}
-footer{text-align:center;padding:25px;color:#666}
+header p{margin:8px 0}
+main{max-width:550px;margin:30px auto;padding:15px}
+.card{background:white;padding:25px 20px;border-radius:18px;box-shadow:0 4px 15px #0001;margin-bottom:20px}
+h2{text-align:center}
+p{line-height:1.5}
+button{width:100%;padding:16px;margin:8px 0;border:0;border-radius:10px;color:white;font-size:17px;font-weight:bold;background:#1769e0}
+.verde{background:#198754}
+.voltar{background:#64748b}
+input,select,textarea{width:100%;padding:14px;margin:8px 0;border:1px solid #cbd5e1;border-radius:9px;font-size:16px}
+textarea{min-height:90px}
+.oculto{display:none}
+footer{text-align:center;padding:25px;color:#64748b}
 </style>
 </head>
 <body>
 <header>
 <h1>TrampoFácil</h1>
-<p>Conectando pessoas e profissionais</p>
+<p>Conectando clientes e profissionais</p>
 </header>
 <main>
-<div class="card">
+<section id="inicio" class="card">
 <h2>Bem-vindo ao TrampoFácil!</h2>
 <p>Encontre profissionais ou ofereça seus serviços de maneira simples e rápida.</p>
-<button class="cliente" onclick="escolher('cliente')">Sou Cliente</button>
-<button class="profissional" onclick="escolher('profissional')">Sou Profissional</button>
+<button onclick="mostrar('cliente')">Sou Cliente</button>
+<button class="verde" onclick="mostrar('profissional')">Sou Profissional</button>
+</section>
+
+<section id="cliente" class="card oculto">
+<h2>Cadastro de Cliente</h2>
+<form onsubmit="cadastrar(event,'cliente')">
+<input name="nome" placeholder="Nome completo" required>
+<input name="email" type="email" placeholder="E-mail" required>
+<input name="telefone" type="tel" placeholder="WhatsApp" required>
+<input name="cidade" placeholder="Cidade" required>
+<button type="submit">Continuar</button>
+</form>
+<button class="voltar" onclick="mostrar('inicio')">Voltar</button>
+</section>
+
+<section id="profissional" class="card oculto">
+<h2>Cadastro de Profissional</h2>
+<form onsubmit="cadastrar(event,'profissional')">
+<input name="nome" placeholder="Nome completo" required>
+<input name="email" type="email" placeholder="E-mail" required>
+<input name="telefone" type="tel" placeholder="WhatsApp" required>
+<input name="cidade" placeholder="Cidade" required>
+<input name="servico" placeholder="Qual serviço você oferece?" required>
+<textarea name="descricao" placeholder="Descreva seu trabalho"></textarea>
+<button class="verde" type="submit">Continuar</button>
+</form>
+<button class="voltar" onclick="mostrar('inicio')">Voltar</button>
+</section>
+
+<section id="resultado" class="card oculto">
+<h2>Cadastro de demonstração</h2>
 <p id="mensagem"></p>
-</div>
+<button onclick="mostrar('inicio')">Página inicial</button>
+</section>
 </main>
 <footer>© 2026 TrampoFácil</footer>
 <script>
-function escolher(tipo){
-document.getElementById('mensagem').textContent =
-tipo==='cliente'?'Área do cliente: em construção.':'Área do profissional: em construção.';
+function mostrar(id){
+document.querySelectorAll('main section').forEach(s=>s.classList.add('oculto'));
+document.getElementById(id).classList.remove('oculto');
+window.scrollTo(0,0);
+}
+function cadastrar(event,tipo){
+event.preventDefault();
+const dados=new FormData(event.target);
+const nome=dados.get('nome');
+document.getElementById('mensagem').textContent=
+'Olá, '+nome+'! O formulário de '+tipo+' está funcionando. Em breve vamos conectar os cadastros ao banco de dados.';
+mostrar('resultado');
 }
 </script>
 </body>
