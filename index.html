@@ -22,6 +22,8 @@ input,select,textarea{width:100%;padding:14px;margin:8px 0;border:1px solid #cbd
 textarea{min-height:90px}
 [hidden]{display:none}
 .erro{color:#a11919}
+article{border-top:1px solid #cbd5e1;padding-top:12px;margin-top:16px}
+article p{overflow-wrap:anywhere}
 footer{text-align:center;padding:25px;color:#64748b}
 </style>
 </head>
@@ -35,6 +37,11 @@ footer{text-align:center;padding:25px;color:#64748b}
 <h2>Bem-vindo ao TrampoFácil!</h2>
 <p>Encontre profissionais ou ofereça seus serviços de maneira simples e rápida.</p>
 <p id="aviso-demo" hidden>Modo de demonstração. Use dados fictícios. Os formulários não enviam dados.</p>
+<div id="menu-servicos" hidden>
+<button type="button" data-pagina="catalogo">Buscar profissionais</button>
+<button type="button" id="abrir-solicitacoes">Minhas solicitações</button>
+<button type="button" id="sair" hidden>Sair da conta</button>
+</div>
 <button type="button" data-pagina="cliente">Sou Cliente</button>
 <button class="verde" type="button" data-pagina="profissional">Sou Profissional</button>
 </section>
@@ -83,9 +90,57 @@ footer{text-align:center;padding:25px;color:#64748b}
 <p id="mensagem"></p>
 <button type="button" data-pagina="inicio">Página inicial</button>
 </section>
+<section id="catalogo" class="card" hidden>
+<h2>Buscar profissionais</h2>
+<form id="form-busca">
+<label>Serviço<input name="servico" maxlength="120"></label>
+<label>Cidade<input name="cidade" maxlength="120"></label>
+<button type="submit">Buscar</button>
+</form>
+<p id="status-busca" role="status"></p>
+<div id="resultados-busca"></div>
+<button type="button" id="mais-profissionais" hidden>Ver mais</button>
+<button class="voltar" type="button" data-pagina="inicio">Página inicial</button>
+</section>
+
+<section id="entrar" class="card" hidden>
+<h2>Entrar na conta</h2>
+<form id="form-entrar" method="post">
+<label>E-mail<input name="email" type="email" maxlength="254" autocomplete="email" required></label>
+<button type="submit">Enviar código</button>
+</form>
+<form id="form-codigo" method="post" hidden>
+<label>Código de acesso<input name="token" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" required></label>
+<button type="submit">Entrar</button>
+<button type="button" id="trocar-email">Usar outro e-mail ou pedir novo código</button>
+</form>
+<p id="status-login" role="status"></p>
+<button class="voltar" type="button" id="cancelar-login">Voltar</button>
+</section>
+
+<section id="nova-solicitacao" class="card" hidden>
+<h2>Solicitar serviço</h2>
+<p id="profissional-escolhido"></p>
+<form id="form-solicitacao" method="post">
+<label>Título<input name="titulo" minlength="3" maxlength="120" required></label>
+<label>Descrição<textarea name="descricao" minlength="10" maxlength="3000" required></textarea></label>
+<button type="submit">Enviar solicitação</button>
+</form>
+<p id="status-envio" role="status"></p>
+<button class="voltar" type="button" data-pagina="catalogo">Voltar à busca</button>
+</section>
+
+<section id="solicitacoes" class="card" hidden>
+<h2>Minhas solicitações</h2>
+<p id="status-solicitacoes" role="status"></p>
+<button type="button" id="recarregar-solicitacoes">Atualizar</button>
+<div id="lista-solicitacoes"></div>
+<button class="voltar" type="button" data-pagina="inicio">Página inicial</button>
+</section>
 </main>
 <footer>© 2026 TrampoFácil</footer>
 <script src="config.js" defer></script>
 <script src="cadastro.js" defer></script>
+<script src="servicos.js" defer></script>
 </body>
 </html>

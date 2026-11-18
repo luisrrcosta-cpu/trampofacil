@@ -58,7 +58,7 @@ function lerPerfil(formulario, tipo) {
   return { email, perfil, tipo };
 }
 
-function enviar(caminho, dados, token, prefer) {
+function enviar(caminho, dados, token, prefer, metodo = 'POST') {
   const headers = {
     apikey: config.chavePublicavel,
     'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ function enviar(caminho, dados, token, prefer) {
   if (prefer) headers.Prefer = prefer;
 
   return fetch(config.url + caminho, {
-    method: 'POST',
+    method: metodo,
     headers,
     body: JSON.stringify(dados),
     credentials: 'omit',
@@ -158,6 +158,7 @@ confirmacao.addEventListener('submit', async (evento) => {
     }
     if (!resposta.ok) throw new Error();
 
+    iniciarSessao(pendente.sessao);
     pendente.formulario.reset();
     pendente = undefined;
     confirmacao.reset();
@@ -179,7 +180,7 @@ for (const botao of document.querySelectorAll('[data-pagina]')) {
   botao.addEventListener('click', () => {
     if (ocupado) return;
     const secao = botao.closest('section');
-    const formulario = secao.querySelector('form');
+    const formulario = secao.querySelector('[data-cadastro]');
     formulario?.reset();
     formulario?.querySelector('[role="alert"]').replaceChildren();
     mostrar(botao.dataset.pagina);

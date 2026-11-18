@@ -72,8 +72,8 @@ com `python3 -m http.server 8000 --bind 127.0.0.1` e abra
 
 Para testar o fluxo conectado, use um projeto Supabase de homologação com a
 estrutura já existente no TrampoFácil. Confirme as políticas de titularidade
-de `clientes` e `profissionais` e aplique em homologação a migração desta
-branch. Ela é incremental e depende dessas tabelas e políticas.
+de `clientes` e `profissionais` e aplique em homologação as migrações desta branch em ordem. Elas são
+incrementais e dependem das tabelas, políticas e triggers já existentes.
 
 No Supabase Auth de homologação, habilite o cadastro e a confirmação por
 e-mail e configure o template **Magic Link** para incluir o código
@@ -90,16 +90,35 @@ window.TRAMPOFACIL_SUPABASE = {
 
 A gravação acontece após a confirmação por código. O cadastro repetido
 atualiza o perfil do titular para o mesmo tipo de conta. O acesso usado na
-gravação fica em memória durante o fluxo. A publicação de profissionais
+gravação fica em memória até sair, recarregar a página ou a sessão expirar. A publicação de profissionais
 depende do controle existente no backend.
+
+## Busca e solicitações
+
+Em modo conectado, a busca filtra os profissionais ativos por serviço e
+cidade e retorna páginas de até 20 resultados. O catálogo é separado dos
+perfis privados e não contém WhatsApp ou e-mail.
+
+Um cliente autenticado com cadastro completo pode solicitar um serviço.
+Cliente e profissional acompanham até 50 solicitações recentes. O
+profissional pode enviar um orçamento, iniciar o trabalho e marcar a entrega.
+O cliente pode aceitar a proposta e concluir o serviço. A opção de
+cancelamento segue as regras de cada status, verificadas pelo banco.
+O valor da proposta é um orçamento em reais.
+
+## Testes locais
+
+Com Node.js 20+ e Chromium instalado, execute `npm ci` e `npm test`.
+Use `TRAMPOFACIL_CHROMIUM` para indicar o executável do Chromium quando ele
+estiver fora de `/usr/bin/chromium`. Os testes usam Chromium com a API
+simulada e PostgreSQL local via PGlite com um esquema mínimo, dados
+fictícios e uma cópia dos triggers de solicitação.
 
 ## Integrações pendentes
 
-- Homologar o envio real de códigos por e-mail e a gravação via Data API.
-- Integrar a busca ao catálogo público de profissionais ativos. O catálogo
-  existente é separado dos perfis privados e não contém WhatsApp ou e-mail.
-- Integrar solicitações, histórico e mensagens às operações autorizadas no
-  Supabase. Validar as transições de status e o acesso dos participantes
-  antes de conectar a interface.
-- Definir e integrar o provedor de pagamentos, incluindo confirmação do
-  pagamento pelo servidor e processamento idempotente das notificações.
+- Homologar o envio real de códigos e os fluxos de cadastro, busca e
+  solicitações pela Data API do ambiente de homologação.
+- Exibir o histórico de mudanças de status e integrar as mensagens na
+  interface. O backend existente já registra as mudanças.
+- Definir o provedor de pagamentos antes da implementação. A aplicação
+  atual grava apenas o valor proposto.
