@@ -62,3 +62,44 @@ document.getElementById('mensagem').textContent=tipo+' — em breve!';
 </body>
 </html>
  contratação de profissionais e serviços com pagamentos online.
+
+## Cadastro de clientes e profissionais
+
+A página funciona em modo de demonstração por padrão, com dados fictícios e
+sem envio. Para testar a interface localmente, sirva a pasta do repositório
+com `python3 -m http.server 8000 --bind 127.0.0.1` e abra
+`http://127.0.0.1:8000`.
+
+Para testar o fluxo conectado, use um projeto Supabase de homologação com a
+estrutura já existente no TrampoFácil. Confirme as políticas de titularidade
+de `clientes` e `profissionais` e aplique em homologação a migração desta
+branch. Ela é incremental e depende dessas tabelas e políticas.
+
+No Supabase Auth de homologação, habilite o cadastro e a confirmação por
+e-mail e configure o template **Magic Link** para incluir o código
+`{{ .Token }}`. Configure o envio de e-mail para as contas de teste e valide
+os limites de envio do Auth e a proteção contra abuso antes da abertura ao
+público. Em `config.js`, preencha:
+
+```js
+window.TRAMPOFACIL_SUPABASE = {
+  url: 'https://referencia-do-projeto.supabase.co',
+  chavePublicavel: 'sb_publishable_...',
+};
+```
+
+A gravação acontece após a confirmação por código. O cadastro repetido
+atualiza o perfil do titular para o mesmo tipo de conta. O acesso usado na
+gravação fica em memória durante o fluxo. A publicação de profissionais
+depende do controle existente no backend.
+
+## Integrações pendentes
+
+- Homologar o envio real de códigos por e-mail e a gravação via Data API.
+- Integrar a busca ao catálogo público de profissionais ativos. O catálogo
+  existente é separado dos perfis privados e não contém WhatsApp ou e-mail.
+- Integrar solicitações, histórico e mensagens às operações autorizadas no
+  Supabase. Validar as transições de status e o acesso dos participantes
+  antes de conectar a interface.
+- Definir e integrar o provedor de pagamentos, incluindo confirmação do
+  pagamento pelo servidor e processamento idempotente das notificações.

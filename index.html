@@ -1,9 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
 <title>TrampoFácil</title>
 <style>
 *{box-sizing:border-box}
@@ -20,7 +20,8 @@ button{width:100%;padding:16px;margin:8px 0;border:0;border-radius:10px;color:wh
 .voltar{background:#64748b}
 input,select,textarea{width:100%;padding:14px;margin:8px 0;border:1px solid #cbd5e1;border-radius:9px;font-size:16px}
 textarea{min-height:90px}
-.oculto{display:none}
+[hidden]{display:none}
+.erro{color:#a11919}
 footer{text-align:center;padding:25px;color:#64748b}
 </style>
 </head>
@@ -33,68 +34,58 @@ footer{text-align:center;padding:25px;color:#64748b}
 <section id="inicio" class="card">
 <h2>Bem-vindo ao TrampoFácil!</h2>
 <p>Encontre profissionais ou ofereça seus serviços de maneira simples e rápida.</p>
-<button onclick="mostrar('cliente')">Sou Cliente</button>
-<button class="verde" onclick="mostrar('profissional')">Sou Profissional</button>
+<p id="aviso-demo" hidden>Modo de demonstração. Use dados fictícios. Os formulários não enviam dados.</p>
+<button type="button" data-pagina="cliente">Sou Cliente</button>
+<button class="verde" type="button" data-pagina="profissional">Sou Profissional</button>
 </section>
 
-<section id="cliente" class="card oculto">
+<section id="cliente" class="card" hidden>
 <h2>Cadastro de Cliente</h2>
-<form onsubmit="cadastrar(event,'cliente')">
-<input name="nome" placeholder="Nome completo" required>
-<input name="email" type="email" placeholder="E-mail" required>
-<input name="telefone" type="tel" placeholder="WhatsApp" required>
-<input name="cidade" placeholder="Cidade" required>
+<form data-cadastro="cliente" method="post">
+<label>Nome completo<input name="nome" autocomplete="name" minlength="2" maxlength="120" required></label>
+<label>E-mail<input name="email" type="email" autocomplete="email" maxlength="254" required></label>
+<label>WhatsApp<input name="telefone" type="tel" autocomplete="tel" maxlength="25" required></label>
+<label>Cidade<input name="cidade" autocomplete="address-level2" minlength="2" maxlength="120" required></label>
 <button type="submit">Continuar</button>
+<p class="erro" role="alert"></p>
 </form>
-<button class="voltar" onclick="mostrar('inicio')">Voltar</button>
+<button class="voltar" type="button" data-pagina="inicio">Voltar</button>
 </section>
 
-<section id="profissional" class="card oculto">
+<section id="profissional" class="card" hidden>
 <h2>Cadastro de Profissional</h2>
-<form onsubmit="cadastrar(event,'profissional')">
-<input name="nome" placeholder="Nome completo" required>
-<input name="email" type="email" placeholder="E-mail" required>
-<input name="telefone" type="tel" placeholder="WhatsApp" required>
-<input name="cidade" placeholder="Cidade" required>
-<input name="servico" placeholder="Qual serviço você oferece?" required>
-<textarea name="descricao" placeholder="Descreva seu trabalho"></textarea>
+<form data-cadastro="profissional" method="post">
+<label>Nome completo<input name="nome" autocomplete="name" minlength="2" maxlength="120" required></label>
+<label>E-mail<input name="email" type="email" autocomplete="email" maxlength="254" required></label>
+<label>WhatsApp<input name="telefone" type="tel" autocomplete="tel" maxlength="25" required></label>
+<label>Cidade<input name="cidade" autocomplete="address-level2" minlength="2" maxlength="120" required></label>
+<label>Serviço<input name="servico" minlength="2" maxlength="120" required></label>
+<label>Descrição do serviço (opcional)<textarea name="descricao" maxlength="1000"></textarea></label>
 <button class="verde" type="submit">Continuar</button>
+<p class="erro" role="alert"></p>
 </form>
-<button class="voltar" onclick="mostrar('inicio')">Voltar</button>
+<button class="voltar" type="button" data-pagina="inicio">Voltar</button>
 </section>
 
-<section id="resultado" class="card oculto">
-<h2>Cadastro de demonstração</h2>
+<section id="confirmacao" class="card" hidden>
+<h2>Confirme seu e-mail</h2>
+<p>Digite o código enviado ao e-mail informado. Se o código expirar, volte e solicite outro.</p>
+<form id="form-confirmacao" method="post" autocomplete="off">
+<label>Código de confirmação<input name="token" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" required></label>
+<button type="submit">Confirmar e salvar</button>
+<p class="erro" role="alert"></p>
+</form>
+<button class="voltar" type="button" id="voltar-cadastro">Voltar ao cadastro</button>
+</section>
+
+<section id="resultado" class="card" hidden>
+<h2 id="titulo-resultado"></h2>
 <p id="mensagem"></p>
-<button onclick="mostrar('inicio')">Página inicial</button>
+<button type="button" data-pagina="inicio">Página inicial</button>
 </section>
 </main>
 <footer>© 2026 TrampoFácil</footer>
-<script>
-function mostrar(id){
-document.querySelectorAll('main section').forEach(s=>s.classList.add('oculto'));
-document.getElementById(id).classList.remove('oculto');
-window.scrollTo(0,0);
-}
-function cadastrar(event,tipo){
-event.preventDefault();
-const dados=new FormData(event.target);
-const nome=dados.get('nome');
-document.getElementById('mensagem').textContent=
-'Olá, '+nome+'! O formulário de '+tipo+' está funcionando. Em breve vamos conectar os cadastros ao banco de dados.';
-mostrar('resultado');
-}
-const SUPABASE_URL = "https://flropneedvaimzcmvcza.supabase.co";
-const SUPABASE_KEY = "sb_publishable_03YzQHFBGZHziaN4H6NCPQ_C1BUJ7Xi";
-
-
-</script>
+<script src="config.js" defer></script>
+<script src="cadastro.js" defer></script>
 </body>
 </html>
-
-
-
-
-
-
-
