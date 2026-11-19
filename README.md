@@ -56,13 +56,15 @@ Pix, débito, tarifas fixas e impostos continuam sem taxas presumidas.
 
 A preparação interna de pagamento usa identidade validada e orçamento salvo,
 recusa valores injetados pelo navegador e sempre retorna pagamentos desativados.
-Os adaptadores HTTPS de Auth/Data API e o handler ainda não estão publicados.
+O serviço Edge `preparar-pagamento-teste` está publicado somente na homologação,
+com Auth/Data API e transação SQL privada. Falta validar uma chamada autenticada
+real e configurar a integração da interface com a origem permitida.
 Não há checkout PagBank, cobrança, webhook, repasse ou conciliação integrados.
 Consulte [server/README.md](server/README.md) para as próximas etapas.
 
 Na homologação existe agora um registro privado da preparação, com unicidade
 por solicitação/versão e conferência atômica do orçamento. O servidor tem um
-ponto de integração opcional, ainda sem conexão de gravação configurada.
+ponto de integração opcional, ligado à transação SQL na composição Edge.
 Isso não implementa tentativas financeiras nem habilita cobrança. Os testes
 reais dessa estrutura estão em `supabase/homologacao/validar-preparacao.sql`.
 
@@ -79,6 +81,8 @@ Instale as dependências fixadas com `npm ci --ignore-scripts`.
 - `npm run test:homologacao`: verificação externa explícita e somente leitura
   do catálogo, bloqueios das tabelas privadas e exigência de sessão no Auth.
   Não envia e-mails, não cadastra contas e não altera o banco.
+- `npm run test:servico`: verifica os bloqueios do endpoint publicado sem
+  sessão válida; não cadastra contas ou preparações e não cria cobranças.
 
 O teste transacional no PostgreSQL real de homologação também passou, com
 três identidades fictícias e rollback integral. RLS está habilitada nas seis

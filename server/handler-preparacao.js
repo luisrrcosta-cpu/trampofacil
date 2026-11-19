@@ -13,7 +13,7 @@ export function criarHandlerPreparacao({preparador,origemPermitida,timeoutCorpoM
     const responder=(status,body)=>new Response(JSON.stringify(body),{status,headers});
     const origemRecebida=request.headers.get('Origin');
     if(origemRecebida&&origemRecebida!==origemPermitida)return responder(403,{erro:'ORIGEM_NAO_PERMITIDA'});
-    if(origemRecebida){headers['Access-Control-Allow-Origin']=origemPermitida;headers['Access-Control-Allow-Headers']='Authorization, Content-Type';headers['Access-Control-Allow-Methods']='POST, OPTIONS';}
+    if(origemRecebida){headers['Access-Control-Allow-Origin']=origemPermitida;headers['Access-Control-Allow-Headers']='Authorization, Content-Type, apikey';headers['Access-Control-Allow-Methods']='POST, OPTIONS';}
     if(new URL(request.url).pathname!=='/api/pagamentos/preparar')return responder(404,{erro:'ROTA_INDISPONIVEL'});
     if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
     if(request.method!=='POST')return responder(405,{erro:'METODO_NAO_PERMITIDO'});

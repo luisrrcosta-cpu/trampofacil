@@ -62,6 +62,24 @@ os testes de contratação e mensagens e reverte todos os dados ao terminar.
 O registro ficou vazio. Não houve integração com provedor ou cobrança.
 Detalhes e limites estão em `server/README.md`.
 
+## Serviço de preparação publicado
+
+A função `preparar-pagamento-teste`, versão 1, está ativa somente neste projeto.
+Ela combina a validação no Auth, consulta do pedido com JWT/RLS e transação
+parametrizada para chamar a função privada. A conexão permanece no servidor,
+com host restrito à homologação e TLS com validação de certificado.
+Nenhuma chave administrativa foi adicionada ao aplicativo ou ao repositório.
+
+`npm run test:servico` passou contra o serviço publicado: sessão ausente e
+token inválido retornam 401; origem externa 403; GET 405; corpo excessivo 413;
+preflight da própria API 204. O registro interno permaneceu vazio.
+Não foi executada chamada autenticada, pois o login real segue pendente.
+Essa etapa ainda precisa validar a conexão TCP/TLS e a gravação no runtime.
+
+A interface não chama o serviço ainda. CORS está limitado à origem da própria
+API enquanto não houver uma hospedagem de homologação definida. Não ampliar
+para wildcard. Pagamentos permanecem desativados em todas as respostas.
+
 ## Verificação da API pública
 
 `npm run test:homologacao` consulta exclusivamente este projeto e passou em
