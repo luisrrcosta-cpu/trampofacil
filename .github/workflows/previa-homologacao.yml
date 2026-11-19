@@ -6,6 +6,7 @@ on:
     paths:
       - '*.html'
       - '*.js'
+      - '*.cjs'
       - '.github/workflows/previa-homologacao.yml'
 permissions:
   contents: read
@@ -58,6 +59,9 @@ jobs:
           assert.match(html, /id="contador-mensagem"/);
           console.log('Sintaxe, scripts e IDs da interface verificados.');
           NODE
+      - name: Testar comissoes e parcelamento
+        shell: bash
+        run: node testes-financeiros.cjs
       - name: Empacotar somente a interface estatica
         shell: bash
         run: |
