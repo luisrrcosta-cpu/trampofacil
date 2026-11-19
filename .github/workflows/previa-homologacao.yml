@@ -71,6 +71,9 @@ jobs:
       - name: Testar permissoes da contratacao
         shell: bash
         run: node testes-contratacao.cjs
+      - name: Testar privacidade de rascunhos
+        shell: bash
+        run: node testes-rascunhos.cjs
       - name: Empacotar somente a interface estatica
         shell: bash
         run: |
