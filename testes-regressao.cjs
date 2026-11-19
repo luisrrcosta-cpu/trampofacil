@@ -12,6 +12,8 @@ assert.match(cadastro, /confirmacao\.elements\.token\.disabled = false/);
 assert.match(servicos, /sessaoServicos !== sessaoDaBusca/);
 assert.match(servicos, /sessaoServicos !== sessaoOriginal \|\| profissionalEscolhido !== profissionalOriginal/);
 assert.match(servicos, /Array\.isArray\(registros\)/);
+assert.match(servicos, /let versaoBusca = 0/);
+assert.match(servicos, /if \(buscaAtual !== versaoBusca\) return/);
 assert.match(servicos, /if \(sessaoServicos !== sessaoDaBusca\) return;/);
 assert.match(servicos, /if \(sessaoServicos === sessaoOriginal\) await carregarPedidos\(aviso\)/);
 assert.match(conversa, /sessaoServicos !== sessaoOriginal \|\| pedidoEmConversa !== pedidoOriginal/);
