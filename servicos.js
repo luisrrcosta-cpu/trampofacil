@@ -7,6 +7,7 @@ let profissionalEscolhido;
 let tentativa;
 let filtrosBusca;
 let paginaBusca = 0;
+let versaoBusca = 0;
 
 const elemento = (id) => document.getElementById(id);
 const busca = elemento('form-busca');
@@ -33,6 +34,11 @@ function iniciarSessao(sessao, preservarRascunho = false) {
   sessaoServicos = sessao;
   controleSessao.alterar(sessao);
   elemento('sair').hidden = !sessao;
+  versaoBusca++;
+  listaBusca.replaceChildren();
+  maisProfissionais.hidden = true;
+  filtrosBusca = undefined;
+  paginaBusca = 0;
   listaPedidos.replaceChildren();
   maisPedidos.hidden = true;
   cursorPedidos = undefined;
@@ -54,6 +60,7 @@ function botaoAcao(rotulo, acao) {
 async function procurar(filtros, pagina) {
   if (!integrado || ocupado) return;
   const status = elemento('status-busca');
+  const buscaAtual = ++versaoBusca;
   bloquear(elemento('catalogo'), true);
   status.textContent = 'Buscando…';
   if (pagina === 0) {
@@ -69,6 +76,7 @@ async function procurar(filtros, pagina) {
     });
     if (!resposta.ok) throw new Error();
     const profissionais = await resposta.json();
+    if (buscaAtual !== versaoBusca) return;
     if (!Array.isArray(profissionais)) throw new Error('Resposta de busca inválida');
     for (const profissional of profissionais) {
       const card = document.createElement('article');
@@ -96,8 +104,10 @@ async function procurar(filtros, pagina) {
       ? `${listaBusca.childElementCount} profissional(is) encontrado(s).`
       : 'Nenhum profissional encontrado.';
   } catch {
-    status.textContent = 'A busca falhou. Tente novamente.';
-    maisProfissionais.hidden = true;
+    if (buscaAtual === versaoBusca) {
+      status.textContent = 'A busca falhou. Tente novamente.';
+      maisProfissionais.hidden = true;
+    }
   } finally {
     bloquear(elemento('catalogo'), false);
   }
