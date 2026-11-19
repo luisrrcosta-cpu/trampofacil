@@ -3,6 +3,7 @@
 let sessaoServicos;
 let destinoLogin;
 let emailLogin;
+let versaoLogin = 0;
 let profissionalEscolhido;
 let tentativa;
 let filtrosBusca;
@@ -128,6 +129,7 @@ maisProfissionais.addEventListener('click', () => {
 });
 
 function reiniciarLogin() {
+  versaoLogin++;
   emailLogin = undefined;
   formularioLogin.reset();
   formularioCodigo.reset();
@@ -187,14 +189,17 @@ async function enviarLogin(evento, verificando) {
     return;
   }
   let autenticado = false;
+  const loginAtual = ++versaoLogin;
   bloquear(secao, true);
   try {
     const resposta = verificando
       ? await enviar('/auth/v1/verify', { email, token, type: 'email' })
       : await enviar('/auth/v1/otp', { email, create_user: false });
+    if (loginAtual !== versaoLogin) return;
     if (!resposta.ok) throw new Error();
     if (verificando) {
       const { access_token, user } = await resposta.json();
+      if (loginAtual !== versaoLogin) return;
       if (!access_token || !user?.id) throw new Error();
       iniciarSessao({ token: access_token, usuario: user.id });
       reiniciarLogin();
@@ -207,6 +212,7 @@ async function enviarLogin(evento, verificando) {
       status.textContent = 'Confira sua caixa de entrada e digite o código de acesso.';
     }
   } catch {
+    if (loginAtual !== versaoLogin) return;
     status.textContent = verificando
       ? 'Código inválido ou expirado. Confira o código ou solicite outro.'
       : 'Não foi possível enviar o código. Confira o e-mail e tente novamente.';
