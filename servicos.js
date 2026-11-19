@@ -110,8 +110,11 @@ async function procurar(filtros, pagina) {
       : 'Nenhum profissional encontrado.';
   } catch {
     if (buscaAtual === versaoBusca) {
-      status.textContent = 'A busca falhou. Tente novamente.';
-      maisProfissionais.hidden = true;
+      status.textContent = pagina > 0
+        ? 'Não foi possível carregar mais profissionais. Toque em Ver mais para tentar novamente.'
+        : 'A busca falhou. Tente novamente.';
+      // Em falhas de paginação, manter os resultados e permitir nova tentativa.
+      if (pagina === 0) maisProfissionais.hidden = true;
     }
   } finally {
     // Uma resposta antiga não pode liberar os controles de uma busca mais recente.
