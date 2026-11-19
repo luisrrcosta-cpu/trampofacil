@@ -227,9 +227,11 @@ formularioPedido.addEventListener('submit', async (evento) => {
     status.textContent = 'Informe um título com 3 caracteres e uma descrição com 10 caracteres ou mais.';
     return;
   }
+  const sessaoOriginal = sessaoServicos;
+  const profissionalOriginal = profissionalEscolhido;
   const dados = {
-    cliente_usuario_id: sessaoServicos.usuario,
-    profissional_id: profissionalEscolhido.id, titulo, descricao,
+    cliente_usuario_id: sessaoOriginal.usuario,
+    profissional_id: profissionalOriginal.id, titulo, descricao,
   };
   const chave = JSON.stringify(dados);
   if (tentativa?.chave !== chave) tentativa = { chave, id: crypto.randomUUID() };
@@ -239,6 +241,7 @@ formularioPedido.addEventListener('submit', async (evento) => {
   let salvo = false;
   try {
     const resposta = await apiPedidos({ select: 'id' }, { id, ...dados }, 'POST');
+    if (sessaoServicos !== sessaoOriginal || profissionalEscolhido !== profissionalOriginal) return;
     if (resposta.status === 401) {
       exigirNovoLogin('nova-solicitacao');
       return;
@@ -250,7 +253,9 @@ formularioPedido.addEventListener('submit', async (evento) => {
         cliente_usuario_id: `eq.${dados.cliente_usuario_id}`,
         profissional_id: `eq.${dados.profissional_id}`,
       });
-      salvo = anterior.ok && (await anterior.json()).length === 1;
+      const registros = anterior.ok ? await anterior.json() : [];
+      if (sessaoServicos !== sessaoOriginal || profissionalEscolhido !== profissionalOriginal) return;
+      salvo = Array.isArray(registros) && registros.length === 1;
     }
     if (!salvo) {
       status.textContent = resposta.status === 403
@@ -258,11 +263,13 @@ formularioPedido.addEventListener('submit', async (evento) => {
         : 'Não foi possível enviar a solicitação. Tente novamente.';
     }
   } catch {
-    status.textContent = 'Não foi possível confirmar o envio. Tente novamente.';
+    if (sessaoServicos === sessaoOriginal && profissionalEscolhido === profissionalOriginal) {
+      status.textContent = 'Não foi possível confirmar o envio. Tente novamente.';
+    }
   } finally {
     bloquear(secao, false);
   }
-  if (salvo) {
+  if (salvo && sessaoServicos === sessaoOriginal && profissionalEscolhido === profissionalOriginal) {
     tentativa = undefined;
     formularioPedido.reset();
         atualizarContadorDescricaoPedido();
