@@ -37,6 +37,8 @@ function iniciarSessao(sessao) {
   controleSessao.alterar(sessao);
   elemento('sair').hidden = !sessao;
   versaoBusca++;
+  bloquear(elemento('catalogo'), false);
+  elemento('status-busca').textContent = '';
   listaBusca.replaceChildren();
   maisProfissionais.hidden = true;
   filtrosBusca = undefined;
