@@ -9,10 +9,10 @@ const config = contexto.window.TRAMPOFACIL_SUPABASE;
 const validar = runInNewContext(await readFile(new URL('../ambiente.js', import.meta.url), 'utf8') + '\nvalidarAmbiente');
 assert.equal(validar(config).integrado, true, 'Selecione exclusivamente a homologação permitida.');
 
-async function consultar(caminho, dados) {
+async function consultar(caminho, dados, perfil) {
   const resposta = await fetch(config.url + caminho, {
     method: dados ? 'POST' : 'GET',
-    headers: { apikey: config.chavePublicavel, 'Content-Type': 'application/json' },
+    headers: { apikey: config.chavePublicavel, 'Content-Type': 'application/json', ...(perfil ? {'Accept-Profile': perfil} : {}) },
     body: dados ? JSON.stringify(dados) : undefined,
     credentials: 'omit', redirect: 'error', cache: 'no-store', signal: AbortSignal.timeout(15000),
   });
@@ -36,4 +36,8 @@ for (const tabela of ['clientes', 'profissionais', 'solicitacoes', 'mensagens_so
 
 const usuario = await consultar('/auth/v1/user');
 assert.equal(usuario.status, 401);
+const privado = await consultar('/rest/v1/preparacoes_pagamento?select=id&limit=1', undefined, 'private');
+assert.equal(privado.status, 406);
+assert.equal(privado.dados.code, 'PGRST106');
+console.log('OK: schema de preparações internas não exposto na Data API.');
 console.log('OK: Auth exige sessão válida. Nenhum e-mail, cadastro ou pagamento foi criado.');

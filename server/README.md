@@ -95,3 +95,50 @@ acesso a orçamento de outra pessoa e corpos excessivos/interrompidos. A suíte
 local soma 31 testes aprovados. O banco real de homologação passou no teste
 transacional de contratação e mensagens; estes adaptadores HTTP ainda não
 foram exercitados com sessões reais do Auth.
+
+## Registro privado da preparação — homologação
+
+As migrações `registrar_preparacao_pagamento_teste` e
+`negar_acesso_publico_preparacoes` criam um registro interno em
+`private.preparacoes_pagamento`. Foram aplicadas apenas no projeto de testes.
+A tabela tem RLS, bloqueio explícito para anon/authenticated e não é exposta
+na Data API. Não contém cartão, CPF, credencial de provedor ou mensagem.
+
+`private.registrar_preparacao_pagamento` é SECURITY INVOKER, tem search_path
+vazio e execução restrita ao papel de serviço. O futuro servidor deve validar
+a sessão no Auth e fornecer a identidade resultante; nunca aceitar o ID do
+cliente no corpo do navegador. A função não é uma RPC pública. Não criar
+wrapper público nem expor private para facilitar sua chamada.
+
+Dentro de uma transação, a função bloqueia a solicitação com FOR UPDATE,
+confere cliente, estado aceita e versão exata do orçamento, e lê o valor salvo.
+Registra somente o valor-base e a divisão 90/10 antes de impostos. A restrição
+única por solicitação/versão e o bloqueio do pedido coordenam repetições.
+A mesma versão e condições devolvem o mesmo ID. Alteração de forma ou parcelas,
+versão antiga, outro cliente ou pedido encerrado são recusados.
+
+Todas as linhas têm `ambiente = teste`, `estado = preparada` e
+`pagamento_habilitado = false`, protegidos por constraints. O papel de serviço
+tem somente SELECT/INSERT nessa tabela, sem UPDATE/DELETE/TRUNCATE.
+
+O preparador aceita opcionalmente o adaptador interno `registrarPreparacao`.
+Ele recebe solicitação, identidade autenticada, versão, forma e parcelas;
+não recebe um preço para gravar. Deve executar a função privada pelo banco e
+retornar `{id}`. Essa conexão de servidor ainda não foi configurada. O handler
+atual continua com os adaptadores de consulta e não grava preparações.
+
+Se o registro responder com conflito, o preparador exige atualização. Se a
+resposta for incerta, retorna erro sem repetir automaticamente. Uma tentativa
+posterior com as mesmas condições será reconhecida pela função do banco.
+`preparacaoRegistrada` indica apenas esse registro; pagamentos continuam
+desativados e `PERSISTENCIA_IDEMPOTENTE` permanece como pendência das futuras
+tentativas financeiras. Não há chamada ao PagBank, total com taxas confirmado,
+reserva de saldo, garantia de cobrança única, webhook ou conciliação.
+
+Seis testes SQL locais exercitam repetição, condições divergentes, versão com
+diferença de um microssegundo, identidade, estado, ACL e constraints. Quatro
+testes do preparador cobrem o adaptador opcional e respostas incertas/conflitos.
+`supabase/homologacao/validar-preparacao.sql` também passou no PostgreSQL real,
+com contas fictícias, fluxo completo e rollback. São testes sequenciais;
+concorrência com múltiplas conexões e falhas reais de rede ainda precisam de
+homologação antes de implementar tentativas financeiras.

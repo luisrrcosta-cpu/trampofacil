@@ -60,6 +60,12 @@ Os adaptadores HTTPS de Auth/Data API e o handler ainda não estão publicados.
 Não há checkout PagBank, cobrança, webhook, repasse ou conciliação integrados.
 Consulte [server/README.md](server/README.md) para as próximas etapas.
 
+Na homologação existe agora um registro privado da preparação, com unicidade
+por solicitação/versão e conferência atômica do orçamento. O servidor tem um
+ponto de integração opcional, ainda sem conexão de gravação configurada.
+Isso não implementa tentativas financeiras nem habilita cobrança. Os testes
+reais dessa estrutura estão em `supabase/homologacao/validar-preparacao.sql`.
+
 ## Verificação
 
 Instale as dependências fixadas com `npm ci --ignore-scripts`.

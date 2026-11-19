@@ -46,6 +46,22 @@ envio de códigos não for validado. Um aviso identifica o ambiente de testes.
 `ambiente.js` recusa qualquer outro projeto, inclusive o de produção.
 Nenhuma chave secreta foi adicionada ao repositório.
 
+## Preparação privada de pagamentos
+
+Também foram aplicadas somente aqui as migrações
+`20261119120537_registrar_preparacao_pagamento_teste.sql` e
+`20261119121031_negar_acesso_publico_preparacoes.sql`.
+Elas adicionam uma tabela e uma função no schema private, sem alterar as seis
+tabelas públicas ou suas políticas. O bloqueio de clientes é explícito;
+o schema continua fora da Data API.
+
+`validar-preparacao.sql` passou no banco real: repetição retorna o mesmo ID,
+divisão 90/10 preservada, outra identidade/versão/condição recusada, registro
+interno inacessível ao cliente e pedido concluído bloqueado. O script preserva
+os testes de contratação e mensagens e reverte todos os dados ao terminar.
+O registro ficou vazio. Não houve integração com provedor ou cobrança.
+Detalhes e limites estão em `server/README.md`.
+
 ## Verificação da API pública
 
 `npm run test:homologacao` consulta exclusivamente este projeto e passou em

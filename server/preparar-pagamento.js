@@ -7,9 +7,10 @@ export class ErroPreparacaoPagamento extends Error {
 }
 const falhar=(codigo,status,mensagem)=>{throw new ErroPreparacaoPagamento(codigo,status,mensagem);};
 
-export function criarPreparadorPagamento({ambiente,autenticar,consultarSolicitacao}={}) {
+export function criarPreparadorPagamento({ambiente,autenticar,consultarSolicitacao,registrarPreparacao}={}) {
   if(ambiente!=='teste')throw new Error('A preparação de pagamentos está disponível somente em testes.');
   if(typeof autenticar!=='function'||typeof consultarSolicitacao!=='function')throw new Error('Configure os adaptadores de autenticação e consulta.');
+  if(registrarPreparacao!==undefined&&typeof registrarPreparacao!=='function')throw new Error('Registro de preparação inválido.');
   return Object.freeze({
     async preparar({authorization,body}={}) {
       const token=/^Bearer ([^\s]+)$/.exec(authorization||'')?.[1];
@@ -40,6 +41,23 @@ export function criarPreparadorPagamento({ambiente,autenticar,consultarSolicitac
         falhar('ORCAMENTO_INVALIDO',409,'O orçamento salvo precisa ser conferido.');
       }
       const comissao=Math.floor((valor+5)/10);
+      let preparacaoId;
+      if(registrarPreparacao) {
+        try {
+          const registro=await registrarPreparacao({
+            solicitacaoId:pedido.id,clienteUsuarioId:usuario.id,
+            versaoOrcamento:pedido.atualizado_em,forma:body.forma,parcelas,
+          });
+          if(!uuid.test(registro?.id||''))throw new Error();
+          preparacaoId=registro.id;
+        } catch (erro) {
+          if(erro?.code==='22023')falhar('PREPARACAO_DIVERGENTE',409,'Orçamento ou condições alteradas. Atualize a solicitação antes de continuar.');
+          if(erro?.code==='P0002')falhar('SOLICITACAO_INDISPONIVEL',404,'Solicitação indisponível.');
+          // Uma resposta perdida pode ter sido gravada. Não gerar nova chave
+          // nem repetir automaticamente; a função atômica reconhece a repetição.
+          falhar('REGISTRO_INDISPONIVEL',503,'Não foi possível confirmar a preparação. Tente novamente com as mesmas condições.');
+        }
+      }
       return Object.freeze({
         solicitacaoId:pedido.id,
         versaoOrcamento:pedido.atualizado_em,
@@ -47,6 +65,8 @@ export function criarPreparadorPagamento({ambiente,autenticar,consultarSolicitac
         profissionalCentavos:valor-comissao,
         comissaoCentavos:comissao,
         forma:body.forma,parcelas,
+        preparacaoRegistrada:Boolean(preparacaoId),
+        ...(preparacaoId?{preparacaoId}:{}),
         pagamentoHabilitado:false,
         pendencias:Object.freeze(['TAXAS_ONLINE','TRIBUTACAO','CREDENCIAIS_SANDBOX','PERSISTENCIA_IDEMPOTENTE','DIVISAO_E_REPASSES','WEBHOOK_VERIFICADO']),
       });

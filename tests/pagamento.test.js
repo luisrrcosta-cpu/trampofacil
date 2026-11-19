@@ -52,3 +52,36 @@ test('produção e métodos não configurados continuam bloqueados',async()=>{
   for(const body of [{solicitacaoId:id,forma:'pix'},{...entrada.body,parcelas:11},{...entrada.body,parcelas:1}])await rejeita(preparar().preparar({...entrada,body}),'FORMA_NAO_CONFIGURADA',422);
   assert.equal(typeof preparar().cobrar,'undefined');
 });
+
+test('registro recebe identidade validada e versão salva, sem valores enviados pelo navegador',async()=>{
+  let parametros;
+  const preparacaoId='55555555-5555-4555-8555-555555555555';
+  const servico=preparar({registrarPreparacao:async dados=>{parametros=dados;return {id:preparacaoId};}});
+  const resultado=await servico.preparar(entrada);
+  assert.deepEqual(parametros,{solicitacaoId:id,clienteUsuarioId:cliente,versaoOrcamento:pedido.atualizado_em,forma:'credito_parcelado',parcelas:10});
+  assert.equal(resultado.preparacaoId,preparacaoId);
+  assert.equal(resultado.preparacaoRegistrada,true);
+  assert.equal(resultado.pagamentoHabilitado,false);
+  assert.ok(resultado.pendencias.includes('PERSISTENCIA_IDEMPOTENTE'), 'tentativas financeiras ainda não foram implementadas');
+});
+test('resposta incerta do registro não é repetida automaticamente nem tratada como sucesso',async()=>{
+  let chamadas=0;
+  const servico=preparar({registrarPreparacao:async()=>{chamadas++;throw new Error('detalhes privados');}});
+  await rejeita(servico.preparar(entrada),'REGISTRO_INDISPONIVEL',503);
+  assert.equal(chamadas,1);
+  await rejeita(preparar({registrarPreparacao:async()=>({})}).preparar(entrada),'REGISTRO_INDISPONIVEL',503);
+});
+test('bloqueios anteriores impedem gravação e o modo padrão continua somente leitura',async()=>{
+  let chamadas=0;
+  const servico=preparar({registrarPreparacao:async()=>{chamadas++;}});
+  await rejeita(servico.preparar({...entrada,body:{...entrada.body,valor_centavos:1}}),'PEDIDO_INVALIDO',400);
+  assert.equal(chamadas,0);
+  assert.equal((await preparar().preparar(entrada)).preparacaoRegistrada,false);
+  assert.throws(()=>preparar({registrarPreparacao:true}),/Registro de preparação inválido/);
+});
+test('conflito de versão ou condições pede atualização e pedido indisponível não revela detalhes',async()=>{
+  for(const [code,codigo,status] of [['22023','PREPARACAO_DIVERGENTE',409],['P0002','SOLICITACAO_INDISPONIVEL',404]]) {
+    const servico=preparar({registrarPreparacao:async()=>{throw Object.assign(new Error('detalhes internos'),{code});}});
+    await rejeita(servico.preparar(entrada),codigo,status);
+  }
+});
