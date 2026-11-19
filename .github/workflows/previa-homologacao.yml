@@ -62,6 +62,9 @@ jobs:
       - name: Testar comissoes e parcelamento
         shell: bash
         run: node testes-financeiros.cjs
+      - name: Testar isolamento de sessao
+        shell: bash
+        run: node testes-sessao.cjs
       - name: Empacotar somente a interface estatica
         shell: bash
         run: |
