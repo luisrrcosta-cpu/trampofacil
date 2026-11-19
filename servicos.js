@@ -395,10 +395,17 @@ async function atualizarPedido(pedido, dados) {
       exigirNovoLogin('solicitacoes');
       return;
     }
-    if (!resposta.ok) throw new Error();
-    aviso = (await resposta.json()).length
-      ? 'Solicitação atualizada.'
-      : 'A solicitação mudou. Confira o estado atual antes de repetir a ação.';
+    if (resposta.status === 403) {
+      aviso = 'Alteração recusada. Somente a parte autorizada pode executar esta etapa, e o serviço precisa estar no estado correto.';
+    } else if (resposta.status === 409 || resposta.status === 412) {
+      aviso = 'A solicitação foi alterada por outra pessoa. Confira o estado atual antes de tentar novamente.';
+    } else if (!resposta.ok) {
+      throw new Error();
+    } else {
+      aviso = (await resposta.json()).length
+        ? 'Solicitação atualizada.'
+        : 'A solicitação mudou. Confira o estado atual antes de repetir a ação.';
+    }
   } catch {
     aviso = 'Não foi possível confirmar a alteração. Confira o estado atual.';
   } finally {
