@@ -128,6 +128,15 @@ maisProfissionais.addEventListener('click', () => {
   procurar(filtrosBusca, paginaBusca + 1);
 });
 
+busca.addEventListener('reset', () => {
+  versaoBusca++;
+  filtrosBusca = undefined;
+  paginaBusca = 0;
+  listaBusca.replaceChildren();
+  maisProfissionais.hidden = true;
+  elemento('status-busca').textContent = 'Filtros limpos. Faça uma nova busca.';
+});
+
 function reiniciarLogin() {
   versaoLogin++;
   emailLogin = undefined;
