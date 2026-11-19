@@ -186,7 +186,7 @@ label input,label select,label textarea{font-weight:400}
 <button type="button" id="mais-mensagens" hidden>Ver mensagens anteriores</button>
 <form id="form-mensagem" method="post" hidden>
 <label>Mensagem<textarea name="texto" maxlength="2000" required aria-describedby="orientacao-mensagem"></textarea></label>
-<p id="orientacao-mensagem">Evite enviar senhas, documentos ou dados bancários.</p>
+<p id="orientacao-mensagem">Evite enviar senhas, documentos ou dados bancários. <span id="contador-mensagem" aria-live="off">0/2000 caracteres</span></p>
 <button type="submit">Enviar mensagem</button>
 </form>
 <p id="status-mensagem" role="status"></p>
