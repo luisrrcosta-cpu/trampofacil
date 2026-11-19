@@ -69,6 +69,7 @@ async function procurar(filtros, pagina) {
     });
     if (!resposta.ok) throw new Error();
     const profissionais = await resposta.json();
+    if (!Array.isArray(profissionais)) throw new Error('Resposta de busca inválida');
     for (const profissional of profissionais) {
       const card = document.createElement('article');
       card.append(
@@ -96,6 +97,7 @@ async function procurar(filtros, pagina) {
       : 'Nenhum profissional encontrado.';
   } catch {
     status.textContent = 'A busca falhou. Tente novamente.';
+    maisProfissionais.hidden = true;
   } finally {
     bloquear(elemento('catalogo'), false);
   }
@@ -407,6 +409,7 @@ async function carregarPedidos(aviso = '', anexar = false) {
     }
     if (!resposta.ok) throw new Error();
     const pedidos = await resposta.json();
+    if (!Array.isArray(pedidos)) throw new Error('Resposta de solicitações inválida');
     // Nunca renderizar dados de uma requisição iniciada em outra sessão.
     if (sessaoServicos !== sessaoDaBusca) return;
     const pagina = pedidos.slice(0, tamanhoPaginaPedidos);
