@@ -330,7 +330,10 @@ function mostrarPedido(pedido) {
   }
   if (['solicitada', 'proposta', 'aceita'].includes(pedido.status)) {
     card.append(botaoAcao('Cancelar solicitação', () => {
-      if (window.confirm('Cancelar esta solicitação de serviço?')) {
+      const aviso = pedido.status === 'aceita'
+        ? 'Esta contratação já foi aceita. Deseja cancelar a solicitação? Avise a outra parte pelas mensagens, se necessário. Nenhum estorno ou reembolso será realizado automaticamente.'
+        : 'Deseja cancelar esta solicitação? Esta ação encerra a negociação e não realiza pagamentos nem estornos.';
+      if (window.confirm(aviso)) {
         atualizarPedido(pedido, { status: 'cancelada' });
       }
     }));
