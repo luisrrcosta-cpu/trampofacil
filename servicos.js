@@ -312,10 +312,16 @@ function mostrarPedido(pedido) {
     campo.max = '1000000';
     campo.step = '0.01';
     campo.required = true;
+    if (pedido.status === 'proposta' && Number.isSafeInteger(pedido.valor_centavos)) {
+      campo.value = (pedido.valor_centavos / 100).toFixed(2);
+    }
     label.append(campo);
     const erro = texto('p', '');
     erro.setAttribute('role', 'alert');
-    form.append(label, erro, texto('button', 'Enviar proposta'));
+    if (pedido.status === 'proposta') {
+      form.append(texto('p', 'Alterar o valor substitui a proposta anterior. O cliente deverá aceitar o orçamento atualizado.'));
+    }
+    form.append(label, erro, texto('button', pedido.status === 'proposta' ? 'Atualizar proposta' : 'Enviar proposta'));
     form.addEventListener('submit', (evento) => {
       evento.preventDefault();
       erro.textContent = '';
