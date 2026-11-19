@@ -77,6 +77,9 @@ jobs:
       - name: Testar privacidade de rascunhos
         shell: bash
         run: node testes-rascunhos.cjs
+      - name: Testar regressoes da interface
+        shell: bash
+        run: node testes-regressao.cjs
       - name: Empacotar somente a interface estatica
         shell: bash
         run: |
