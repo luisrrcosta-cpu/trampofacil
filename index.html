@@ -27,6 +27,32 @@ article p{overflow-wrap:anywhere}
 .texto-mensagem{white-space:pre-wrap}
 footer{text-align:center;padding:25px;color:#64748b}
 table{width:100%;border-collapse:collapse}th,td{padding:10px 4px;border-bottom:1px solid #cbd5e1;text-align:left}td{text-align:right;white-space:nowrap}
+
+/* Refinamento responsivo da interface — sem alterar autenticação ou pagamentos */
+:root{color-scheme:light}
+body{min-height:100vh;background:linear-gradient(180deg,#edf3ff 0,#f5f7fb 260px,#f5f7fb 100%);line-height:1.5}
+header{padding:34px 18px 42px;background:linear-gradient(135deg,#102f60,#1769d2)}
+header h1{font-size:clamp(28px,6vw,38px);letter-spacing:-.8px}
+header p{opacity:.92}
+main{max-width:640px;margin:-20px auto 32px;padding:0 16px;position:relative}
+.card{border:1px solid #e4eaf4;border-radius:20px;padding:26px 22px;box-shadow:0 12px 32px #122e5b12}
+.card h2{font-size:clamp(21px,4.8vw,27px);line-height:1.25;letter-spacing:-.4px}
+button{cursor:pointer;min-height:48px;transition:filter .15s,transform .15s}
+button:not(:disabled):active{transform:scale(.99)}
+button:disabled{opacity:.6;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #f0ae32;outline-offset:2px}
+input,select,textarea{background:#fff;color:#17243b;max-width:100%}
+label{display:block;font-weight:600;margin-top:10px}
+label input,label select,label textarea{font-weight:400}
+#inicio{text-align:center}
+#inicio>p{color:#475569}
+#inicio button{margin:9px 0}
+#aviso-homologacao{background:#f9fbff;border-left:4px solid #1769e0}
+#aviso-homologacao p{margin-bottom:0}
+[role="alert"]:not(:empty){font-weight:600}
+#status-login,#status-busca,#status-solicitacoes,#status-conversa,#status-mensagem{overflow-wrap:anywhere}
+@media(max-width:420px){header{padding:28px 14px 38px}main{padding:0 12px}.card{padding:22px 16px;border-radius:17px}button{font-size:16px;padding:13px 12px}}
+@media(prefers-reduced-motion:reduce){button{transition:none}}
 </style>
 </head>
 <body>
