@@ -15,6 +15,8 @@ assert.match(servicos, /Array\.isArray\(registros\)/);
 assert.match(servicos, /select: 'id,titulo,descricao'/);
 assert.match(servicos, /registros\[0\]\.titulo === titulo && registros\[0\]\.descricao === descricao/);
 assert.match(servicos, /let versaoBusca = 0/);
+assert.match(servicos, /if \(!filtrosBusca \|\| maisProfissionais\.hidden\) return/);
+assert.match(servicos, /const filtrosAtuais = \{ \.\.\.filtros \}/);
 assert.match(servicos, /if \(buscaAtual !== versaoBusca\) return/);
 assert.match(servicos, /if \(sessaoServicos !== sessaoDaBusca\) return;/);
 assert.match(servicos, /if \(sessaoServicos === sessaoOriginal\) await carregarPedidos\(aviso\)/);
