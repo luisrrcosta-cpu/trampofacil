@@ -75,6 +75,7 @@ async function procurar(filtros, pagina) {
         profissionalEscolhido = profissional;
         tentativa = undefined;
         formularioPedido.reset();
+        atualizarContadorDescricaoPedido();
         elemento('status-envio').textContent = '';
         elemento('profissional-escolhido').textContent = `${profissional.nome} · ${profissional.servico}`;
         proteger('nova-solicitacao');
@@ -141,6 +142,7 @@ elemento('sair').addEventListener('click', () => {
   tentativa = undefined;
   profissionalEscolhido = undefined;
   formularioPedido.reset();
+        atualizarContadorDescricaoPedido();
   reiniciarLogin();
 });
 
@@ -249,6 +251,7 @@ formularioPedido.addEventListener('submit', async (evento) => {
   if (salvo) {
     tentativa = undefined;
     formularioPedido.reset();
+        atualizarContadorDescricaoPedido();
     status.textContent = '';
     proteger('solicitacoes');
   }
