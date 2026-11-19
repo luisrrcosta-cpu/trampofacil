@@ -203,11 +203,14 @@ formularioMensagem.addEventListener('submit', async (evento) => {
     statusMensagem.textContent = 'Escreva uma mensagem de até 2.000 caracteres.';
     return;
   }
+  const sessaoOriginal = sessaoServicos;
+  const pedidoOriginal = pedidoEmConversa;
   bloquear(secaoConversa, true);
   statusMensagem.textContent = 'Enviando…';
   let atualizar = false;
   try {
-    const resposta = await apiConversa(mensagens, {}, { solicitacao_id: pedidoEmConversa, texto: corpo });
+    const resposta = await apiConversa(mensagens, {}, { solicitacao_id: pedidoOriginal, texto: corpo });
+    if (sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return;
     if (resposta.status === 401) {
       exigirNovoLogin('conversa');
       return;
@@ -224,13 +227,17 @@ formularioMensagem.addEventListener('submit', async (evento) => {
       atualizar = true;
     }
   } catch {
-    envioIncerto = true;
-    statusMensagem.textContent = 'Não foi possível confirmar o envio. Atualize as mensagens antes de tentar novamente.';
+    if (sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal) {
+      envioIncerto = true;
+      statusMensagem.textContent = 'Não foi possível confirmar o envio. Atualize as mensagens antes de tentar novamente.';
+    }
   } finally {
     bloquear(secaoConversa, false);
     enviarMensagem.disabled = envioIncerto;
   }
-  if (atualizar) await carregarConversa();
+  if (atualizar && sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal) {
+    await carregarConversa();
+  }
 });
 
 elemento('atualizar-conversa').addEventListener('click', carregarConversa);
