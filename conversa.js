@@ -60,8 +60,9 @@ function trocarSessaoConversa(sessao, usuarioAnterior) {
   pedidoEmConversa = undefined;
   if (usuarioAnterior && corpo && pedido) {
     rascunhoConversa = { usuario: usuarioAnterior, pedido, corpo, incerto };
-  } else if (rascunho && sessao?.usuario === rascunho.usuario) {
-    // Restaurar apenas o rascunho da própria conta, após reabrir a conversa.
+  } else if (rascunho) {
+    // Manter o rascunho somente na memória, sem exibi-lo a outra conta.
+    // A restauração só ocorre ao reabrir o pedido pelo mesmo usuário.
     rascunhoConversa = rascunho;
   }
 }
