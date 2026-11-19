@@ -125,9 +125,33 @@ estiver fora de `/usr/bin/chromium`. Os testes usam Chromium com a API
 simulada e PostgreSQL local via PGlite com um esquema mínimo, dados
 fictícios e uma cópia dos triggers de solicitação.
 
+Para executar apenas os testes sem navegador, use `npm run test:local`.
+`npm run test:browser` executa a suíte de interface; `npm test` mantém a suíte
+completa, sem esconder falhas de navegador. A conversão de valores usa
+`valores.js`, rejeita números ambíguos e não arredonda casas adicionais.
+
+Verificação de 19/11/2026: os três testes sem navegador passaram, cobrindo
+contratação até conclusão, isolamento de terceiros, autoria de mensagens,
+bloqueio de mensagens após encerramento, integridade do histórico, proteção
+do preço aceito e limites monetários. Tudo foi executado em PGlite em memória,
+sem conexão com o Supabase de produção. O Chromium não iniciou neste ambiente
+por bloqueio de socket (`Operation not permitted`); a suíte de interface
+continua pendente de execução em um ambiente compatível.
+
+## Limite dos testes de pagamentos
+
+Ainda não existe checkout, tabela de pagamentos, webhook ou provedor integrado.
+Aceitar proposta não cobra e concluir um serviço não comprova pagamento.
+A tela de solicitações informa essa limitação. Os testes validam somente os
+valores do orçamento e rejeitam tentativas de mudar a solicitação para um
+estado financeiro inventado (`pago`). Eles não validam Pix, cartão, estorno,
+repasse ou idempotência de webhook. Esses testes dependem da escolha do
+provedor e de credenciais de sandbox; não usar credenciais de produção.
+
 ## Integrações pendentes
 
 - Homologar o envio real de códigos e os fluxos de cadastro, busca e
   solicitações, histórico e mensagens pela Data API em homologação.
 - Definir o provedor de pagamentos antes da implementação. A aplicação
   atual grava apenas o valor proposto.
+

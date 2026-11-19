@@ -144,10 +144,17 @@ test('catálogo, solicitações e conversas respeitam acesso, autoria e transiç
   await autenticar(profissional);
   assert.deepEqual((await falar('Resposta fictícia do profissional')).rows, [{ autor_usuario_id: profissional }]);
   await db.exec("update solicitacoes set status = 'proposta', valor_centavos = 15000");
+  // Cobrança não está integrada: nenhum participante pode inventar um estado pago.
+  await assert.rejects(db.exec("update solicitacoes set status = 'pago'"), /não permitida/);
+  await assert.rejects(db.exec("update solicitacoes set status = 'proposta', valor_centavos = 0"), /check constraint/);
+  await assert.rejects(db.exec("update solicitacoes set status = 'proposta', valor_centavos = 100000001"), /check constraint/);
   await autenticar(cliente);
+  await assert.rejects(db.exec("update solicitacoes set status = 'pago'"), /não permitida/);
   await assert.rejects(db.exec("update solicitacoes set status = 'aceita', valor_centavos = 1"), /não permitida/);
   await db.exec("update solicitacoes set status = 'aceita'");
   await autenticar(profissional);
+  await assert.rejects(db.exec("update solicitacoes set status = 'em_andamento', valor_centavos = 20000"), /valor aceito/);
+  assert.equal((await db.query('select valor_centavos from solicitacoes')).rows[0].valor_centavos, 15000);
   await db.exec("update solicitacoes set status = 'em_andamento'");
   await assert.rejects(db.exec("update solicitacoes set status = 'cancelada'"), /não permitida/);
   await autenticar(cliente);
@@ -157,6 +164,8 @@ test('catálogo, solicitações e conversas respeitam acesso, autoria e transiç
   await autenticar(cliente);
   await db.exec("update solicitacoes set status = 'concluida'");
   await assert.rejects(falar('Mensagem após conclusão'), /row-level security/);
+  await assert.rejects(db.exec('delete from mensagens_solicitacoes'), /permission denied/);
+  await assert.rejects(db.exec('delete from historico_solicitacoes'), /permission denied/);
   assert.equal((await db.query('select * from mensagens_solicitacoes')).rows.length, 2);
   const historico = await db.query('select status from historico_solicitacoes');
   assert.deepEqual(historico.rows.map(({ status }) => status),
@@ -173,3 +182,4 @@ test('catálogo, solicitações e conversas respeitam acesso, autoria e transiç
   assert.deepEqual((await db.query('select status from solicitacoes where id=$1', [cancelado])).rows,
     [{ status: 'cancelada' }]);
 });
+

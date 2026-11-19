@@ -7,7 +7,7 @@ import { chromium } from 'playwright-core';
 
 test('busca, autenticação e solicitação com repetição segura', async (t) => {
   const server = createServer(async (req, res) => {
-    const arquivos = ['index.html', 'config.js', 'cadastro.js', 'servicos.js', 'conversa.js'];
+    const arquivos = ['index.html', 'config.js', 'cadastro.js', 'valores.js', 'servicos.js', 'conversa.js'];
     const arquivo = req.url === '/' ? 'index.html' : req.url.slice(1);
     if (!arquivos.includes(arquivo)) {
       res.writeHead(404).end();
@@ -253,3 +253,4 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   assert.equal(await page.locator('#lista-solicitacoes article').count(), 50);
   assert.deepEqual(erros, []);
 });
+

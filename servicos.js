@@ -267,10 +267,18 @@ function mostrarPedido(pedido) {
     campo.step = '0.01';
     campo.required = true;
     label.append(campo);
-    form.append(label, texto('button', 'Enviar proposta'));
+    const erro = texto('p', '');
+    erro.setAttribute('role', 'alert');
+    form.append(label, erro, texto('button', 'Enviar proposta'));
     form.addEventListener('submit', (evento) => {
       evento.preventDefault();
-      atualizarPedido(pedido, { status: 'proposta', valor_centavos: Math.round(campo.valueAsNumber * 100) });
+      erro.textContent = '';
+      try {
+        const valor_centavos = propostaEmCentavos(campo.value);
+        atualizarPedido(pedido, { status: 'proposta', valor_centavos });
+      } catch (falha) {
+        erro.textContent = falha.message;
+      }
     });
     card.append(form);
   }
@@ -360,3 +368,4 @@ async function atualizarPedido(pedido, dados) {
 elemento('recarregar-solicitacoes').addEventListener('click', () => carregarPedidos());
 
 maisPedidos.addEventListener('click', () => carregarPedidos('', true));
+
