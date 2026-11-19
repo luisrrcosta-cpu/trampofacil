@@ -37,4 +37,13 @@ rodar("sessaoServicos = {usuario: 'conta-b'}; trocarSessaoConversa(sessaoServico
 assert.equal(memoria.texto.value, '', 'Outra conta não pode ver rascunho.');
 rodar("sessaoServicos = {usuario: 'conta-a'}; trocarSessaoConversa(sessaoServicos);");
 assert.equal(rodar('rascunhoConversa?.pedido'), 'pedido-1');
+rodar("abrirConversa('pedido-1')");
+assert.equal(memoria.texto.value, 'Rascunho privado', 'Rascunho deve voltar somente ao abrir a conversa original.');
+rodar("trocarSessaoConversa(undefined, 'conta-a')");
+rodar("sessaoServicos = {usuario: 'conta-b'}; trocarSessaoConversa(sessaoServicos);");
+rodar("abrirConversa('pedido-1')");
+assert.equal(memoria.texto.value, '', 'Outra conta não pode recuperar texto da conta anterior.');
+rodar("sessaoServicos = {usuario: 'conta-a'}; trocarSessaoConversa(sessaoServicos);");
+rodar("abrirConversa('pedido-diferente')");
+assert.equal(memoria.texto.value, '', 'Rascunho não pode ser exibido em outro pedido.');
 console.log('Isolamento de rascunhos entre contas aprovado.');
