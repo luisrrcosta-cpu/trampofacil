@@ -1,0 +1,15 @@
+'use strict';
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const html = fs.readFileSync('index.html', 'utf8');
+const cadastro = fs.readFileSync('cadastro.js', 'utf8');
+const servicos = fs.readFileSync('servicos.js', 'utf8');
+const conversa = fs.readFileSync('conversa.js', 'utf8');
+const ambiente = fs.readFileSync('ambiente.js', 'utf8');
+assert.match(html, /<script src="transicoes-contratacao\.js" defer><\/script>/);
+assert.ok(html.indexOf('transicoes-contratacao.js') < html.indexOf('servicos.js'));
+assert.match(cadastro, /confirmacao\.elements\.token\.disabled = false/);
+assert.match(servicos, /sessaoServicos !== sessaoDaBusca/);
+assert.match(conversa, /sessaoServicos !== sessaoOriginal \|\| pedidoEmConversa !== pedidoOriginal/);
+assert.match(ambiente, /config\.ambiente !== 'homologacao'/);
+console.log('Verificacoes de regressao da interface aprovadas.');
