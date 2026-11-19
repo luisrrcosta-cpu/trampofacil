@@ -4,6 +4,12 @@ const secaoConversa = elemento('conversa');
 const formularioMensagem = elemento('form-mensagem');
 const statusConversa = elemento('status-conversa');
 const statusMensagem = elemento('status-mensagem');
+const contadorMensagem = elemento('contador-mensagem');
+function atualizarContadorMensagem() {
+  const quantidade = formularioMensagem.elements.texto.value.length;
+  contadorMensagem.textContent = `${quantidade}/2000 caracteres`;
+}
+formularioMensagem.elements.texto.addEventListener('input', atualizarContadorMensagem);
 const enviarMensagem = formularioMensagem.querySelector('button[type="submit"]');
 const dataConversa = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 const tamanhoPaginaConversa = 30;
@@ -54,6 +60,7 @@ function trocarSessaoConversa(sessao, usuarioAnterior) {
     rascunhoConversa = { usuario: usuarioAnterior, pedido: pedidoEmConversa, corpo, incerto };
   } else if (rascunho && sessao?.usuario === rascunho.usuario && pedidoEmConversa === rascunho.pedido) {
     formularioMensagem.elements.texto.value = rascunho.corpo;
+    atualizarContadorMensagem();
     envioIncerto = rascunho.incerto;
   }
 }
@@ -65,6 +72,7 @@ function limparConversa() {
   statusConversa.textContent = '';
   statusMensagem.textContent = '';
   formularioMensagem.reset();
+  atualizarContadorMensagem();
   formularioMensagem.hidden = true;
   podeEnviarMensagem = false;
   for (const fluxo of [historico, mensagens]) {
@@ -193,6 +201,7 @@ formularioMensagem.addEventListener('submit', async (evento) => {
       throw new Error();
     } else {
       formularioMensagem.reset();
+      atualizarContadorMensagem();
       statusMensagem.textContent = 'Mensagem enviada.';
       atualizar = true;
     }
