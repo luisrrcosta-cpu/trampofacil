@@ -384,6 +384,11 @@ async function carregarPedidos(aviso = '', anexar = false) {
 
 async function atualizarPedido(pedido, dados) {
   if (ocupado || !sessaoServicos) return;
+  const papel = pedido.cliente_usuario_id === sessaoServicos.usuario ? 'cliente' : 'profissional';
+  if (!podeMudarContratacao(pedido.status, dados.status, papel)) {
+    elemento('status-solicitacoes').textContent = 'Esta ação não está disponível para sua função ou para o estado atual do serviço.';
+    return;
+  }
   const secao = elemento('solicitacoes');
   const status = elemento('status-solicitacoes');
   bloquear(secao, true);
