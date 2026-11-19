@@ -68,6 +68,9 @@ jobs:
       - name: Testar estados financeiros
         shell: bash
         run: node testes-estados-pagamento.cjs
+      - name: Testar permissoes da contratacao
+        shell: bash
+        run: node testes-contratacao.cjs
       - name: Empacotar somente a interface estatica
         shell: bash
         run: |
