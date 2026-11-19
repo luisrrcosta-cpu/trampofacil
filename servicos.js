@@ -62,6 +62,7 @@ async function procurar(filtros, pagina) {
   if (!integrado || ocupado) return;
   const status = elemento('status-busca');
   const buscaAtual = ++versaoBusca;
+  const filtrosAtuais = { ...filtros };
   bloquear(elemento('catalogo'), true);
   status.textContent = 'Buscando…';
   if (pagina === 0) {
@@ -73,7 +74,7 @@ async function procurar(filtros, pagina) {
   }
   try {
     const resposta = await enviar('/rest/v1/rpc/buscar_profissionais', {
-      ...filtros, pagina,
+      ...filtrosAtuais, pagina,
     });
     if (!resposta.ok) throw new Error();
     const profissionais = await resposta.json();
@@ -98,7 +99,7 @@ async function procurar(filtros, pagina) {
       }));
       listaBusca.append(card);
     }
-    filtrosBusca = filtros;
+    filtrosBusca = filtrosAtuais;
     paginaBusca = pagina;
     maisProfissionais.hidden = profissionais.length !== 20;
     status.textContent = listaBusca.childElementCount
@@ -121,7 +122,10 @@ busca.addEventListener('submit', (evento) => {
     termo_cidade: busca.elements.cidade.value.trim(),
   }, 0);
 });
-maisProfissionais.addEventListener('click', () => procurar(filtrosBusca, paginaBusca + 1));
+maisProfissionais.addEventListener('click', () => {
+  if (!filtrosBusca || maisProfissionais.hidden) return;
+  procurar(filtrosBusca, paginaBusca + 1);
+});
 
 function reiniciarLogin() {
   emailLogin = undefined;
