@@ -318,7 +318,13 @@ function mostrarPedido(pedido) {
   }
   if (!cliente && pedido.status === 'aceita') acao('Iniciar serviço', 'em_andamento');
   if (!cliente && pedido.status === 'em_andamento') acao('Marcar como entregue', 'entregue');
-  if (cliente && pedido.status === 'entregue') acao('Concluir serviço', 'concluida');
+  if (cliente && pedido.status === 'entregue') {
+    card.append(botaoAcao('Concluir serviço', () => {
+      if (window.confirm('Confirmar que o serviço foi entregue e concluído? Isso encerra a solicitação e não representa pagamento ao profissional.')) {
+        atualizarPedido(pedido, { status: 'concluida' });
+      }
+    }));
+  }
   if (['solicitada', 'proposta', 'aceita'].includes(pedido.status)) {
     card.append(botaoAcao('Cancelar solicitação', () => {
       if (window.confirm('Cancelar esta solicitação de serviço?')) {
