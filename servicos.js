@@ -144,6 +144,12 @@ elemento('sair').addEventListener('click', () => {
   formularioPedido.reset();
         atualizarContadorDescricaoPedido();
   reiniciarLogin();
+  destinoLogin = undefined;
+  listaBusca.replaceChildren();
+  maisProfissionais.hidden = true;
+  elemento('status-busca').textContent = '';
+  elemento('status-envio').textContent = '';
+  mostrar('inicio');
 });
 
 async function enviarLogin(evento, verificando) {
