@@ -13,6 +13,6 @@ for (const [entrada, esperado] of [
   else assert.equal(converter(entrada), esperado);
 }
 for (const invalido of ['0', '-10', '1,999', '1.000,00', '1000000,01', 'abc', 'Infinity', '1e5', '']) {
-  assert.throws(() => converter(invalido), Error, `Valor invalido aceito: ${invalido}`);
+  assert.throws(() => converter(invalido), /Informe|orçamento/, `Valor invalido aceito: ${invalido}`);
 }
 console.log('Testes de valores monetarios aprovados.');
