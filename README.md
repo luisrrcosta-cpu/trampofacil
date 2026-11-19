@@ -199,6 +199,21 @@ forem confirmadas. A aplicação não permite pagar por esta tela, nem altera
 o orçamento salvo. Os quatro testes novos de cálculo passaram localmente,
 totalizando 14 testes locais aprovados.
 
+## Preparação do pagamento no servidor
+
+A lógica interna em `server/preparar-pagamento.js` foi preparada para receber
+autenticação e consulta de orçamento por adaptadores do servidor. O navegador
+não pode fornecer valor, comissão, identidade, status ou flags para habilitar
+cobrança. A preparação exige a identidade do cliente da solicitação e orçamento
+aceito, retorna a divisão 90/10 antes de impostos e mantém pagamentos desativados.
+O módulo não está conectado à interface, a um endpoint HTTP ou a APIs reais.
+
+Oito testes novos com adaptadores simulados verificam os bloqueios e o uso do
+valor salvo. `npm run test:local` agora inclui esses testes. Consulte
+`server/README.md` para as pendências de autenticação real, homologação,
+idempotência, taxas, tributação, divisão/repasse e webhook. Não aplicar nada no
+Supabase de produção nesta etapa.
+
 ## Integrações pendentes
 
 - Homologar o envio real de códigos e os fluxos de cadastro, busca e
