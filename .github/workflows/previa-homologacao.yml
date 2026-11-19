@@ -43,16 +43,16 @@ jobs:
           import fs from 'node:fs';
           import assert from 'node:assert/strict';
           const html = fs.readFileSync('index.html', 'utf8');
-          const scripts = [...html.matchAll(/<script\\s+src="([^"]+)"\\s+defer><\\/script>/g)].map(m => m[1]);
+          const scripts = [...html.matchAll(/<script\s+src="([^"]+)"\s+defer><\/script>/g)].map(m => m[1]);
           assert.deepEqual(scripts, [
             'config.js','ambiente.js','cadastro.js','valores.js',
             'simulacao.js','sessao.js','transicoes-contratacao.js','servicos.js','conversa.js','simulador.js'
           ], 'A ordem dos scripts foi alterada.');
           for (const arquivo of scripts) assert.ok(fs.existsSync(arquivo), `Script ausente: ${arquivo}`);
-          const ids = [...html.matchAll(/\\bid="([^"]+)"/g)].map(m => m[1]);
+          const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
           assert.equal(new Set(ids).size, ids.length, 'Existem IDs HTML duplicados.');
           const js = scripts.map(arquivo => fs.readFileSync(arquivo, 'utf8')).join('\\n');
-          for (const [, id] of js.matchAll(/\\belemento\\('([^']+)'\\)/g)) {
+          for (const [, id] of js.matchAll(/\belemento\('([^']+)'\)/g)) {
             assert.ok(ids.includes(id), `Elemento HTML ausente: ${id}`);
           }
           assert.match(html, /id="contador-descricao"/);
