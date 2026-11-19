@@ -43,6 +43,9 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
     id: String(31 - i), criado_em: data, autor_usuario_id: 'profissional', texto: `Mensagem fictícia ${31 - i}`,
   }));
   let rejeitarMensagem = false;
+  let expirarSessao = false;
+  let perderResposta = false;
+  let tentativasMensagem = 0;
   await page.route('https://teste.supabase.co/**', async (route) => {
     const req = route.request();
     const url = new URL(req.url());
@@ -72,12 +75,21 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
         const dados = req.postDataJSON();
         assert.deepEqual(Object.keys(dados).sort(), ['solicitacao_id', 'texto']);
         assert.equal(dados.solicitacao_id, pedido.id);
+        tentativasMensagem++;
+        if (expirarSessao) {
+          expirarSessao = false;
+          return route.fulfill({ status: 401 });
+        }
         if (rejeitarMensagem) {
           pedido.status = 'cancelada';
           return route.fulfill({ status: 403 });
         }
         chats.unshift({ id: '32', criado_em: data, texto: dados.texto,
           autor_usuario_id: req.headers().authorization.split(' ').at(-1) });
+        if (perderResposta) {
+          perderResposta = false;
+          return route.abort('failed');
+        }
         return route.fulfill({ status: 201 });
       }
       assert.equal(url.searchParams.get('select'), 'id,criado_em,autor_usuario_id,texto');
@@ -171,6 +183,33 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await page.getByRole('textbox', { name: 'Mensagem', exact: true }).fill('Resposta fictícia');
   await page.getByRole('button', { name: 'Enviar mensagem' }).click();
   await page.getByText('Resposta fictícia', { exact: true }).waitFor();
+  const campoMensagem = page.getByRole('textbox', { name: 'Mensagem', exact: true });
+  const botaoMensagem = page.getByRole('button', { name: 'Enviar mensagem' });
+  expirarSessao = true;
+  await campoMensagem.fill('Rascunho de teste');
+  await botaoMensagem.click();
+  await page.getByText('Sua sessão expirou.', { exact: false }).waitFor();
+  await entrar('profissional@example.com');
+  await campoMensagem.waitFor();
+  assert.equal(await campoMensagem.inputValue(), 'Rascunho de teste');
+
+  expirarSessao = true;
+  await botaoMensagem.click();
+  await page.getByText('Sua sessão expirou.', { exact: false }).waitFor();
+  await entrar('cliente@example.com');
+  await campoMensagem.waitFor();
+  assert.equal(await campoMensagem.inputValue(), '');
+
+  perderResposta = true;
+  await campoMensagem.fill('Mensagem salva sem resposta');
+  await botaoMensagem.click();
+  await page.getByText('Não foi possível confirmar o envio.', { exact: false }).waitFor();
+  assert.equal(await botaoMensagem.isDisabled(), true);
+  const total = tentativasMensagem;
+  await page.getByRole('button', { name: 'Atualizar histórico e mensagens' }).click();
+  await page.getByText('Mensagem salva sem resposta', { exact: true }).waitFor();
+  assert.equal(tentativasMensagem, total);
+  assert.equal(await botaoMensagem.isEnabled(), true);
   rejeitarMensagem = true;
   await page.getByRole('textbox', { name: 'Mensagem', exact: true }).fill('Mensagem após cancelamento');
   await page.getByRole('button', { name: 'Enviar mensagem' }).click();

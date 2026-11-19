@@ -19,11 +19,11 @@ const listaPedidos = elemento('lista-solicitacoes');
 
 elemento('menu-servicos').hidden = !integrado;
 
-function iniciarSessao(sessao) {
+function iniciarSessao(sessao, preservarRascunho = false) {
+  trocarSessaoConversa(sessao, preservarRascunho ? sessaoServicos?.usuario : undefined);
   sessaoServicos = sessao;
   elemento('sair').hidden = !sessao;
   listaPedidos.replaceChildren();
-  limparConversa();
 }
 
 function texto(tag, valor) {
@@ -117,6 +117,7 @@ elemento('abrir-solicitacoes').addEventListener('click', () => proteger('solicit
 elemento('trocar-email').addEventListener('click', reiniciarLogin);
 elemento('cancelar-login').addEventListener('click', () => {
   reiniciarLogin();
+  limparConversa();
   mostrar(destinoLogin === 'nova-solicitacao' ? 'catalogo' : 'inicio');
 });
 elemento('sair').addEventListener('click', () => {
@@ -173,7 +174,7 @@ function apiPedidos(filtros, dados, metodo) {
 }
 
 function exigirNovoLogin(destino) {
-  iniciarSessao(undefined);
+  iniciarSessao(undefined, destino === 'conversa');
   proteger(destino);
   elemento('status-login').textContent = 'Sua sessão expirou. Entre novamente para continuar.';
 }

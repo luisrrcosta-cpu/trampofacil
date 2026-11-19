@@ -4,11 +4,14 @@ const secaoConversa = elemento('conversa');
 const formularioMensagem = elemento('form-mensagem');
 const statusConversa = elemento('status-conversa');
 const statusMensagem = elemento('status-mensagem');
+const enviarMensagem = formularioMensagem.querySelector('button[type="submit"]');
 const dataConversa = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 const tamanhoPaginaConversa = 30;
 const conversaEncerrada = (status) => ['concluida', 'cancelada'].includes(status);
 let pedidoEmConversa;
 let podeEnviarMensagem = false;
+let envioIncerto = false;
+let rascunhoConversa;
 
 const historico = {
   tabela: 'historico_solicitacoes',
@@ -42,7 +45,22 @@ const mensagens = {
   },
 };
 
+function trocarSessaoConversa(sessao, usuarioAnterior) {
+  const rascunho = rascunhoConversa;
+  const corpo = formularioMensagem.elements.texto.value;
+  const incerto = envioIncerto;
+  limparConversa();
+  if (usuarioAnterior && corpo) {
+    rascunhoConversa = { usuario: usuarioAnterior, pedido: pedidoEmConversa, corpo, incerto };
+  } else if (rascunho && sessao?.usuario === rascunho.usuario && pedidoEmConversa === rascunho.pedido) {
+    formularioMensagem.elements.texto.value = rascunho.corpo;
+    envioIncerto = rascunho.incerto;
+  }
+}
+
 function limparConversa() {
+  rascunhoConversa = undefined;
+  envioIncerto = false;
   elemento('titulo-conversa').textContent = '';
   statusConversa.textContent = '';
   statusMensagem.textContent = '';
@@ -120,6 +138,10 @@ async function carregarConversa() {
     elemento('titulo-conversa').textContent = pedido.titulo;
     if (!(await carregarPaginaConversa(historico, false))) return;
     if (!(await carregarPaginaConversa(mensagens, false))) return;
+    if (envioIncerto) {
+      envioIncerto = false;
+      statusMensagem.textContent = 'Confira se a mensagem já aparece na conversa antes de reenviar.';
+    }
     podeEnviarMensagem = !conversaEncerrada(pedido.status);
     formularioMensagem.hidden = !podeEnviarMensagem;
     statusConversa.textContent = podeEnviarMensagem ? '' : 'Solicitação encerrada. As mensagens continuam disponíveis para leitura.';
@@ -127,6 +149,7 @@ async function carregarConversa() {
     statusConversa.textContent = 'Não foi possível carregar todos os dados. Tente atualizar.';
   } finally {
     bloquear(secaoConversa, false);
+    enviarMensagem.disabled = envioIncerto;
   }
 }
 
@@ -140,13 +163,14 @@ for (const fluxo of [historico, mensagens]) {
       statusConversa.textContent = 'Não foi possível carregar a página anterior. Tente novamente.';
     } finally {
       bloquear(secaoConversa, false);
+    enviarMensagem.disabled = envioIncerto;
     }
   });
 }
 
 formularioMensagem.addEventListener('submit', async (evento) => {
   evento.preventDefault();
-  if (ocupado || !sessaoServicos || !podeEnviarMensagem) return;
+  if (ocupado || !sessaoServicos || !podeEnviarMensagem || envioIncerto) return;
   const corpo = formularioMensagem.elements.texto.value.trim();
   if (!corpo || corpo.length > 2000) {
     statusMensagem.textContent = 'Escreva uma mensagem de até 2.000 caracteres.';
@@ -172,9 +196,11 @@ formularioMensagem.addEventListener('submit', async (evento) => {
       atualizar = true;
     }
   } catch {
+    envioIncerto = true;
     statusMensagem.textContent = 'Não foi possível confirmar o envio. Atualize as mensagens antes de tentar novamente.';
   } finally {
     bloquear(secaoConversa, false);
+    enviarMensagem.disabled = envioIncerto;
   }
   if (atualizar) await carregarConversa();
 });
