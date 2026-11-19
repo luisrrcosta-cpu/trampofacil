@@ -301,7 +301,18 @@ function mostrarPedido(pedido) {
     });
     card.append(form);
   }
-  if (cliente && pedido.status === 'proposta') acao('Aceitar proposta', 'aceita');
+  if (cliente && pedido.status === 'proposta') {
+    card.append(botaoAcao('Aceitar proposta', () => {
+      if (!Number.isSafeInteger(pedido.valor_centavos) || pedido.valor_centavos < 100) {
+        elemento('status-solicitacoes').textContent = 'Proposta sem valor válido. Atualize a lista antes de aceitar.';
+        return;
+      }
+      const valor = moeda.format(pedido.valor_centavos / 100);
+      if (window.confirm(`Aceitar o orçamento de ${valor} para este serviço? Esta ação não realiza pagamento nem reserva dinheiro. O pagamento online ainda não está disponível.`)) {
+        atualizarPedido(pedido, { status: 'aceita' });
+      }
+    }));
+  }
   if (!cliente && pedido.status === 'aceita') acao('Iniciar serviço', 'em_andamento');
   if (!cliente && pedido.status === 'em_andamento') acao('Marcar como entregue', 'entregue');
   if (cliente && pedido.status === 'entregue') acao('Concluir serviço', 'concluida');
