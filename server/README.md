@@ -24,8 +24,9 @@ uma operação atômica ao criar a tentativa de pagamento. A repetição desta f
 
 ## Próximas etapas, antes de habilitar qualquer cobrança
 
-1. Selecionar um projeto Supabase de homologação e implementar os adaptadores
-   reais de autenticação/consulta. Não usar produção para os testes.
+1. Validar os adaptadores reais de autenticação/consulta no projeto separado
+   `TrampoFacil-Homologacao`. A estrutura e os testes transacionais estão
+   documentados em `supabase/homologacao/README.md`. Não usar produção.
 2. Confirmar taxas online, tarifas fixas, impostos e regras de parcelamento;
    apresentar o preço total ao cliente e registrar seu aceite antes da cobrança.
 3. Definir a divisão e os repasses. Checkout simples e divisão automática não
@@ -82,7 +83,7 @@ export function montar(config) {
 ```
 
 Os arquivos não iniciam um servidor nem publicam uma função automaticamente.
-Ainda é necessário escolher o projeto de homologação, preparar seu esquema,
+O projeto de homologação e seu esquema já estão preparados. Ainda é necessário
 configurar a origem e a chave publicável correspondentes e selecionar a
 hospedagem. Não apontar `config.js` para produção para contornar essa etapa.
 Não há chamadas ao PagBank, credenciais de sandbox ou cobrança nesta composição.
@@ -91,4 +92,6 @@ Nove testes novos exercitam o handler inteiro com `Request`/`Response` e
 respostas simuladas do Auth/Data API. Eles incluem rejeição do projeto de
 produção, anonimato, e-mail não confirmado, tentativa de alterar valores,
 acesso a orçamento de outra pessoa e corpos excessivos/interrompidos. A suíte
-local soma 31 testes aprovados. Ainda não foi testada contra um projeto real.
+local soma 31 testes aprovados. O banco real de homologação passou no teste
+transacional de contratação e mensagens; estes adaptadores HTTP ainda não
+foram exercitados com sessões reais do Auth.
