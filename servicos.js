@@ -30,7 +30,8 @@ let cursorPedidos;
 elemento('menu-servicos').hidden = !integrado;
 
 function iniciarSessao(sessao, preservarRascunho = false) {
-  trocarSessaoConversa(sessao, preservarRascunho ? sessaoServicos?.usuario : undefined);
+  // Rascunhos ficam apenas em memória e só reaparecem para a conta de origem.
+  trocarSessaoConversa(sessao, sessaoServicos?.usuario);
   sessaoServicos = sessao;
   controleSessao.alterar(sessao);
   elemento('sair').hidden = !sessao;
