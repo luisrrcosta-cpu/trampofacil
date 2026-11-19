@@ -65,6 +65,9 @@ jobs:
       - name: Testar isolamento de sessao
         shell: bash
         run: node testes-sessao.cjs
+      - name: Testar estados financeiros
+        shell: bash
+        run: node testes-estados-pagamento.cjs
       - name: Empacotar somente a interface estatica
         shell: bash
         run: |
