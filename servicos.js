@@ -410,6 +410,7 @@ async function carregarPedidos(aviso = '', anexar = false) {
       filtros.or = `(atualizado_em.lt.${atualizado_em},and(atualizado_em.eq.${atualizado_em},id.lt.${id}))`;
     }
     const resposta = await apiPedidos(filtros);
+    if (sessaoServicos !== sessaoDaBusca) return;
     if (resposta.status === 401) {
       exigirNovoLogin('solicitacoes');
       return;
@@ -429,9 +430,11 @@ async function carregarPedidos(aviso = '', anexar = false) {
       ? `${listaPedidos.childElementCount} solicitações exibidas.`
       : 'Nenhuma solicitação encontrada.');
   } catch {
-    status.textContent = anexar
-      ? 'Não foi possível carregar as solicitações anteriores. Tente novamente.'
-      : 'Não foi possível carregar as solicitações. Tente atualizar.';
+    if (sessaoServicos === sessaoDaBusca) {
+      status.textContent = anexar
+        ? 'Não foi possível carregar as solicitações anteriores. Tente novamente.'
+        : 'Não foi possível carregar as solicitações. Tente atualizar.';
+    }
   } finally {
     bloquear(secao, false);
   }
