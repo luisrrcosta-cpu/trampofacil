@@ -131,6 +131,7 @@ maisProfissionais.addEventListener('click', () => {
 
 busca.addEventListener('reset', () => {
   versaoBusca++;
+  bloquear(elemento('catalogo'), false);
   filtrosBusca = undefined;
   paginaBusca = 0;
   listaBusca.replaceChildren();
