@@ -156,12 +156,14 @@ async function carregarConversa() {
     const pedido = pedidos[0];
     if (!pedido) {
       limparConversa();
+      pedidoEmConversa = undefined;
       statusConversa.textContent = 'Solicitação indisponível.';
       return;
     }
     elemento('titulo-conversa').textContent = pedido.titulo;
     if (!(await carregarPaginaConversa(historico, false))) return;
     if (!(await carregarPaginaConversa(mensagens, false))) return;
+    if (sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return;
     if (envioIncerto) {
       envioIncerto = false;
       statusMensagem.textContent = 'Confira se a mensagem já aparece na conversa antes de reenviar.';
