@@ -263,12 +263,24 @@ const nomesStatus = {
   cancelada: 'Cancelada',
 };
 const moeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+const proximosPassos = Object.freeze({
+  solicitada: 'Aguardando orçamento do profissional.',
+  proposta: 'Aguardando o cliente aceitar ou recusar o orçamento.',
+  aceita: 'Orçamento aceito. Aguardando o profissional iniciar o serviço.',
+  em_andamento: 'Serviço em andamento. O profissional avisará quando entregar.',
+  entregue: 'Serviço entregue. Aguardando confirmação de conclusão pelo cliente.',
+  concluida: 'Serviço concluído. Pagamento e repasse ainda não são processados pelo aplicativo.',
+  cancelada: 'Solicitação cancelada. Não há reembolso automático.',
+});
 
 function mostrarPedido(pedido) {
   const card = document.createElement('article');
   const cliente = pedido.cliente_usuario_id === sessaoServicos.usuario;
   card.append(texto('h3', pedido.titulo), texto('p', pedido.descricao),
     texto('p', `${cliente ? 'Enviada' : 'Recebida'} · ${nomesStatus[pedido.status] ?? pedido.status}`));
+  if (Object.prototype.hasOwnProperty.call(proximosPassos, pedido.status)) {
+    card.append(texto('p', proximosPassos[pedido.status]));
+  }
   if (Number.isSafeInteger(pedido.valor_centavos) && pedido.valor_centavos >= 100) {
     const comissao = Math.floor((pedido.valor_centavos + 5) / 10);
     const repasse = pedido.valor_centavos - comissao;
