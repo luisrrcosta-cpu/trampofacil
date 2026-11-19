@@ -12,6 +12,8 @@ assert.match(cadastro, /confirmacao\.elements\.token\.disabled = false/);
 assert.match(servicos, /sessaoServicos !== sessaoDaBusca/);
 assert.match(servicos, /sessaoServicos !== sessaoOriginal \|\| profissionalEscolhido !== profissionalOriginal/);
 assert.match(servicos, /Array\.isArray\(registros\)/);
+assert.match(servicos, /if \(sessaoServicos !== sessaoDaBusca\) return;/);
+assert.match(servicos, /if \(sessaoServicos === sessaoOriginal\) await carregarPedidos\(aviso\)/);
 assert.match(conversa, /sessaoServicos !== sessaoOriginal \|\| pedidoEmConversa !== pedidoOriginal/);
 assert.match(ambiente, /config\.ambiente !== 'homologacao'/);
 console.log('Verificacoes de regressao da interface aprovadas.');
