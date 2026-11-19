@@ -260,13 +260,18 @@ formularioPedido.addEventListener('submit', async (evento) => {
     salvo = resposta.ok;
     if (resposta.status === 409) {
       const anterior = await apiPedidos({
-        select: 'id', id: `eq.${id}`,
+        select: 'id,titulo,descricao', id: `eq.${id}`,
         cliente_usuario_id: `eq.${dados.cliente_usuario_id}`,
         profissional_id: `eq.${dados.profissional_id}`,
       });
+      if (anterior.status === 401) {
+        if (sessaoServicos === sessaoOriginal) exigirNovoLogin('nova-solicitacao');
+        return;
+      }
       const registros = anterior.ok ? await anterior.json() : [];
       if (sessaoServicos !== sessaoOriginal || profissionalEscolhido !== profissionalOriginal) return;
-      salvo = Array.isArray(registros) && registros.length === 1;
+      salvo = Array.isArray(registros) && registros.length === 1
+        && registros[0].titulo === titulo && registros[0].descricao === descricao;
     }
     if (!salvo) {
       status.textContent = resposta.status === 403
