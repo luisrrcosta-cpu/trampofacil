@@ -29,7 +29,7 @@ let cursorPedidos;
 
 elemento('menu-servicos').hidden = !integrado;
 
-function iniciarSessao(sessao, preservarRascunho = false) {
+function iniciarSessao(sessao) {
   // Rascunhos ficam apenas em memória e só reaparecem para a conta de origem.
   trocarSessaoConversa(sessao, sessaoServicos?.usuario);
   sessaoServicos = sessao;
@@ -222,7 +222,7 @@ function apiPedidos(filtros, dados, metodo) {
 }
 
 function exigirNovoLogin(destino) {
-  iniciarSessao(undefined, destino === 'conversa');
+  iniciarSessao(undefined);
   proteger(destino);
   elemento('status-login').textContent = 'Sua sessão expirou. Entre novamente para continuar.';
 }
