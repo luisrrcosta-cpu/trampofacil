@@ -382,6 +382,7 @@ async function carregarPedidos(aviso = '', anexar = false) {
   if (ocupado || !sessaoServicos || (anexar && !cursorPedidos)) return;
   const secao = elemento('solicitacoes');
   const status = elemento('status-solicitacoes');
+  const sessaoDaBusca = sessaoServicos;
   bloquear(secao, true);
   status.textContent = 'Carregando…';
   try {
@@ -400,6 +401,8 @@ async function carregarPedidos(aviso = '', anexar = false) {
     }
     if (!resposta.ok) throw new Error();
     const pedidos = await resposta.json();
+    // Nunca renderizar dados de uma requisição iniciada em outra sessão.
+    if (sessaoServicos !== sessaoDaBusca) return;
     const pagina = pedidos.slice(0, tamanhoPaginaPedidos);
     const cards = pagina.map(mostrarPedido);
     if (anexar) listaPedidos.append(...cards);
