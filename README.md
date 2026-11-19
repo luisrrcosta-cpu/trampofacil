@@ -163,6 +163,16 @@ ramificação e em pull requests destinados à main, com permissão somente de
 leitura do repositório. Não usa segredos, não publica o aplicativo e não
 executa migrações ou comandos contra o Supabase.
 
+### Resultado da execução completa
+
+Em 19/11/2026, o GitHub Actions executou o commit
+`b5ee492d8676447069be89b118ddce3387bfbbfb` com resultado **11 testes aprovados,
+zero falhas e zero testes ignorados**, incluindo Chromium com a API simulada.
+Isso resolve a pendência de execução da suíte de interface descrita acima;
+a homologação com Supabase e e-mail reais continua pendente.
+
+Execução: https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/44509548917
+
 ## Integrações pendentes
 
 - Homologar o envio real de códigos e os fluxos de cadastro, busca e
