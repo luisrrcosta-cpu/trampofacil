@@ -21,7 +21,7 @@ const contexto = vm.createContext({
   Intl, Date, console,
   nomesStatus: {}, moeda: { format: v => String(v) },
   sessaoServicos: undefined,
-  integrado: false,
+  integrado: false, ocupado: false, proteger() {},
 });
 formulario.addEventListener = () => {};
 formulario.querySelector = () => ({ disabled: false });
