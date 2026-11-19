@@ -115,6 +115,8 @@ async function cadastrar(evento) {
     if (!resposta.ok) throw new Error();
     pendente = { ...cadastro, formulario };
     confirmacao.reset();
+    // O campo pode ter ficado desativado após uma tentativa anterior.
+    confirmacao.elements.token.disabled = false;
     confirmacao.querySelector('[role="alert"]').textContent = '';
     mostrar('confirmacao');
   } catch {
