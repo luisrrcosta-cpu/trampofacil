@@ -444,6 +444,7 @@ async function atualizarPedido(pedido, dados) {
     elemento('status-solicitacoes').textContent = 'Esta ação não está disponível para sua função ou para o estado atual do serviço.';
     return;
   }
+  const sessaoOriginal = sessaoServicos;
   const secao = elemento('solicitacoes');
   const status = elemento('status-solicitacoes');
   bloquear(secao, true);
@@ -458,6 +459,7 @@ async function atualizarPedido(pedido, dados) {
         ? { valor_centavos: `eq.${pedido.valor_centavos}` }
         : {}),
     }, dados, 'PATCH');
+    if (sessaoServicos !== sessaoOriginal) return;
     if (resposta.status === 401) {
       exigirNovoLogin('solicitacoes');
       return;
@@ -469,16 +471,21 @@ async function atualizarPedido(pedido, dados) {
     } else if (!resposta.ok) {
       throw new Error();
     } else {
-      aviso = (await resposta.json()).length
+      const registros = await resposta.json();
+      if (sessaoServicos !== sessaoOriginal) return;
+      if (!Array.isArray(registros)) throw new Error('Resposta de atualização inválida');
+      aviso = registros.length
         ? 'Solicitação atualizada.'
         : 'A solicitação mudou. Confira o estado atual antes de repetir a ação.';
     }
   } catch {
-    aviso = 'Não foi possível confirmar a alteração. Confira o estado atual.';
+    if (sessaoServicos === sessaoOriginal) {
+      aviso = 'Não foi possível confirmar a alteração. Confira o estado atual.';
+    }
   } finally {
     bloquear(secao, false);
   }
-  await carregarPedidos(aviso);
+  if (sessaoServicos === sessaoOriginal) await carregarPedidos(aviso);
 }
 
 elemento('recarregar-solicitacoes').addEventListener('click', () => carregarPedidos());
