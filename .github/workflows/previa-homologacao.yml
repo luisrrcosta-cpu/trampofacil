@@ -31,6 +31,33 @@ jobs:
           assert.ok(fs.existsSync('index.html'));
           console.log('Previa restrita: autenticacao e pagamentos nao liberados.');
           NODE
+      - name: Verificar sintaxe e integridade da interface
+        shell: bash
+        run: |
+          set -eu
+          for arquivo in *.js; do
+            node --check "$arquivo"
+          done
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          const html = fs.readFileSync('index.html', 'utf8');
+          const scripts = [...html.matchAll(/<script\\s+src="([^"]+)"\\s+defer><\\/script>/g)].map(m => m[1]);
+          assert.deepEqual(scripts, [
+            'config.js','ambiente.js','cadastro.js','valores.js',
+            'simulacao.js','sessao.js','servicos.js','conversa.js','simulador.js'
+          ], 'A ordem dos scripts foi alterada.');
+          for (const arquivo of scripts) assert.ok(fs.existsSync(arquivo), `Script ausente: ${arquivo}`);
+          const ids = [...html.matchAll(/\\bid="([^"]+)"/g)].map(m => m[1]);
+          assert.equal(new Set(ids).size, ids.length, 'Existem IDs HTML duplicados.');
+          const js = scripts.map(arquivo => fs.readFileSync(arquivo, 'utf8')).join('\\n');
+          for (const [, id] of js.matchAll(/\\belemento\\('([^']+)'\\)/g)) {
+            assert.ok(ids.includes(id), `Elemento HTML ausente: ${id}`);
+          }
+          assert.match(html, /id="contador-descricao"/);
+          assert.match(html, /id="contador-mensagem"/);
+          console.log('Sintaxe, scripts e IDs da interface verificados.');
+          NODE
       - name: Empacotar somente a interface estatica
         shell: bash
         run: |
