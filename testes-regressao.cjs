@@ -17,6 +17,7 @@ assert.match(servicos, /registros\[0\]\.titulo === titulo && registros\[0\]\.des
 assert.match(servicos, /let versaoBusca = 0/);
 assert.match(html, /id="limpar-busca"/);
 assert.match(servicos, /busca\.addEventListener\('reset'/);
+assert.match(servicos, /bloquear\(elemento\('catalogo'\), false\);\s*elemento\('status-busca'\)\.textContent = ''/);
 assert.match(servicos, /if \(buscaAtual === versaoBusca\) bloquear\(elemento\('catalogo'\), false\)/);
 assert.match(servicos, /let versaoLogin = 0/);
 assert.match(servicos, /const loginAtual = \+\+versaoLogin/);
