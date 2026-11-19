@@ -319,8 +319,20 @@ function mostrarPedido(pedido) {
       }
     }));
   }
-  if (!cliente && pedido.status === 'aceita') acao('Iniciar serviço', 'em_andamento');
-  if (!cliente && pedido.status === 'em_andamento') acao('Marcar como entregue', 'entregue');
+  if (!cliente && pedido.status === 'aceita') {
+    card.append(botaoAcao('Iniciar serviço', () => {
+      if (window.confirm('Confirmar o início do serviço? O cliente poderá acompanhar o andamento.')) {
+        atualizarPedido(pedido, { status: 'em_andamento' });
+      }
+    }));
+  }
+  if (!cliente && pedido.status === 'em_andamento') {
+    card.append(botaoAcao('Marcar como entregue', () => {
+      if (window.confirm('O serviço foi realmente entregue? O cliente precisará confirmar a conclusão. Esta etapa não confirma pagamento nem repasse.')) {
+        atualizarPedido(pedido, { status: 'entregue' });
+      }
+    }));
+  }
   if (cliente && pedido.status === 'entregue') {
     card.append(botaoAcao('Concluir serviço', () => {
       if (window.confirm('Confirmar que o serviço foi entregue e concluído? Isso encerra a solicitação e não representa pagamento ao profissional.')) {
