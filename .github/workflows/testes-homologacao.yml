@@ -23,7 +23,10 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - name: Instalar navegador de teste
-        run: npx --no-install playwright-core install --with-deps chromium
+        timeout-minutes: 3
+        # A imagem ubuntu-24.04 já inclui as bibliotecas necessárias ao Chromium.
+        # Evita atualizar pacotes/fontes do sistema a cada execução.
+        run: npx --no-install playwright-core install chromium
       - name: Executar testes locais e de interface com API simulada
         shell: bash
         run: |

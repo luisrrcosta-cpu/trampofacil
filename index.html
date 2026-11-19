@@ -26,6 +26,7 @@ article{border-top:1px solid #cbd5e1;padding-top:12px;margin-top:16px}
 article p{overflow-wrap:anywhere}
 .texto-mensagem{white-space:pre-wrap}
 footer{text-align:center;padding:25px;color:#64748b}
+table{width:100%;border-collapse:collapse}th,td{padding:10px 4px;border-bottom:1px solid #cbd5e1;text-align:left}td{text-align:right;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -45,6 +46,7 @@ footer{text-align:center;padding:25px;color:#64748b}
 </div>
 <button type="button" data-pagina="cliente">Sou Cliente</button>
 <button class="verde" type="button" data-pagina="profissional">Sou Profissional</button>
+<button type="button" data-pagina="simulacao">Simular custos de pagamento</button>
 </section>
 
 <section id="cliente" class="card" hidden>
@@ -159,14 +161,30 @@ footer{text-align:center;padding:25px;color:#64748b}
 <p id="status-mensagem" role="status"></p>
 <button class="voltar" type="button" id="voltar-solicitacoes">Voltar às solicitações</button>
 </section>
+<section id="simulacao" class="card" hidden>
+<h2>Simulação de pagamento</h2>
+<p>Referências da maquininha: 4% à vista e 12% no total em até 10 vezes. Estas condições ainda não foram confirmadas para pagamentos online.</p>
+<form id="form-simulacao">
+<label>Orçamento do serviço (R$)<input name="valor" inputmode="decimal" placeholder="Ex.: 100,00" maxlength="12" required></label>
+<label>Forma de pagamento<select name="forma"><option value="credito_avista">Crédito à vista — referência de 4%</option><option value="credito_parcelado">Crédito parcelado — referência total de 12%</option></select></label>
+<label>Quantidade de parcelas<select name="parcelas" disabled><option value="1">1 vez</option><option value="2">2 vezes</option><option value="3">3 vezes</option><option value="4">4 vezes</option><option value="5">5 vezes</option><option value="6">6 vezes</option><option value="7">7 vezes</option><option value="8">8 vezes</option><option value="9">9 vezes</option><option value="10">10 vezes</option></select></label>
+<button type="submit">Calcular simulação</button>
+</form>
+<p id="erro-simulacao" role="alert"></p>
+<div id="resultado-simulacao" aria-live="polite"></div>
+<p>Pix, débito, impostos e tarifas fixas aguardam definição. Sua comissão exibida é anterior a impostos. Esta tela não cria pagamentos e não altera o orçamento salvo.</p>
+<button type="button" data-pagina="inicio">Página inicial</button>
+</section>
 </main>
 <footer>© 2026 TrampoFácil</footer>
 <script src="config.js" defer></script>
 <script src="cadastro.js" defer></script>
 <script src="valores.js" defer></script>
+<script src="simulacao.js" defer></script>
 <script src="sessao.js" defer></script>
 <script src="servicos.js" defer></script>
 <script src="conversa.js" defer></script>
+<script src="simulador.js" defer></script>
 </body>
 </html>
 

@@ -173,6 +173,32 @@ a homologação com Supabase e e-mail reais continua pendente.
 
 Execução: https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/44509548917
 
+## Simulação de taxas — referências informadas pelo proprietário
+
+A página **Simular custos de pagamento** funciona localmente, sem autenticação
+e sem enviar requisições. Usa exclusivamente as referências da maquininha:
+4% para crédito à vista e 12% **no total**, não por parcela, para 2 a 10 vezes.
+Não configura essas condições no PagBank e não cria uma cobrança.
+
+A comissão é 10% do orçamento do serviço, arredondada ao centavo mais próximo;
+o profissional recebe o restante. Calcula-se o total por divisão pelo líquido
+da taxa: `total = teto(orcamento / (1 - taxa))`, em centavos. A tarifa exibida
+é uma estimativa arredondada ao centavo; a eventual sobra de 1 centavo fica
+identificada como ajuste, separada da comissão. Regras reais de arredondamento
+do provedor ainda devem ser verificadas em homologação.
+
+Para R$ 100, a simulação à vista resulta em R$ 104,17, com tarifa estimada de
+R$ 4,17. Em 10 vezes, resulta em R$ 113,64, com tarifa estimada de R$ 13,64;
+as parcelas são 4 de R$ 11,37 e 6 de R$ 11,36. Nos dois cenários o profissional
+fica com R$ 90 e a comissão simulada é R$ 10 **antes de impostos**.
+
+Pix, débito, tarifas fixas e impostos não são presumidos. A conta foi informada
+como CPF; o tratamento tributário depende de definição contábil. O total
+exibido é incompleto para uma cobrança real enquanto essas condições não
+forem confirmadas. A aplicação não permite pagar por esta tela, nem altera
+o orçamento salvo. Os quatro testes novos de cálculo passaram localmente,
+totalizando 14 testes locais aprovados.
+
 ## Integrações pendentes
 
 - Homologar o envio real de códigos e os fluxos de cadastro, busca e

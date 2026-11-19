@@ -7,7 +7,7 @@ import { chromium } from 'playwright-core';
 
 test('busca, autenticação e solicitação com repetição segura', async (t) => {
   const server = createServer(async (req, res) => {
-    const arquivos = ['index.html', 'config.js', 'cadastro.js', 'valores.js', 'sessao.js', 'servicos.js', 'conversa.js'];
+    const arquivos = ['index.html', 'config.js', 'cadastro.js', 'valores.js', 'simulacao.js', 'simulador.js', 'sessao.js', 'servicos.js', 'conversa.js'];
     const arquivo = req.url === '/' ? 'index.html' : req.url.slice(1);
     if (!arquivos.includes(arquivo)) {
       res.writeHead(404).end();
@@ -48,7 +48,9 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   let expirarSessao = false;
   let perderResposta = false;
   let tentativasMensagem = 0;
+  let chamadasApi = 0;
   await page.route('https://teste.supabase.co/**', async (route) => {
+    chamadasApi++;
     const req = route.request();
     const url = new URL(req.url());
     if (url.pathname.endsWith('/buscar_profissionais')) {
@@ -139,6 +141,17 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   });
 
   await page.goto(`http://127.0.0.1:${server.address().port}`);
+  await page.getByRole('button', { name: 'Simular custos de pagamento' }).click();
+  await page.getByLabel('Orçamento do serviço (R$)').fill('100,00');
+  await page.getByRole('button', { name: 'Calcular simulação' }).click();
+  assert.match(await page.locator('#resultado-simulacao').innerText(), /104,17/);
+  await page.getByLabel('Forma de pagamento').selectOption('credito_parcelado');
+  await page.getByLabel('Quantidade de parcelas').selectOption('10');
+  await page.getByRole('button', { name: 'Calcular simulação' }).click();
+  assert.match(await page.locator('#resultado-simulacao').innerText(), /113,64/);
+  assert.match(await page.locator('#resultado-simulacao').innerText(), /4 ×.*11,37.*6 ×.*11,36/);
+  assert.equal(chamadasApi, 0, 'simulação não deve enviar requisições ou criar cobranças');
+  await page.locator('#simulacao').getByRole('button', { name: 'Página inicial' }).click();
   await page.getByRole('button', { name: 'Buscar profissionais' }).click();
   await page.locator('#form-busca').getByLabel('Serviço').fill('Pintura %');
   await page.locator('#form-busca').getByLabel('Cidade').fill('São Paulo');
