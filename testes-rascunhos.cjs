@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 
 const codigo = fs.readFileSync('conversa.js', 'utf8');
-const memoria = { texto: { value: '' } };
+const memoria = { texto: { value: '', addEventListener() {} } };
 const formulario = { elements: memoria, reset() { memoria.texto.value = ''; }, hidden: false };
 const elementos = new Map();
 function elemento(id) {
