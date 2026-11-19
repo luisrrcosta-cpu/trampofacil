@@ -269,8 +269,11 @@ function mostrarPedido(pedido) {
   const cliente = pedido.cliente_usuario_id === sessaoServicos.usuario;
   card.append(texto('h3', pedido.titulo), texto('p', pedido.descricao),
     texto('p', `${cliente ? 'Enviada' : 'Recebida'} · ${nomesStatus[pedido.status] ?? pedido.status}`));
-  if (pedido.valor_centavos !== null) {
+  if (Number.isSafeInteger(pedido.valor_centavos) && pedido.valor_centavos >= 100) {
+    const comissao = Math.floor((pedido.valor_centavos + 5) / 10);
+    const repasse = pedido.valor_centavos - comissao;
     card.append(texto('p', `Valor proposto: ${moeda.format(pedido.valor_centavos / 100)}`));
+    card.append(texto('p', `Divisão prevista: profissional ${moeda.format(repasse / 100)} (90%) · TrampoFácil ${moeda.format(comissao / 100)} (10%). Valores antes de impostos e taxas aplicáveis; nenhum pagamento foi processado.`));
   }
 
   const acao = (rotulo, status) => card.append(
