@@ -55,13 +55,14 @@ function trocarSessaoConversa(sessao, usuarioAnterior) {
   const rascunho = rascunhoConversa;
   const corpo = formularioMensagem.elements.texto.value;
   const incerto = envioIncerto;
+  const pedido = pedidoEmConversa;
   limparConversa();
-  if (usuarioAnterior && corpo) {
-    rascunhoConversa = { usuario: usuarioAnterior, pedido: pedidoEmConversa, corpo, incerto };
-  } else if (rascunho && sessao?.usuario === rascunho.usuario && pedidoEmConversa === rascunho.pedido) {
-    formularioMensagem.elements.texto.value = rascunho.corpo;
-    atualizarContadorMensagem();
-    envioIncerto = rascunho.incerto;
+  pedidoEmConversa = undefined;
+  if (usuarioAnterior && corpo && pedido) {
+    rascunhoConversa = { usuario: usuarioAnterior, pedido, corpo, incerto };
+  } else if (rascunho && sessao?.usuario === rascunho.usuario) {
+    // Restaurar apenas o rascunho da própria conta, após reabrir a conversa.
+    rascunhoConversa = rascunho;
   }
 }
 
@@ -84,8 +85,14 @@ function limparConversa() {
 
 function abrirConversa(id) {
   if (ocupado) return;
+  const rascunho = rascunhoConversa;
   limparConversa();
   pedidoEmConversa = id;
+  if (rascunho?.usuario === sessaoServicos?.usuario && rascunho.pedido === id) {
+    formularioMensagem.elements.texto.value = rascunho.corpo;
+    atualizarContadorMensagem();
+    envioIncerto = rascunho.incerto;
+  }
   proteger('conversa');
 }
 
