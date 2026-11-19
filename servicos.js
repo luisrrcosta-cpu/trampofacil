@@ -399,6 +399,9 @@ async function atualizarPedido(pedido, dados) {
       select: 'id', id: `eq.${pedido.id}`,
       atualizado_em: `eq.${pedido.atualizado_em}`,
       status: `eq.${pedido.status}`,
+      ...(pedido.status === 'proposta' && dados.status === 'aceita'
+        ? { valor_centavos: `eq.${pedido.valor_centavos}` }
+        : {}),
     }, dados, 'PATCH');
     if (resposta.status === 401) {
       exigirNovoLogin('solicitacoes');
