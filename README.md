@@ -100,8 +100,8 @@ cidade e retorna páginas de até 20 resultados. O catálogo é separado dos
 perfis privados e não contém WhatsApp ou e-mail.
 
 Um cliente autenticado com cadastro completo pode solicitar um serviço.
-Cliente e profissional acompanham até 50 solicitações recentes. O
-profissional pode enviar um orçamento, iniciar o trabalho e marcar a entrega.
+Cliente e profissional acompanham as solicitações em páginas de até 50,
+começando pelas mais recentes. O profissional pode enviar um orçamento, iniciar o trabalho e marcar a entrega.
 O cliente pode aceitar a proposta e concluir o serviço. A opção de
 cancelamento segue as regras de cada status, verificadas pelo banco.
 O valor da proposta é um orçamento em reais.

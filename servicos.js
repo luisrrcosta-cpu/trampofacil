@@ -16,6 +16,9 @@ const formularioLogin = elemento('form-entrar');
 const formularioCodigo = elemento('form-codigo');
 const formularioPedido = elemento('form-solicitacao');
 const listaPedidos = elemento('lista-solicitacoes');
+const maisPedidos = elemento('mais-solicitacoes');
+const tamanhoPaginaPedidos = 50;
+let cursorPedidos;
 
 elemento('menu-servicos').hidden = !integrado;
 
@@ -24,6 +27,8 @@ function iniciarSessao(sessao, preservarRascunho = false) {
   sessaoServicos = sessao;
   elemento('sair').hidden = !sessao;
   listaPedidos.replaceChildren();
+  maisPedidos.hidden = true;
+  cursorPedidos = undefined;
 }
 
 function texto(tag, valor) {
@@ -284,29 +289,41 @@ function mostrarPedido(pedido) {
   return card;
 }
 
-async function carregarPedidos(aviso = '') {
-  if (ocupado || !sessaoServicos) return;
+async function carregarPedidos(aviso = '', anexar = false) {
+  if (ocupado || !sessaoServicos || (anexar && !cursorPedidos)) return;
   const secao = elemento('solicitacoes');
   const status = elemento('status-solicitacoes');
   bloquear(secao, true);
   status.textContent = 'Carregando…';
   try {
-    const resposta = await apiPedidos({
+    const filtros = {
       select: 'id,cliente_usuario_id,titulo,descricao,status,valor_centavos,atualizado_em',
-      order: 'atualizado_em.desc,id.desc', limit: '50',
-    });
+      order: 'atualizado_em.desc,id.desc', limit: tamanhoPaginaPedidos + 1,
+    };
+    if (anexar) {
+      const { atualizado_em, id } = cursorPedidos;
+      filtros.or = `(atualizado_em.lt.${atualizado_em},and(atualizado_em.eq.${atualizado_em},id.lt.${id}))`;
+    }
+    const resposta = await apiPedidos(filtros);
     if (resposta.status === 401) {
       exigirNovoLogin('solicitacoes');
       return;
     }
     if (!resposta.ok) throw new Error();
     const pedidos = await resposta.json();
-    listaPedidos.replaceChildren(...pedidos.map(mostrarPedido));
-    status.textContent = aviso || (pedidos.length
-      ? 'Exibindo as 50 solicitações mais recentes, quando disponíveis.'
+    const pagina = pedidos.slice(0, tamanhoPaginaPedidos);
+    const cards = pagina.map(mostrarPedido);
+    if (anexar) listaPedidos.append(...cards);
+    else listaPedidos.replaceChildren(...cards);
+    cursorPedidos = pagina.at(-1);
+    maisPedidos.hidden = pedidos.length <= tamanhoPaginaPedidos;
+    status.textContent = aviso || (listaPedidos.childElementCount
+      ? `${listaPedidos.childElementCount} solicitações exibidas.`
       : 'Nenhuma solicitação encontrada.');
   } catch {
-    status.textContent = 'Não foi possível carregar as solicitações. Tente atualizar.';
+    status.textContent = anexar
+      ? 'Não foi possível carregar as solicitações anteriores. Tente novamente.'
+      : 'Não foi possível carregar as solicitações. Tente atualizar.';
   } finally {
     bloquear(secao, false);
   }
@@ -341,3 +358,5 @@ async function atualizarPedido(pedido, dados) {
 }
 
 elemento('recarregar-solicitacoes').addEventListener('click', () => carregarPedidos());
+
+maisPedidos.addEventListener('click', () => carregarPedidos('', true));

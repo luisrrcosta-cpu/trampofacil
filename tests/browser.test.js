@@ -43,6 +43,8 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
     id: String(31 - i), criado_em: data, autor_usuario_id: 'profissional', texto: `Mensagem fictícia ${31 - i}`,
   }));
   let rejeitarMensagem = false;
+  let pedidosPaginados;
+  let falharPaginaPedidos = true;
   let expirarSessao = false;
   let perderResposta = false;
   let tentativasMensagem = 0;
@@ -118,6 +120,20 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
       }
       Object.assign(pedido, req.postDataJSON());
       return route.fulfill({ json: [{ id: pedido.id }] });
+    }
+    if (pedidosPaginados && url.searchParams.get('limit') === '51') {
+      assert.equal(url.searchParams.get('order'), 'atualizado_em.desc,id.desc');
+      if (url.searchParams.has('or')) {
+        const { atualizado_em, id } = pedidosPaginados[49];
+        assert.equal(url.searchParams.get('or'),
+          `(atualizado_em.lt.${atualizado_em},and(atualizado_em.eq.${atualizado_em},id.lt.${id}))`);
+        if (falharPaginaPedidos) {
+          falharPaginaPedidos = false;
+          return route.fulfill({ status: 503 });
+        }
+        return route.fulfill({ json: pedidosPaginados.slice(50) });
+      }
+      return route.fulfill({ json: pedidosPaginados.slice(0, 51) });
     }
     return route.fulfill({ json: pedido ? [pedido] : [] });
   });
@@ -217,5 +233,23 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   assert.equal(await page.getByRole('button', { name: 'Enviar mensagem' }).isVisible(), false);
   await page.getByText('Resposta fictícia', { exact: true }).waitFor();
   assert.deepEqual(await page.evaluate(() => [localStorage.length, sessionStorage.length]), [0, 0]);
+  pedidosPaginados = Array.from({ length: 52 }, (_, i) => ({
+    ...pedido, titulo: `Solicitação fictícia ${52 - i}`,
+    id: '00000000-0000-0000-0000-' + String(52 - i).padStart(12, '0'),
+  }));
+  await page.getByRole('button', { name: 'Voltar às solicitações' }).click();
+  const anteriores = page.getByRole('button', { name: 'Ver solicitações anteriores' });
+  await anteriores.waitFor();
+  assert.equal(await page.locator('#lista-solicitacoes article').count(), 50);
+  await anteriores.click();
+  await page.getByText('Não foi possível carregar as solicitações anteriores.', { exact: false }).waitFor();
+  assert.equal(await page.locator('#lista-solicitacoes article').count(), 50);
+  await anteriores.click();
+  await page.getByText('Solicitação fictícia 1', { exact: true }).waitFor();
+  assert.equal(await page.locator('#lista-solicitacoes article').count(), 52);
+  assert.equal(await anteriores.isVisible(), false);
+  await page.locator('#solicitacoes').getByRole('button', { name: 'Atualizar', exact: true }).click();
+  await anteriores.waitFor();
+  assert.equal(await page.locator('#lista-solicitacoes article').count(), 50);
   assert.deepEqual(erros, []);
 });
