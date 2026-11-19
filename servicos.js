@@ -294,7 +294,10 @@ function mostrarPedido(pedido) {
       erro.textContent = '';
       try {
         const valor_centavos = propostaEmCentavos(campo.value);
-        atualizarPedido(pedido, { status: 'proposta', valor_centavos });
+        const valor = moeda.format(valor_centavos / 100);
+        if (window.confirm(`Enviar proposta de ${valor} para este serviço? O cliente precisará aceitar o orçamento. Nenhum pagamento será realizado agora.`)) {
+          atualizarPedido(pedido, { status: 'proposta', valor_centavos });
+        }
       } catch (falha) {
         erro.textContent = falha.message;
       }
