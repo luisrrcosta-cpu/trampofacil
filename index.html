@@ -24,6 +24,7 @@ textarea{min-height:90px}
 .erro{color:#a11919}
 article{border-top:1px solid #cbd5e1;padding-top:12px;margin-top:16px}
 article p{overflow-wrap:anywhere}
+.texto-mensagem{white-space:pre-wrap}
 footer{text-align:center;padding:25px;color:#64748b}
 </style>
 </head>
@@ -137,10 +138,30 @@ footer{text-align:center;padding:25px;color:#64748b}
 <div id="lista-solicitacoes"></div>
 <button class="voltar" type="button" data-pagina="inicio">Página inicial</button>
 </section>
+<section id="conversa" class="card" hidden>
+<h2>Histórico e mensagens</h2>
+<p id="titulo-conversa"></p>
+<p id="status-conversa" role="status"></p>
+<button type="button" id="atualizar-conversa">Atualizar histórico e mensagens</button>
+<h3>Histórico da solicitação</h3>
+<ol id="historico-conversa"></ol>
+<button type="button" id="mais-historico" hidden>Ver eventos anteriores</button>
+<h3>Mensagens</h3>
+<ol id="mensagens-conversa"></ol>
+<button type="button" id="mais-mensagens" hidden>Ver mensagens anteriores</button>
+<form id="form-mensagem" method="post" hidden>
+<label>Mensagem<textarea name="texto" maxlength="2000" required aria-describedby="orientacao-mensagem"></textarea></label>
+<p id="orientacao-mensagem">Evite enviar senhas, documentos ou dados bancários.</p>
+<button type="submit">Enviar mensagem</button>
+</form>
+<p id="status-mensagem" role="status"></p>
+<button class="voltar" type="button" id="voltar-solicitacoes">Voltar às solicitações</button>
+</section>
 </main>
 <footer>© 2026 TrampoFácil</footer>
 <script src="config.js" defer></script>
 <script src="cadastro.js" defer></script>
 <script src="servicos.js" defer></script>
+<script src="conversa.js" defer></script>
 </body>
 </html>

@@ -23,6 +23,7 @@ function iniciarSessao(sessao) {
   sessaoServicos = sessao;
   elemento('sair').hidden = !sessao;
   listaPedidos.replaceChildren();
+  limparConversa();
 }
 
 function texto(tag, valor) {
@@ -109,6 +110,7 @@ function proteger(destino) {
   }
   mostrar(destino);
   if (destino === 'solicitacoes') carregarPedidos();
+  if (destino === 'conversa') carregarConversa();
 }
 
 elemento('abrir-solicitacoes').addEventListener('click', () => proteger('solicitacoes'));
@@ -277,6 +279,7 @@ function mostrarPedido(pedido) {
       }
     }));
   }
+  card.append(botaoAcao('Ver histórico e mensagens', () => abrirConversa(pedido.id)));
   return card;
 }
 

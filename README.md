@@ -106,6 +106,17 @@ O cliente pode aceitar a proposta e concluir o serviço. A opção de
 cancelamento segue as regras de cada status, verificadas pelo banco.
 O valor da proposta é um orçamento em reais.
 
+Em **Minhas solicitações**, use **Ver histórico e mensagens** para consultar
+os eventos registrados pelo banco e conversar com a outra parte. Os itens
+mais recentes aparecem primeiro, com opção de carregar os anteriores e de
+atualizar a tela. O histórico mostra data, status e valor quando disponível.
+As mensagens identificam os autores como **Você** ou **Outra parte**.
+
+As políticas RLS existentes limitam a conversa aos participantes. O banco
+atribui a autoria e impede novas mensagens após conclusão ou cancelamento.
+O histórico e as mensagens anteriores continuam disponíveis aos
+participantes. A tela não solicita e-mail, WhatsApp ou dados de perfil.
+
 ## Testes locais
 
 Com Node.js 20+ e Chromium instalado, execute `npm ci` e `npm test`.
@@ -117,8 +128,6 @@ fictícios e uma cópia dos triggers de solicitação.
 ## Integrações pendentes
 
 - Homologar o envio real de códigos e os fluxos de cadastro, busca e
-  solicitações pela Data API do ambiente de homologação.
-- Exibir o histórico de mudanças de status e integrar as mensagens na
-  interface. O backend existente já registra as mudanças.
+  solicitações, histórico e mensagens pela Data API em homologação.
 - Definir o provedor de pagamentos antes da implementação. A aplicação
   atual grava apenas o valor proposto.

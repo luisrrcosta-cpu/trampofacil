@@ -7,7 +7,7 @@ import { chromium } from 'playwright-core';
 
 test('busca, autenticação e solicitação com repetição segura', async (t) => {
   const server = createServer(async (req, res) => {
-    const arquivos = ['index.html', 'config.js', 'cadastro.js', 'servicos.js'];
+    const arquivos = ['index.html', 'config.js', 'cadastro.js', 'servicos.js', 'conversa.js'];
     const arquivo = req.url === '/' ? 'index.html' : req.url.slice(1);
     if (!arquivos.includes(arquivo)) {
       res.writeHead(404).end();
@@ -38,6 +38,11 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   let pedido;
   let falharAtualizacao = true;
   const criacoes = [];
+  const data = '2026-11-18T12:00:00+00:00';
+  const chats = Array.from({ length: 31 }, (_, i) => ({
+    id: String(31 - i), criado_em: data, autor_usuario_id: 'profissional', texto: `Mensagem fictícia ${31 - i}`,
+  }));
+  let rejeitarMensagem = false;
   await page.route('https://teste.supabase.co/**', async (route) => {
     const req = route.request();
     const url = new URL(req.url());
@@ -57,6 +62,33 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
       return route.fulfill({ json: { access_token: id, user: { id } } });
     }
     assert.match(req.headers().authorization, /^Bearer (cliente|profissional)$/);
+    if (url.pathname.endsWith('/historico_solicitacoes')) {
+      assert.equal(url.searchParams.get('select'), 'id,criado_em,status,valor_centavos');
+      assert.equal(url.searchParams.get('solicitacao_id'), 'eq.' + pedido.id);
+      return route.fulfill({ json: [{ id: 'evento', criado_em: data, status: 'solicitada', valor_centavos: null }] });
+    }
+    if (url.pathname.endsWith('/mensagens_solicitacoes')) {
+      if (req.method() === 'POST') {
+        const dados = req.postDataJSON();
+        assert.deepEqual(Object.keys(dados).sort(), ['solicitacao_id', 'texto']);
+        assert.equal(dados.solicitacao_id, pedido.id);
+        if (rejeitarMensagem) {
+          pedido.status = 'cancelada';
+          return route.fulfill({ status: 403 });
+        }
+        chats.unshift({ id: '32', criado_em: data, texto: dados.texto,
+          autor_usuario_id: req.headers().authorization.split(' ').at(-1) });
+        return route.fulfill({ status: 201 });
+      }
+      assert.equal(url.searchParams.get('select'), 'id,criado_em,autor_usuario_id,texto');
+      assert.equal(url.searchParams.get('solicitacao_id'), 'eq.' + pedido.id);
+      const anterior = url.searchParams.get('or');
+      if (anterior) {
+        assert.equal(anterior, `(criado_em.lt.${data},and(criado_em.eq.${data},id.lt.2))`);
+        return route.fulfill({ json: chats.slice(-1) });
+      }
+      return route.fulfill({ json: chats.slice(0, 31) });
+    }
     if (req.method() === 'POST') {
       const dados = req.postDataJSON();
       criacoes.push(dados);
@@ -110,6 +142,17 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   assert.equal(criacoes[0].id, criacoes[1].id);
   assert.equal(await page.getByRole('button', { name: 'Enviar proposta' }).count(), 0);
 
+  await page.getByRole('button', { name: 'Ver histórico e mensagens' }).click();
+  await page.locator('#historico-conversa').getByText('Solicitada', { exact: false }).waitFor();
+  await page.getByRole('button', { name: 'Ver mensagens anteriores' }).click();
+  await page.getByText('Mensagem fictícia 1', { exact: true }).waitFor();
+  const textoFicticio = '<img src=x onerror=alert(1)> Mensagem de teste';
+  await page.getByRole('textbox', { name: 'Mensagem', exact: true }).fill(textoFicticio);
+  await page.getByRole('button', { name: 'Enviar mensagem' }).click();
+  await page.getByText(textoFicticio, { exact: true }).waitFor();
+  assert.equal(await page.locator('#mensagens-conversa img').count(), 0);
+  assert.equal(await page.locator('#mensagens-conversa li').first().locator('strong').textContent(), 'Você');
+  await page.getByRole('button', { name: 'Voltar às solicitações' }).click();
   await page.locator('#solicitacoes').getByRole('button', { name: 'Página inicial' }).click();
   await page.getByRole('button', { name: 'Sair da conta' }).click();
   await page.getByRole('button', { name: 'Minhas solicitações' }).click();
@@ -122,6 +165,18 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await page.getByRole('button', { name: 'Enviar proposta' }).click();
   await page.getByText('Recebida · Proposta enviada').waitFor();
   assert.equal(pedido.valor_centavos, 15000);
+  await page.getByRole('button', { name: 'Ver histórico e mensagens' }).click();
+  await page.getByText(textoFicticio, { exact: true }).waitFor();
+  assert.equal(await page.locator('#mensagens-conversa li').first().locator('strong').textContent(), 'Outra parte');
+  await page.getByRole('textbox', { name: 'Mensagem', exact: true }).fill('Resposta fictícia');
+  await page.getByRole('button', { name: 'Enviar mensagem' }).click();
+  await page.getByText('Resposta fictícia', { exact: true }).waitFor();
+  rejeitarMensagem = true;
+  await page.getByRole('textbox', { name: 'Mensagem', exact: true }).fill('Mensagem após cancelamento');
+  await page.getByRole('button', { name: 'Enviar mensagem' }).click();
+  await page.getByText('Solicitação encerrada.', { exact: false }).waitFor();
+  assert.equal(await page.getByRole('button', { name: 'Enviar mensagem' }).isVisible(), false);
+  await page.getByText('Resposta fictícia', { exact: true }).waitFor();
   assert.deepEqual(await page.evaluate(() => [localStorage.length, sessionStorage.length]), [0, 0]);
   assert.deepEqual(erros, []);
 });
