@@ -13,6 +13,5 @@ assert.match(servicos, /sessaoServicos !== sessaoDaBusca/);
 assert.match(servicos, /sessaoServicos !== sessaoOriginal \|\| profissionalEscolhido !== profissionalOriginal/);
 assert.match(servicos, /Array\.isArray\(registros\)/);
 assert.match(conversa, /sessaoServicos !== sessaoOriginal \|\| pedidoEmConversa !== pedidoOriginal/);
-assert.match(conversa, /sessaoServicos !== sessaoOriginal \|\| pedidoEmConversa !== pedidoOriginal/);
 assert.match(ambiente, /config\.ambiente !== 'homologacao'/);
 console.log('Verificacoes de regressao da interface aprovadas.');
