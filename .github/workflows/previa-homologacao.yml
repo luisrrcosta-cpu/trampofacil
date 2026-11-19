@@ -37,7 +37,7 @@ jobs:
           mkdir -p previa
           cp index.html *.js previa/
           printf 'PREVIA DE HOMOLOGACAO. Nao publicar sem validar autenticacao, redirect URLs e origem permitida. Pagamentos desativados.\n' > previa/LEIA-ANTES.txt
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f436d7a # v4
+      - uses: actions/upload-artifact@v4
         with:
           name: trampofacil-previa-homologacao
           path: previa/
