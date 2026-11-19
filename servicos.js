@@ -15,6 +15,12 @@ const maisProfissionais = elemento('mais-profissionais');
 const formularioLogin = elemento('form-entrar');
 const formularioCodigo = elemento('form-codigo');
 const formularioPedido = elemento('form-solicitacao');
+const campoDescricaoPedido = formularioPedido.elements.descricao;
+const contadorDescricaoPedido = elemento('contador-descricao');
+function atualizarContadorDescricaoPedido() {
+  contadorDescricaoPedido.textContent = `${campoDescricaoPedido.value.length}/3000 caracteres`;
+}
+campoDescricaoPedido.addEventListener('input', atualizarContadorDescricaoPedido);
 const listaPedidos = elemento('lista-solicitacoes');
 const maisPedidos = elemento('mais-solicitacoes');
 const tamanhoPaginaPedidos = 50;
