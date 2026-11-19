@@ -130,6 +130,7 @@ async function carregarPaginaConversa(fluxo, anexar) {
   if (sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return false;
   const registros = await lerConversa(resposta);
   if (!registros || sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return false;
+  if (!Array.isArray(registros)) throw new Error('Resposta de conversa inválida');
   const pagina = registros.slice(0, tamanhoPaginaConversa);
   const itens = pagina.map(fluxo.renderizar);
   if (anexar) fluxo.lista.append(...itens);
@@ -154,6 +155,7 @@ async function carregarConversa() {
     if (sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return;
     const pedidos = await lerConversa(resposta);
     if (!pedidos || sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return;
+    if (!Array.isArray(pedidos)) throw new Error('Resposta de solicitação inválida');
     const pedido = pedidos[0];
     if (!pedido) {
       limparConversa();
