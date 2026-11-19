@@ -112,7 +112,8 @@ async function procurar(filtros, pagina) {
       maisProfissionais.hidden = true;
     }
   } finally {
-    bloquear(elemento('catalogo'), false);
+    // Uma resposta antiga não pode liberar os controles de uma busca mais recente.
+    if (buscaAtual === versaoBusca) bloquear(elemento('catalogo'), false);
   }
 }
 
