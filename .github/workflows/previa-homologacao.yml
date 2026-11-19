@@ -1,0 +1,44 @@
+name: Preparar previa isolada TrampoFacil
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/v16-seguranca-integracoes]
+    paths:
+      - '*.html'
+      - '*.js'
+      - '.github/workflows/previa-homologacao.yml'
+permissions:
+  contents: read
+jobs:
+  previa:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Validar ambiente exclusivo de homologacao
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          const config=fs.readFileSync('config.js','utf8');
+          const ambiente=fs.readFileSync('ambiente.js','utf8');
+          assert.match(config,/asdszqtpydiowgerxwee\.supabase\.co/);
+          assert.match(config,/autenticacaoPronta:\s*false/);
+          assert.match(ambiente,/asdszqtpydiowgerxwee/);
+          assert.ok(fs.existsSync('index.html'));
+          console.log('Previa restrita: autenticacao e pagamentos nao liberados.');
+          NODE
+      - name: Empacotar somente a interface estatica
+        shell: bash
+        run: |
+          mkdir -p previa
+          cp index.html *.js previa/
+          printf 'PREVIA DE HOMOLOGACAO. Nao publicar sem validar autenticacao, redirect URLs e origem permitida. Pagamentos desativados.\n' > previa/LEIA-ANTES.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f436d7a # v4
+        with:
+          name: trampofacil-previa-homologacao
+          path: previa/
+          retention-days: 7
