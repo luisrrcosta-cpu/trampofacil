@@ -390,6 +390,7 @@ async function atualizarPedido(pedido, dados) {
     const resposta = await apiPedidos({
       select: 'id', id: `eq.${pedido.id}`,
       atualizado_em: `eq.${pedido.atualizado_em}`,
+      status: `eq.${pedido.status}`,
     }, dados, 'PATCH');
     if (resposta.status === 401) {
       exigirNovoLogin('solicitacoes');
