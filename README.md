@@ -214,6 +214,13 @@ valor salvo. `npm run test:local` agora inclui esses testes. Consulte
 idempotência, taxas, tributação, divisão/repasse e webhook. Não aplicar nada no
 Supabase de produção nesta etapa.
 
+Os adaptadores HTTPS de Auth e consulta e o handler HTTP foram preparados em
+`server/supabase-homologacao.js` e `server/handler-preparacao.js`. Não foram
+publicados nem configurados com um projeto real. Eles permitem apenas leitura
+do projeto de homologação explicitamente confirmado, recusam o projeto de
+produção conhecido e continuam devolvendo `pagamentoHabilitado: false`.
+A configuração e os nove testes novos estão descritos em `server/README.md`.
+
 ## Integrações pendentes
 
 - Homologar o envio real de códigos e os fluxos de cadastro, busca e

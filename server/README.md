@@ -49,3 +49,46 @@ A API de criação de checkout documenta o endpoint de sandbox
 `https://sandbox.api.pagseguro.com/checkouts`. Nenhuma chamada a esse endpoint
 é feita nesta entrega. As taxas de maquininha do simulador continuam sem efeito
 em uma cobrança online.
+
+## Adaptador de consulta e handler de homologação
+
+`supabase-homologacao.js` implementa os adaptadores via HTTPS: valida o token
+em `/auth/v1/user` e consulta a solicitação pela Data API com o JWT do próprio
+cliente. São apenas requisições GET, sem chave administrativa, preservando RLS.
+O projeto de produção conhecido é explicitamente recusado, assim como URLs
+externas, HTTP, caminhos/credenciais na URL e chaves secretas. A configuração
+exige `ambiente: 'teste'` e `projetoHomologacaoConfirmado: true` no servidor.
+
+`handler-preparacao.js` recebe objetos Web `Request` e devolve `Response` para
+`POST /api/pagamentos/preparar`. Ele aceita apenas a origem HTTPS configurada
+quando há Origin, exige JSON, limita o corpo a 4 KiB e sua leitura a 5 segundos,
+e envia respostas com `Cache-Control: no-store`. CORS não substitui autenticação:
+inclusive clientes sem Origin precisam fornecer um token válido. Não existe
+rota para cobrar ou marcar pagamentos como pagos.
+
+Composição para uma hospedagem de homologação futura:
+
+```js
+import {criarAdaptadoresHomologacao} from './supabase-homologacao.js';
+import {criarPreparadorPagamento} from './preparar-pagamento.js';
+import {criarHandlerPreparacao} from './handler-preparacao.js';
+
+// Carregar estes valores das configurações do servidor, nunca do corpo HTTP.
+export function montar(config) {
+  const adaptadores = criarAdaptadoresHomologacao(config);
+  const preparador = criarPreparadorPagamento({ambiente:'teste', ...adaptadores});
+  return criarHandlerPreparacao({preparador, origemPermitida:config.origemPermitida});
+}
+```
+
+Os arquivos não iniciam um servidor nem publicam uma função automaticamente.
+Ainda é necessário escolher o projeto de homologação, preparar seu esquema,
+configurar a origem e a chave publicável correspondentes e selecionar a
+hospedagem. Não apontar `config.js` para produção para contornar essa etapa.
+Não há chamadas ao PagBank, credenciais de sandbox ou cobrança nesta composição.
+
+Nove testes novos exercitam o handler inteiro com `Request`/`Response` e
+respostas simuladas do Auth/Data API. Eles incluem rejeição do projeto de
+produção, anonimato, e-mail não confirmado, tentativa de alterar valores,
+acesso a orçamento de outra pessoa e corpos excessivos/interrompidos. A suíte
+local soma 31 testes aprovados. Ainda não foi testada contra um projeto real.
