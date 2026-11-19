@@ -175,7 +175,9 @@ async function carregarConversa() {
     formularioMensagem.hidden = !podeEnviarMensagem;
     statusConversa.textContent = podeEnviarMensagem ? '' : 'Solicitação encerrada. As mensagens continuam disponíveis para leitura.';
   } catch {
-    statusConversa.textContent = 'Não foi possível carregar todos os dados. Tente atualizar.';
+    if (sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal) {
+      statusConversa.textContent = 'Não foi possível carregar todos os dados. Tente atualizar.';
+    }
   } finally {
     bloquear(secaoConversa, false);
     enviarMensagem.disabled = envioIncerto;
@@ -184,12 +186,16 @@ async function carregarConversa() {
 
 for (const fluxo of [historico, mensagens]) {
   fluxo.mais.addEventListener('click', async () => {
-    if (ocupado || !sessaoServicos) return;
+    if (ocupado || !sessaoServicos || !pedidoEmConversa) return;
+    const sessaoOriginal = sessaoServicos;
+    const pedidoOriginal = pedidoEmConversa;
     bloquear(secaoConversa, true);
     try {
       await carregarPaginaConversa(fluxo, true);
     } catch {
-      statusConversa.textContent = 'Não foi possível carregar a página anterior. Tente novamente.';
+      if (sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal) {
+        statusConversa.textContent = 'Não foi possível carregar a página anterior. Tente novamente.';
+      }
     } finally {
       bloquear(secaoConversa, false);
     enviarMensagem.disabled = envioIncerto;
