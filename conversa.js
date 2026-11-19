@@ -106,6 +106,8 @@ async function lerConversa(resposta) {
 }
 
 async function carregarPaginaConversa(fluxo, anexar) {
+  const sessaoOriginal = sessaoServicos;
+  const pedidoOriginal = pedidoEmConversa;
   const filtros = {
     select: fluxo.campos,
     solicitacao_id: `eq.${pedidoEmConversa}`,
@@ -116,8 +118,10 @@ async function carregarPaginaConversa(fluxo, anexar) {
     const { criado_em, id } = fluxo.cursor;
     filtros.or = `(criado_em.lt.${criado_em},and(criado_em.eq.${criado_em},id.lt.${id}))`;
   }
-  const registros = await lerConversa(await apiConversa(fluxo, filtros));
-  if (!registros) return false;
+  const resposta = await apiConversa(fluxo, filtros);
+  if (sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return false;
+  const registros = await lerConversa(resposta);
+  if (!registros || sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return false;
   const pagina = registros.slice(0, tamanhoPaginaConversa);
   const itens = pagina.map(fluxo.renderizar);
   if (anexar) fluxo.lista.append(...itens);
@@ -129,15 +133,19 @@ async function carregarPaginaConversa(fluxo, anexar) {
 
 async function carregarConversa() {
   if (ocupado || !sessaoServicos || !pedidoEmConversa) return;
+  const sessaoOriginal = sessaoServicos;
+  const pedidoOriginal = pedidoEmConversa;
   bloquear(secaoConversa, true);
   statusConversa.textContent = 'Carregando…';
   formularioMensagem.hidden = true;
   podeEnviarMensagem = false;
   try {
-    const pedidos = await lerConversa(await apiPedidos({
-      select: 'titulo,status', id: `eq.${pedidoEmConversa}`, limit: '1',
-    }));
-    if (!pedidos) return;
+    const resposta = await apiPedidos({
+      select: 'titulo,status', id: `eq.${pedidoOriginal}`, limit: '1',
+    });
+    if (sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return;
+    const pedidos = await lerConversa(resposta);
+    if (!pedidos || sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return;
     const pedido = pedidos[0];
     if (!pedido) {
       limparConversa();
