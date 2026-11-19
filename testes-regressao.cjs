@@ -25,6 +25,8 @@ assert.match(servicos, /if \(loginAtual !== versaoLogin\) return/);
 assert.match(servicos, /if \(!filtrosBusca \|\| maisProfissionais\.hidden\) return/);
 assert.match(servicos, /const filtrosAtuais = \{ \.\.\.filtros \}/);
 assert.match(servicos, /if \(buscaAtual !== versaoBusca\) return/);
+assert.match(servicos, /if \(pagina === 0\) maisProfissionais\.hidden = true/);
+assert.match(servicos, /Não foi possível carregar mais profissionais/);
 assert.match(servicos, /if \(sessaoServicos !== sessaoDaBusca\) return;/);
 assert.match(servicos, /if \(sessaoServicos === sessaoOriginal\) await carregarPedidos\(aviso\)/);
 assert.match(conversa, /sessaoServicos !== sessaoOriginal \|\| pedidoEmConversa !== pedidoOriginal/);
