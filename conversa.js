@@ -83,8 +83,9 @@ function abrirConversa(id) {
 
 function apiConversa(fluxo, filtros, dados) {
   const caminho = `/rest/v1/${fluxo.tabela}?${new URLSearchParams(filtros)}`;
-  return enviar(caminho, dados, sessaoServicos.token, dados ? 'return=minimal' : undefined,
-    dados ? 'POST' : 'GET');
+  return controleSessao.requisitar((token) =>
+    enviar(caminho, dados, token, dados ? 'return=minimal' : undefined,
+      dados ? 'POST' : 'GET'));
 }
 
 async function lerConversa(resposta) {
@@ -212,3 +213,4 @@ elemento('voltar-solicitacoes').addEventListener('click', () => {
   pedidoEmConversa = undefined;
   proteger('solicitacoes');
 });
+

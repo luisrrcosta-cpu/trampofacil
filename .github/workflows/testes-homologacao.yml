@@ -1,0 +1,31 @@
+name: Testes isolados do TrampoFacil
+
+on:
+  push:
+    branches: [codex/v16-seguranca-integracoes]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  testes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Instalar navegador de teste
+        run: npx --no-install playwright-core install --with-deps chromium
+      - name: Executar testes locais e de interface com API simulada
+        shell: bash
+        run: |
+          export TRAMPOFACIL_CHROMIUM="$(node --input-type=module -e 'import {chromium} from "playwright-core"; process.stdout.write(chromium.executablePath())')"
+          npm test

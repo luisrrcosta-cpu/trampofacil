@@ -148,6 +148,21 @@ estado financeiro inventado (`pago`). Eles não validam Pix, cartão, estorno,
 repasse ou idempotência de webhook. Esses testes dependem da escolha do
 provedor e de credenciais de sandbox; não usar credenciais de produção.
 
+## Proteção de respostas após troca de conta
+
+`sessao.js` descarta respostas privadas iniciadas antes de sair ou entrar
+novamente, inclusive quando a troca ocorre durante a leitura do JSON. Esse
+controle atende solicitações, histórico e mensagens. Uma resposta 401 antiga
+não provoca a saída de uma conta que entrou depois. Os sete testes dessa
+proteção, somados aos três testes anteriores, passaram localmente em
+19/11/2026. São testes isolados e não substituem a homologação da API real.
+
+O workflow `testes-homologacao.yml` prepara a execução completa em um runner
+Ubuntu do GitHub Actions, com Chromium próprio do Playwright. Ele roda nessa
+ramificação e em pull requests destinados à main, com permissão somente de
+leitura do repositório. Não usa segredos, não publica o aplicativo e não
+executa migrações ou comandos contra o Supabase.
+
 ## Integrações pendentes
 
 - Homologar o envio real de códigos e os fluxos de cadastro, busca e

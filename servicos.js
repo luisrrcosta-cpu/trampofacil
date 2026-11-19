@@ -25,6 +25,7 @@ elemento('menu-servicos').hidden = !integrado;
 function iniciarSessao(sessao, preservarRascunho = false) {
   trocarSessaoConversa(sessao, preservarRascunho ? sessaoServicos?.usuario : undefined);
   sessaoServicos = sessao;
+  controleSessao.alterar(sessao);
   elemento('sair').hidden = !sessao;
   listaPedidos.replaceChildren();
   maisPedidos.hidden = true;
@@ -174,8 +175,9 @@ formularioLogin.addEventListener('submit', (evento) => enviarLogin(evento, false
 formularioCodigo.addEventListener('submit', (evento) => enviarLogin(evento, true));
 
 function apiPedidos(filtros, dados, metodo) {
-  return enviar(`/rest/v1/solicitacoes?${new URLSearchParams(filtros)}`, dados,
-    sessaoServicos.token, metodo ? 'return=representation' : undefined, metodo || 'GET');
+  return controleSessao.requisitar((token) =>
+    enviar(`/rest/v1/solicitacoes?${new URLSearchParams(filtros)}`, dados,
+      token, metodo ? 'return=representation' : undefined, metodo || 'GET'));
 }
 
 function exigirNovoLogin(destino) {
