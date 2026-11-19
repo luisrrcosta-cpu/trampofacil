@@ -56,13 +56,19 @@ async function procurar(filtros, pagina) {
   const status = elemento('status-busca');
   bloquear(elemento('catalogo'), true);
   status.textContent = 'Buscando…';
+  if (pagina === 0) {
+    // Uma busca nova invalida resultados e paginação anteriores, inclusive se falhar.
+    listaBusca.replaceChildren();
+    maisProfissionais.hidden = true;
+    filtrosBusca = undefined;
+    paginaBusca = 0;
+  }
   try {
     const resposta = await enviar('/rest/v1/rpc/buscar_profissionais', {
       ...filtros, pagina,
     });
     if (!resposta.ok) throw new Error();
     const profissionais = await resposta.json();
-    if (pagina === 0) listaBusca.replaceChildren();
     for (const profissional of profissionais) {
       const card = document.createElement('article');
       card.append(
