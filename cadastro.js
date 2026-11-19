@@ -1,14 +1,16 @@
 'use strict';
 
 const config = window.TRAMPOFACIL_SUPABASE;
-const integrado = /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(config?.url) &&
-  /^sb_publishable_[A-Za-z0-9_-]+$/.test(config?.chavePublicavel);
+const { integrado, autenticacaoPronta } = validarAmbiente(config);
+const avisoAutenticacao = 'O acesso por e-mail está em preparação neste ambiente de testes. A busca e o simulador continuam disponíveis.';
 const tabelas = { cliente: 'clientes', profissional: 'profissionais' };
 const confirmacao = document.querySelector('#form-confirmacao');
 let pendente;
 let ocupado = false;
 
 document.querySelector('#aviso-demo').hidden = integrado;
+document.querySelector('#aviso-homologacao').hidden = !integrado;
+document.querySelector('#aviso-autenticacao').hidden = !integrado || autenticacaoPronta;
 
 function mostrar(id) {
   for (const secao of document.querySelectorAll('main section')) {
@@ -59,6 +61,9 @@ function lerPerfil(formulario, tipo) {
 }
 
 function enviar(caminho, dados, token, prefer, metodo = 'POST') {
+  if (!integrado || (!autenticacaoPronta && caminho.startsWith('/auth/'))) {
+    throw new Error('Integração indisponível neste ambiente.');
+  }
   const headers = {
     apikey: config.chavePublicavel,
     'Content-Type': 'application/json',
@@ -83,6 +88,10 @@ async function cadastrar(evento) {
   const formulario = evento.currentTarget;
   const erro = formulario.querySelector('[role="alert"]');
   erro.textContent = '';
+  if (integrado && !autenticacaoPronta) {
+    erro.textContent = avisoAutenticacao;
+    return;
+  }
   let cadastro;
   try {
     cadastro = lerPerfil(formulario, formulario.dataset.cadastro);
@@ -194,3 +203,4 @@ document.querySelector('#voltar-cadastro').addEventListener('click', () => {
   campoCodigo.disabled = false;
   mostrar(tipo);
 });
+

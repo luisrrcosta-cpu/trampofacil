@@ -39,9 +39,41 @@ Auth nem a integração HTTP do aplicativo.
 ## Ainda pendente
 
 Configurar hospedagem de homologação e origem permitida; testar login real
-com contas de teste autorizadas e os adaptadores Auth/Data API. A configuração
-pública padrão do aplicativo continua em demonstração. Nenhuma chave secreta
-foi adicionada ao repositório.
+com contas de teste e os adaptadores Auth/Data API. `config.js` aponta agora
+somente para este projeto, com chave publicável e `autenticacaoPronta: false`.
+A busca está conectada; cadastro e login não enviam requisições enquanto o
+envio de códigos não for validado. Um aviso identifica o ambiente de testes.
+`ambiente.js` recusa qualquer outro projeto, inclusive o de produção.
+Nenhuma chave secreta foi adicionada ao repositório.
+
+## Verificação da API pública
+
+`npm run test:homologacao` consulta exclusivamente este projeto e passou em
+19/11/2026: RPC de busca respondeu HTTP 200; as cinco tabelas privadas recusaram
+acesso sem sessão com HTTP 401 e erro PostgreSQL 42501; Auth recusou consulta
+de usuário sem token. O catálogo estava vazio. Não foram emitidos e-mails,
+criadas contas nem gravados registros. O script não roda em `npm test` ou
+automaticamente no workflow.
+
+## Liberação do login de testes
+
+O endpoint público de configurações confirma e-mail habilitado, confirmação
+obrigatória e login anônimo desabilitado. Ele não informa o conteúdo dos
+modelos nem confirma entrega de mensagens.
+
+1. Conferir os modelos de confirmação de cadastro e Magic Link no
+   [painel de modelos](https://supabase.com/dashboard/project/asdszqtpydiowgerxwee/auth/templates).
+   `email-codigo.html` contém o modelo em português com `{{ .Token }}`.
+2. Conferir entrega para as contas de teste. O SMTP padrão envia apenas para
+   membros da organização; outros destinatários exigem configurar um serviço
+   de envio. Não desabilitar confirmação para contornar falhas de entrega.
+3. Validar emissão, confirmação, cadastro e nova entrada com contas de teste.
+   Só então alterar `autenticacaoPronta` para `true` nesta ramificação.
+
+Referências verificadas:
+
+- https://supabase.com/docs/guides/auth/auth-email-passwordless
+- https://supabase.com/docs/guides/auth/auth-smtp
 
 PagBank permanece sem chamadas ou cobranças. Taxas online, impostos, credenciais
 de sandbox e modelo de divisão/repasses ainda precisam de definição antes

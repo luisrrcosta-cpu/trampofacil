@@ -1,230 +1,84 @@
-# trampofacil
-Plataforma 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TrampoFácil</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#17243b}
-header{background:#123b76;color:white;padding:22px;text-align:center}
-header h1{margin:0;font-size:30px}
-header p{margin:8px 0 0;color:#dbeafe}
-main{max-width:650px;margin:auto;padding:22px 16px}
-.hero{text-align:center;padding:24px 8px}
-.hero h2{font-size:27px;margin:0 0 12px}
-.hero p{color:#64748b;line-height:1.6}
-.search{width:100%;padding:16px;border:1px solid #cbd5e1;border-radius:12px;font-size:16px}
-.btn{display:block;width:100%;border:0;border-radius:12px;padding:17px;margin-top:12px;font-size:16px;font-weight:bold;cursor:pointer}
-.blue{background:#1769e0;color:white}
-.green{background:#16a34a;color:white}
-h3{margin-top:30px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.card{background:white;border-radius:14px;padding:22px 10px;text-align:center;box-shadow:0 3px 12px #0000000a;cursor:pointer}
-.card span{display:block;font-size:32px;margin-bottom:10px}
-.card strong{font-size:14px}
-#mensagem{text-align:center;color:#1769e0;font-weight:bold;margin-top:18px}
-footer{text-align:center;padding:25px;color:#64748b;font-size:13px}
-</style>
-</head>
-<body>
-<header>
-<h1>🔧 TrampoFácil</h1>
-<p>Conectando quem precisa com quem faz!</p>
-</header>
-<main>
-<section class="hero">
-<h2>Encontre o profissional ideal</h2>
-<p>Serviços de qualidade, perto de você. Simples, rápido e seguro.</p>
-<input class="search" id="busca" placeholder="Qual serviço você precisa?">
-<button class="btn blue" onclick="acao('Busca de profissionais')">🔎 Encontrar profissional</button>
-<button class="btn green" onclick="acao('Cadastro profissional')">🧰 Sou profissional</button>
-</section>
-<h3>Explore os serviços</h3>
-<div class="grid">
-<div class="card" onclick="acao('Eletricista')"><span>⚡</span><strong>Eletricista</strong></div>
-<div class="card" onclick="acao('Encanador')"><span>🔧</span><strong>Encanador</strong></div>
-<div class="card" onclick="acao('Diarista')"><span>🧹</span><strong>Diarista</strong></div>
-<div class="card" onclick="acao('Pintor')"><span>🎨</span><strong>Pintor</strong></div>
-<div class="card" onclick="acao('Jardineiro')"><span>🌿</span><strong>Jardineiro</strong></div>
-<div class="card" onclick="acao('Montador')"><span>🪛</span><strong>Montador</strong></div>
-</div>
-<p id="mensagem"></p>
-</main>
-<footer>© 2026 TrampoFácil — Todos os direitos reservados.</footer>
-<script>
-function acao(tipo){
-document.getElementById('mensagem').textContent=tipo+' — em breve!';
-}
-</script>
-</body>
-</html>
- contratação de profissionais e serviços com pagamentos online.
+# TrampoFácil
 
-## Cadastro de clientes e profissionais
+Plataforma de contratação de profissionais em desenvolvimento.
 
-A página funciona em modo de demonstração por padrão, com dados fictícios e
-sem envio. Para testar a interface localmente, sirva a pasta do repositório
-com `python3 -m http.server 8000 --bind 127.0.0.1` e abra
-`http://127.0.0.1:8000`.
+O trabalho atual está na ramificação `codex/v16-seguranca-integracoes`.
+A versão publicada, a main e o banco de produção não são alterados por estes testes.
 
-Para testar o fluxo conectado, use um projeto Supabase de homologação com a
-estrutura já existente no TrampoFácil. Confirme as políticas de titularidade
-de `clientes` e `profissionais` e aplique em homologação as migrações desta branch em ordem. Elas são
-incrementais e dependem das tabelas, políticas e triggers já existentes.
+## Ambiente conectado de testes
 
-No Supabase Auth de homologação, habilite o cadastro e a confirmação por
-e-mail e configure o template **Magic Link** para incluir o código
-`{{ .Token }}`. Configure o envio de e-mail para as contas de teste e valide
-os limites de envio do Auth e a proteção contra abuso antes da abertura ao
-público. Em `config.js`, preencha:
+`config.js` usa exclusivamente o projeto Supabase `TrampoFacil-Homologacao`,
+com chave publicável. A aplicação mostra um aviso de testes e permite consultar
+seu catálogo público. Use somente dados fictícios. O catálogo começa vazio.
+`ambiente.js` recusa qualquer projeto diferente do projeto de homologação permitido.
+Para executar sem conexão, defina `window.TRAMPOFACIL_SUPABASE = null`.
 
-```js
-window.TRAMPOFACIL_SUPABASE = {
-  url: 'https://referencia-do-projeto.supabase.co',
-  chavePublicavel: 'sb_publishable_...',
-};
-```
+Cadastro e login permanecem bloqueados por `autenticacaoPronta: false` até
+verificar os modelos e a entrega dos códigos de e-mail. Essa restrição também
+existe no transporte HTTP. Não desabilitar a confirmação de e-mail para contornar
+problemas de envio. O modelo em português e o procedimento estão em
+[supabase/homologacao/README.md](supabase/homologacao/README.md).
 
-A gravação acontece após a confirmação por código. O cadastro repetido
-atualiza o perfil do titular para o mesmo tipo de conta. O acesso usado na
-gravação fica em memória até sair, recarregar a página ou a sessão expirar. A publicação de profissionais
-depende do controle existente no backend.
+Para abrir localmente, sirva a pasta com
+`python3 -m http.server 8000 --bind 127.0.0.1` e acesse `http://127.0.0.1:8000`.
+Nenhum token de usuário é persistido em localStorage ou sessionStorage.
 
-## Busca e solicitações
+## Fluxos preparados
 
-Em modo conectado, a busca filtra os profissionais ativos por serviço e
-cidade e retorna páginas de até 20 resultados. O catálogo é separado dos
-perfis privados e não contém WhatsApp ou e-mail.
+A busca filtra serviço e cidade, com até 20 profissionais por página. O catálogo
+não contém telefone ou e-mail dos perfis privados.
 
-Um cliente autenticado com cadastro completo pode solicitar um serviço.
-Cliente e profissional acompanham as solicitações em páginas de até 50,
-começando pelas mais recentes. O profissional pode enviar um orçamento, iniciar o trabalho e marcar a entrega.
-O cliente pode aceitar a proposta e concluir o serviço. A opção de
-cancelamento segue as regras de cada status, verificadas pelo banco.
-O valor da proposta é um orçamento em reais.
+Com autenticação validada, o cliente com perfil completo pode criar solicitações.
+O profissional propõe o orçamento; o cliente aceita. O profissional registra
+início e entrega, e o cliente conclui. As regras de transição, identidade e preço
+aceito são verificadas no banco. O histórico registra os eventos. Solicitações
+usam UUID para reconhecer repetição após uma resposta incerta.
 
-Em **Minhas solicitações**, use **Ver histórico e mensagens** para consultar
-os eventos registrados pelo banco e conversar com a outra parte. Os itens
-mais recentes aparecem primeiro, com opção de carregar os anteriores e de
-atualizar a tela. O histórico mostra data, status e valor quando disponível.
-As mensagens identificam os autores como **Você** ou **Outra parte**.
+Histórico e mensagens ficam restritos aos participantes por RLS. A autoria vem
+da sessão no banco. Solicitações encerradas não recebem novas mensagens.
+Mensagens com resposta de envio incerta exigem atualização antes de reenviar.
+Respostas privadas antigas são descartadas após troca de sessão ou conta.
 
-As políticas RLS existentes limitam a conversa aos participantes. O banco
-atribui a autoria e impede novas mensagens após conclusão ou cancelamento.
-O histórico e as mensagens anteriores continuam disponíveis aos
-participantes. A tela não solicita e-mail, WhatsApp ou dados de perfil.
+## Simulador e pagamentos
 
-## Testes locais
+O simulador local não envia dados e não cria cobranças. Usa as referências
+informadas para a maquininha: crédito à vista 4%; parcelado 12% no total em
+2 a 10 vezes. Essas taxas ainda não são condições confirmadas do checkout online.
 
-Com Node.js 20+ e Chromium instalado, execute `npm ci` e `npm test`.
-Use `TRAMPOFACIL_CHROMIUM` para indicar o executável do Chromium quando ele
-estiver fora de `/usr/bin/chromium`. Os testes usam Chromium com a API
-simulada e PostgreSQL local via PGlite com um esquema mínimo, dados
-fictícios e uma cópia dos triggers de solicitação.
+O profissional recebe 90% do orçamento, e a comissão da plataforma é 10%, antes
+de impostos. O total simulado usa `teto(orcamento / (1 - taxa))` em centavos;
+a eventual sobra de arredondamento é separada da comissão.
 
-Para executar apenas os testes sem navegador, use `npm run test:local`.
-`npm run test:browser` executa a suíte de interface; `npm test` mantém a suíte
-completa, sem esconder falhas de navegador. A conversão de valores usa
-`valores.js`, rejeita números ambíguos e não arredonda casas adicionais.
+Para R$ 100: à vista R$ 104,17; parcelado R$ 113,64. Em 10 vezes, as parcelas
+são 4 de R$ 11,37 e 6 de R$ 11,36. Nos dois cenários, a divisão-base é
+R$ 90 para o profissional e R$ 10 para a plataforma, antes de impostos.
+Pix, débito, tarifas fixas e impostos continuam sem taxas presumidas.
 
-Verificação de 19/11/2026: os três testes sem navegador passaram, cobrindo
-contratação até conclusão, isolamento de terceiros, autoria de mensagens,
-bloqueio de mensagens após encerramento, integridade do histórico, proteção
-do preço aceito e limites monetários. Tudo foi executado em PGlite em memória,
-sem conexão com o Supabase de produção. O Chromium não iniciou neste ambiente
-por bloqueio de socket (`Operation not permitted`); a suíte de interface
-continua pendente de execução em um ambiente compatível.
+A preparação interna de pagamento usa identidade validada e orçamento salvo,
+recusa valores injetados pelo navegador e sempre retorna pagamentos desativados.
+Os adaptadores HTTPS de Auth/Data API e o handler ainda não estão publicados.
+Não há checkout PagBank, cobrança, webhook, repasse ou conciliação integrados.
+Consulte [server/README.md](server/README.md) para as próximas etapas.
 
-## Limite dos testes de pagamentos
+## Verificação
 
-Ainda não existe checkout, tabela de pagamentos, webhook ou provedor integrado.
-Aceitar proposta não cobra e concluir um serviço não comprova pagamento.
-A tela de solicitações informa essa limitação. Os testes validam somente os
-valores do orçamento e rejeitam tentativas de mudar a solicitação para um
-estado financeiro inventado (`pago`). Eles não validam Pix, cartão, estorno,
-repasse ou idempotência de webhook. Esses testes dependem da escolha do
-provedor e de credenciais de sandbox; não usar credenciais de produção.
+Instale as dependências fixadas com `npm ci --ignore-scripts`.
 
-## Proteção de respostas após troca de conta
+- `npm run test:local`: testes isolados de banco, sessão, valores, simulador,
+  preparação de pagamento, handler e seleção segura de ambiente.
+- `npm run test:browser`: Chromium com API simulada, incluindo o bloqueio do
+  envio de códigos enquanto a autenticação está pendente.
+- `npm test`: suíte completa. Use `TRAMPOFACIL_CHROMIUM` para indicar outro
+  executável. No GitHub Actions, o workflow instala seu próprio Chromium.
+- `npm run test:homologacao`: verificação externa explícita e somente leitura
+  do catálogo, bloqueios das tabelas privadas e exigência de sessão no Auth.
+  Não envia e-mails, não cadastra contas e não altera o banco.
 
-`sessao.js` descarta respostas privadas iniciadas antes de sair ou entrar
-novamente, inclusive quando a troca ocorre durante a leitura do JSON. Esse
-controle atende solicitações, histórico e mensagens. Uma resposta 401 antiga
-não provoca a saída de uma conta que entrou depois. Os sete testes dessa
-proteção, somados aos três testes anteriores, passaram localmente em
-19/11/2026. São testes isolados e não substituem a homologação da API real.
+O teste transacional no PostgreSQL real de homologação também passou, com
+três identidades fictícias e rollback integral. RLS está habilitada nas seis
+tabelas; o verificador de segurança retornou zero alertas. Os testes SQL e
+a verificação pública não substituem validar login real e as operações
+privadas pela Data API com sessões do Auth.
 
-O workflow `testes-homologacao.yml` prepara a execução completa em um runner
-Ubuntu do GitHub Actions, com Chromium próprio do Playwright. Ele roda nessa
-ramificação e em pull requests destinados à main, com permissão somente de
-leitura do repositório. Não usa segredos, não publica o aplicativo e não
-executa migrações ou comandos contra o Supabase.
-
-### Resultado da execução completa
-
-Em 19/11/2026, o GitHub Actions executou o commit
-`b5ee492d8676447069be89b118ddce3387bfbbfb` com resultado **11 testes aprovados,
-zero falhas e zero testes ignorados**, incluindo Chromium com a API simulada.
-Isso resolve a pendência de execução da suíte de interface descrita acima;
-a homologação com Supabase e e-mail reais continua pendente.
-
-Execução: https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/44509548917
-
-## Simulação de taxas — referências informadas pelo proprietário
-
-A página **Simular custos de pagamento** funciona localmente, sem autenticação
-e sem enviar requisições. Usa exclusivamente as referências da maquininha:
-4% para crédito à vista e 12% **no total**, não por parcela, para 2 a 10 vezes.
-Não configura essas condições no PagBank e não cria uma cobrança.
-
-A comissão é 10% do orçamento do serviço, arredondada ao centavo mais próximo;
-o profissional recebe o restante. Calcula-se o total por divisão pelo líquido
-da taxa: `total = teto(orcamento / (1 - taxa))`, em centavos. A tarifa exibida
-é uma estimativa arredondada ao centavo; a eventual sobra de 1 centavo fica
-identificada como ajuste, separada da comissão. Regras reais de arredondamento
-do provedor ainda devem ser verificadas em homologação.
-
-Para R$ 100, a simulação à vista resulta em R$ 104,17, com tarifa estimada de
-R$ 4,17. Em 10 vezes, resulta em R$ 113,64, com tarifa estimada de R$ 13,64;
-as parcelas são 4 de R$ 11,37 e 6 de R$ 11,36. Nos dois cenários o profissional
-fica com R$ 90 e a comissão simulada é R$ 10 **antes de impostos**.
-
-Pix, débito, tarifas fixas e impostos não são presumidos. A conta foi informada
-como CPF; o tratamento tributário depende de definição contábil. O total
-exibido é incompleto para uma cobrança real enquanto essas condições não
-forem confirmadas. A aplicação não permite pagar por esta tela, nem altera
-o orçamento salvo. Os quatro testes novos de cálculo passaram localmente,
-totalizando 14 testes locais aprovados.
-
-## Preparação do pagamento no servidor
-
-A lógica interna em `server/preparar-pagamento.js` foi preparada para receber
-autenticação e consulta de orçamento por adaptadores do servidor. O navegador
-não pode fornecer valor, comissão, identidade, status ou flags para habilitar
-cobrança. A preparação exige a identidade do cliente da solicitação e orçamento
-aceito, retorna a divisão 90/10 antes de impostos e mantém pagamentos desativados.
-O módulo não está conectado à interface, a um endpoint HTTP ou a APIs reais.
-
-Oito testes novos com adaptadores simulados verificam os bloqueios e o uso do
-valor salvo. `npm run test:local` agora inclui esses testes. Consulte
-`server/README.md` para as pendências de autenticação real, homologação,
-idempotência, taxas, tributação, divisão/repasse e webhook. Não aplicar nada no
-Supabase de produção nesta etapa.
-
-Os adaptadores HTTPS de Auth e consulta e o handler HTTP foram preparados em
-`server/supabase-homologacao.js` e `server/handler-preparacao.js`. Não foram
-publicados nem configurados com um projeto real. Eles permitem apenas leitura
-do projeto de homologação explicitamente confirmado, recusam o projeto de
-produção conhecido e continuam devolvendo `pagamentoHabilitado: false`.
-A configuração e os nove testes novos estão descritos em `server/README.md`.
-
-## Integrações pendentes
-
-- Homologar o envio real de códigos e os fluxos de cadastro, busca e
-  solicitações, histórico e mensagens pela Data API em homologação.
-- Definir o provedor de pagamentos antes da implementação. A aplicação
-  atual grava apenas o valor proposto.
-
+O workflow de testes não publica o aplicativo, não recebe segredos e não
+executa migrações ou chamadas ao Supabase. Produção permanece fora do escopo.

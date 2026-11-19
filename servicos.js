@@ -108,6 +108,10 @@ function reiniciarLogin() {
 
 function proteger(destino) {
   if (!integrado) return;
+  if (!autenticacaoPronta) {
+    resultado('Acesso de testes em preparação', avisoAutenticacao);
+    return;
+  }
   if (!sessaoServicos) {
     destinoLogin = destino;
     reiniciarLogin();
@@ -141,6 +145,10 @@ async function enviarLogin(evento, verificando) {
   const token = formularioCodigo.elements.token.value;
   const secao = elemento('entrar');
   const status = elemento('status-login');
+  if (!autenticacaoPronta) {
+    status.textContent = avisoAutenticacao;
+    return;
+  }
   let autenticado = false;
   bloquear(secao, true);
   try {

@@ -6,8 +6,9 @@ import test from 'node:test';
 import { chromium } from 'playwright-core';
 
 test('busca, autenticação e solicitação com repetição segura', async (t) => {
+  let autenticacaoProntaTeste = true;
   const server = createServer(async (req, res) => {
-    const arquivos = ['index.html', 'config.js', 'cadastro.js', 'valores.js', 'simulacao.js', 'simulador.js', 'sessao.js', 'servicos.js', 'conversa.js'];
+    const arquivos = ['index.html', 'config.js', 'ambiente.js', 'cadastro.js', 'valores.js', 'simulacao.js', 'simulador.js', 'sessao.js', 'servicos.js', 'conversa.js'];
     const arquivo = req.url === '/' ? 'index.html' : req.url.slice(1);
     if (!arquivos.includes(arquivo)) {
       res.writeHead(404).end();
@@ -15,7 +16,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
     }
     if (arquivo === 'config.js') {
       res.setHeader('Content-Type', 'application/javascript');
-      res.end("window.TRAMPOFACIL_SUPABASE = {url:'https://teste.supabase.co',chavePublicavel:'sb_publishable_teste'};");
+      res.end(`window.TRAMPOFACIL_SUPABASE = {ambiente:'homologacao',url:'https://asdszqtpydiowgerxwee.supabase.co',chavePublicavel:'sb_publishable_teste',autenticacaoPronta:${autenticacaoProntaTeste}};`);
       return;
     }
     res.setHeader('Content-Type', arquivo.endsWith('.js') ? 'application/javascript' : 'text/html; charset=utf-8');
@@ -49,7 +50,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   let perderResposta = false;
   let tentativasMensagem = 0;
   let chamadasApi = 0;
-  await page.route('https://teste.supabase.co/**', async (route) => {
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**', async (route) => {
     chamadasApi++;
     const req = route.request();
     const url = new URL(req.url());
@@ -264,6 +265,28 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await page.locator('#solicitacoes').getByRole('button', { name: 'Atualizar', exact: true }).click();
   await anteriores.waitFor();
   assert.equal(await page.locator('#lista-solicitacoes article').count(), 50);
+  // A configuração real começa com login pendente. Nenhum OTP deve sair.
+  autenticacaoProntaTeste = false;
+  const antesDoBloqueio = chamadasApi;
+  await page.reload();
+  await page.locator('#aviso-homologacao').waitFor();
+  await page.locator('#aviso-autenticacao').waitFor();
+  await page.getByRole('button', { name: 'Minhas solicitações' }).click();
+  await page.getByRole('heading', { name: 'Acesso de testes em preparação' }).waitFor();
+  await page.locator('#resultado').getByRole('button', { name: 'Página inicial' }).click();
+  await page.getByRole('button', { name: 'Sou Cliente' }).click();
+  const cadastro = page.locator('[data-cadastro="cliente"]');
+  await cadastro.getByLabel('Nome completo').fill('Pessoa fictícia');
+  await cadastro.getByLabel('E-mail').fill('teste@example.invalid');
+  await cadastro.getByLabel('WhatsApp').fill('11999999999');
+  await cadastro.getByLabel('Cidade').fill('Cidade de teste');
+  await cadastro.getByRole('button', { name: 'Continuar' }).click();
+  await cadastro.getByRole('alert').getByText('O acesso por e-mail está em preparação', { exact: false }).waitFor();
+  assert.equal(await page.evaluate(() => {
+    try { enviar('/auth/v1/otp', {email:'teste@example.invalid'}); return false; }
+    catch { return true; }
+  }), true, 'transporte também deve bloquear autenticação pendente');
+  assert.equal(chamadasApi, antesDoBloqueio);
   assert.deepEqual(erros, []);
 });
 
