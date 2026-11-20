@@ -655,6 +655,11 @@ async function carregarPedidos(aviso = '', anexar = false) {
 
 async function atualizarPedido(pedido, dados) {
   if (ocupado || !sessaoServicos) return;
+  if (!pedido || !dados || typeof dados !== 'object' || Array.isArray(dados) ||
+      typeof dados.status !== 'string') {
+    elemento('status-solicitacoes').textContent = 'Dados da alteração inválidos. Atualize a lista.';
+    return;
+  }
   const papel = papelNaContratacao(pedido, sessaoServicos.usuario);
   if (!podeMudarContratacao(pedido.status, dados.status, papel)) {
     elemento('status-solicitacoes').textContent = 'Esta ação não está disponível para sua função ou para o estado atual do serviço.';
@@ -662,7 +667,7 @@ async function atualizarPedido(pedido, dados) {
   }
   const alterandoProposta = papel === 'profissional' && dados.status === 'proposta';
   const chavesPermitidas = alterandoProposta ? ['status', 'valor_centavos'] : ['status'];
-  if (!dados || Object.keys(dados).length !== chavesPermitidas.length ||
+  if (Object.keys(dados).length !== chavesPermitidas.length ||
       !Object.keys(dados).every(chave => chavesPermitidas.includes(chave)) ||
       (alterandoProposta && (!Number.isSafeInteger(dados.valor_centavos) ||
         dados.valor_centavos < 100 || dados.valor_centavos > 100000000))) {
