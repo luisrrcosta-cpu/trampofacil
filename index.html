@@ -54,6 +54,9 @@ label input,label select,label textarea{font-weight:400}
 #status-login,#status-busca,#status-solicitacoes,#status-conversa,#status-mensagem{overflow-wrap:anywhere}
 @media(max-width:420px){header{padding:28px 14px 38px}main{padding:0 12px}.card{padding:22px 16px;border-radius:17px}button{font-size:16px;padding:13px 12px}}
 @media(prefers-reduced-motion:reduce){button{transition:none}}
+#buscas-populares{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+#buscas-populares button{font-size:14px;padding:10px 6px;margin:0;min-height:42px;background:#e8f0ff;color:#123b76;border:1px solid #b9d0fa}
+
 </style>
 </head>
 <body>
@@ -184,6 +187,15 @@ label input,label select,label textarea{font-weight:400}
 </section>
 <section id="catalogo" class="card" hidden>
 <h2>Buscar profissionais</h2>
+<p>Encontre mão de obra de qualquer profissão. Escolha uma sugestão ou digite livremente.</p>
+<div id="buscas-populares" aria-label="Serviços mais procurados">
+<button type="button" data-servico-popular="Diarista">Diarista</button>
+<button type="button" data-servico-popular="Pedreiro">Pedreiro</button>
+<button type="button" data-servico-popular="Eletricista">Eletricista</button>
+<button type="button" data-servico-popular="Encanador">Encanador</button>
+<button type="button" data-servico-popular="Pintor">Pintor</button>
+<button type="button" data-servico-popular="Montador de móveis">Montador de móveis</button>
+</div>
 <form id="form-busca">
 <label>Profissão ou serviço<input name="servico" list="sugestoes-profissoes" maxlength="120" placeholder="Busque qualquer tipo de mão de obra"></label>
 <label>Cidade<input name="cidade" maxlength="120"></label>
