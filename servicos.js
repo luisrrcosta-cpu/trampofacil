@@ -119,11 +119,16 @@ async function procurar(filtros, pagina) {
     }
     for (const profissional of profissionais) {
       const card = document.createElement('article');
-      card.append(
-        texto('h3', profissional.nome),
-        texto('p', `${profissional.servico} · ${profissional.cidade}`),
-      );
-      if (profissional.descricao) card.append(texto('p', profissional.descricao));
+      const servico = texto('p', profissional.servico);
+      servico.className = 'profissional-servico';
+      const local = texto('p', `Atende em: ${profissional.cidade}`);
+      local.className = 'profissional-local';
+      card.append(texto('h3', profissional.nome), servico, local);
+      if (typeof profissional.descricao === 'string' && profissional.descricao.trim()) {
+        const descricao = texto('p', profissional.descricao.trim());
+        descricao.className = 'profissional-descricao';
+        card.append(descricao);
+      }
       card.append(botaoAcao('Solicitar serviço', () => {
         if (ocupado) return;
         profissionalEscolhido = profissional;
