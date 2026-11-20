@@ -583,7 +583,9 @@ async function carregarPedidos(aviso = '', anexar = false) {
     };
     if (anexar) {
       const { atualizado_em, id } = cursorPedidos;
-      if (typeof atualizado_em !== 'string' || !Number.isFinite(Date.parse(atualizado_em)) ||
+      if (typeof atualizado_em !== 'string' ||
+        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(atualizado_em) ||
+        !Number.isFinite(Date.parse(atualizado_em)) ||
         typeof id !== 'string' ||
         !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
         throw new Error('Cursor de paginação inválido');
@@ -601,7 +603,9 @@ async function carregarPedidos(aviso = '', anexar = false) {
     if (!Array.isArray(pedidos) || pedidos.length > tamanhoPaginaPedidos + 1 ||
       !pedidos.every(p => p && typeof p.id === 'string' &&
         /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.id) &&
-        typeof p.atualizado_em === 'string' && !Number.isNaN(Date.parse(p.atualizado_em)) &&
+        typeof p.atualizado_em === 'string' &&
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(p.atualizado_em) &&
+        Number.isFinite(Date.parse(p.atualizado_em)) &&
         typeof p.cliente_usuario_id === 'string' &&
         /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.cliente_usuario_id) &&
         typeof p.profissional_usuario_id === 'string' &&
