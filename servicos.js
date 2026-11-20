@@ -154,9 +154,11 @@ async function procurar(filtros, pagina) {
     }
     // Uma página repetida não deve duplicar o mesmo profissional na tela.
     const idsExibidos = new Set(Array.from(listaBusca.children, card => card.dataset.profissionalId));
+    let novosProfissionais = 0;
     for (const profissional of profissionais) {
       if (idsExibidos.has(profissional.id)) continue;
       idsExibidos.add(profissional.id);
+      novosProfissionais++;
       const card = document.createElement('article');
       card.dataset.profissionalId = profissional.id;
       const servico = texto('p', profissional.servico);
@@ -183,10 +185,13 @@ async function procurar(filtros, pagina) {
     }
     filtrosBusca = filtrosAtuais;
     paginaBusca = pagina;
-    maisProfissionais.hidden = profissionais.length !== 20;
-    status.textContent = listaBusca.childElementCount
-      ? `${listaBusca.childElementCount} profissional(is) carregado(s). Use Ver mais para consultar outros resultados, quando disponível.`
-      : 'Nenhum profissional encontrado. Experimente outra profissão, uma cidade próxima ou limpe os filtros.';
+    // Evita um botão infinito se o servidor repetir uma página inteira.
+    maisProfissionais.hidden = profissionais.length !== 20 || novosProfissionais === 0;
+    status.textContent = novosProfissionais === 0 && pagina > 0
+      ? 'Não há novos profissionais nesta página. Tente outra busca.'
+      : listaBusca.childElementCount
+        ? `${listaBusca.childElementCount} profissional(is) carregado(s).${maisProfissionais.hidden ? '' : ' Use Ver mais para consultar outros resultados.'}`
+        : 'Nenhum profissional encontrado. Experimente outra profissão, uma cidade próxima ou limpe os filtros.';
   } catch {
     if (buscaAtual === versaoBusca) {
       status.textContent = pagina > 0
