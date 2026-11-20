@@ -156,6 +156,17 @@ async function procurar(filtros, pagina) {
   }
 }
 
+for (const atalho of document.querySelectorAll('[data-servico-popular]')) {
+  atalho.addEventListener('click', () => {
+    if (ocupado) return;
+    busca.elements.servico.value = atalho.dataset.servicoPopular;
+    procurar({
+      termo_servico: atalho.dataset.servicoPopular,
+      termo_cidade: busca.elements.cidade.value.trim(),
+    }, 0);
+  });
+}
+
 busca.addEventListener('submit', (evento) => {
   evento.preventDefault();
   procurar({
