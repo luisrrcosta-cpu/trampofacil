@@ -234,6 +234,7 @@ label input,label select,label textarea{font-weight:400}
 <h2>Solicitar serviço</h2>
 <p id="profissional-escolhido"></p>
 <form id="form-solicitacao" method="post">
+<label>Modelo de pedido (opcional)<select id="modelo-solicitacao"><option value="">Escrever do zero</option><option value="reparo">Reparo ou manutenção</option><option value="instalacao">Instalação</option><option value="reforma">Obra ou reforma</option><option value="limpeza">Limpeza ou organização</option><option value="outro">Outro serviço</option></select></label>
 <label>Título<input name="titulo" minlength="3" maxlength="120" required></label>
 <label>Descrição<textarea name="descricao" minlength="10" maxlength="3000" aria-describedby="ajuda-descricao" required></textarea></label>
 <p id="ajuda-descricao">Explique o serviço, o local aproximado e quando precisa. Não informe endereço completo nem dados pessoais. <span id="contador-descricao">0/3000 caracteres</span></p>
