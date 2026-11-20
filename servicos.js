@@ -262,8 +262,12 @@ formularioPedido.addEventListener('submit', async (evento) => {
   const descricao = formularioPedido.elements.descricao.value.trim();
   const secao = elemento('nova-solicitacao');
   const status = elemento('status-envio');
-  if (titulo.length < 3 || descricao.length < 10) {
-    status.textContent = 'Informe um título com 3 caracteres e uma descrição com 10 caracteres ou mais.';
+  if (titulo.length < 3 || titulo.length > 120 || descricao.length < 10 || descricao.length > 3000) {
+    status.textContent = 'Informe um título de 3 a 120 caracteres e uma descrição de 10 a 3.000 caracteres.';
+    return;
+  }
+  if (typeof profissionalEscolhido.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(profissionalEscolhido.id)) {
+    status.textContent = 'Profissional inválido. Volte à busca e escolha novamente.';
     return;
   }
   const sessaoOriginal = sessaoServicos;
