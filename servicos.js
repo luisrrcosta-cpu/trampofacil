@@ -597,8 +597,14 @@ async function carregarPedidos(aviso = '', anexar = false) {
     // Nunca renderizar dados de uma requisição iniciada em outra sessão ou busca.
     if (sessaoServicos !== sessaoDaBusca || pedidosAtuais !== versaoPedidos) return;
     const pagina = pedidos.slice(0, tamanhoPaginaPedidos);
-    const idsExibidos = new Set(Array.from(listaPedidos.children, card => card.dataset.solicitacaoId));
-    const novosPedidos = anexar ? pagina.filter(p => !idsExibidos.has(p.id)) : pagina;
+    const idsExibidos = new Set(anexar
+      ? Array.from(listaPedidos.children, card => card.dataset.solicitacaoId)
+      : []);
+    const novosPedidos = pagina.filter(p => {
+      if (idsExibidos.has(p.id)) return false;
+      idsExibidos.add(p.id);
+      return true;
+    });
     const cards = novosPedidos.map(mostrarPedido);
     cards.forEach((card, i) => { card.dataset.solicitacaoId = novosPedidos[i].id; });
     if (anexar) listaPedidos.append(...cards);
@@ -606,9 +612,11 @@ async function carregarPedidos(aviso = '', anexar = false) {
     cursorPedidos = pagina.at(-1);
     // Uma página repetida não deve manter o botão de paginação indefinidamente.
     maisPedidos.hidden = pedidos.length <= tamanhoPaginaPedidos || (anexar && novosPedidos.length === 0);
-    status.textContent = aviso || (listaPedidos.childElementCount
-      ? `${listaPedidos.childElementCount} solicitações carregadas.`
-      : 'Nenhuma solicitação encontrada.');
+    status.textContent = aviso || (anexar && novosPedidos.length === 0
+      ? 'Não há novas solicitações nesta página.'
+      : listaPedidos.childElementCount
+        ? `${listaPedidos.childElementCount} solicitações carregadas.`
+        : 'Nenhuma solicitação encontrada.');
     aplicarFiltroPedidos();
     if (aviso) status.textContent = aviso;
   } catch {
