@@ -143,7 +143,10 @@ async function procurar(filtros, pagina) {
       throw new Error('Resposta de busca inválida');
     }
     if (!profissionais.every(p => p && typeof p.nome === 'string' &&
-      typeof p.servico === 'string' && typeof p.cidade === 'string' &&
+      p.nome.trim().length >= 2 && p.nome.length <= 120 &&
+      typeof p.servico === 'string' && p.servico.trim().length >= 2 && p.servico.length <= 120 &&
+      typeof p.cidade === 'string' && p.cidade.trim().length >= 2 && p.cidade.length <= 120 &&
+      (p.descricao == null || (typeof p.descricao === 'string' && p.descricao.length <= 1000)) &&
       typeof p.id === 'string' &&
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.id))) {
       throw new Error('Profissional inválido na resposta');
@@ -176,8 +179,8 @@ async function procurar(filtros, pagina) {
     paginaBusca = pagina;
     maisProfissionais.hidden = profissionais.length !== 20;
     status.textContent = listaBusca.childElementCount
-      ? `${listaBusca.childElementCount} profissional(is) encontrado(s).`
-      : 'Nenhum profissional encontrado.';
+      ? `${listaBusca.childElementCount} profissional(is) carregado(s). Use Ver mais para consultar outros resultados, quando disponível.`
+      : 'Nenhum profissional encontrado. Experimente outra profissão, uma cidade próxima ou limpe os filtros.';
   } catch {
     if (buscaAtual === versaoBusca) {
       status.textContent = pagina > 0
