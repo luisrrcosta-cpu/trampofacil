@@ -393,7 +393,12 @@ formularioPedido.addEventListener('submit', async (evento) => {
       exigirNovoLogin('nova-solicitacao');
       return;
     }
-    salvo = resposta.ok;
+    if (resposta.ok) {
+      const registros = await resposta.json();
+      if (sessaoServicos !== sessaoOriginal || profissionalEscolhido !== profissionalOriginal) return;
+      salvo = Array.isArray(registros) && registros.length === 1 && registros[0]?.id === id;
+      if (!salvo) throw new Error('Resposta de criação inválida');
+    }
     if (resposta.status === 409) {
       const anterior = await apiPedidos({
         select: 'id,titulo,descricao', id: `eq.${id}`,
@@ -419,7 +424,10 @@ formularioPedido.addEventListener('submit', async (evento) => {
       status.textContent = 'Não foi possível confirmar o envio. Tente novamente.';
     }
   } finally {
-    bloquear(secao, false);
+    // Uma resposta antiga não pode alterar os controles de outra conta ou seleção.
+    if (sessaoServicos === sessaoOriginal && profissionalEscolhido === profissionalOriginal) {
+      bloquear(secao, false);
+    }
   }
   if (salvo && sessaoServicos === sessaoOriginal && profissionalEscolhido === profissionalOriginal) {
     tentativa = undefined;
