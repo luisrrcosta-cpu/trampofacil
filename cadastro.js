@@ -7,6 +7,13 @@ const tabelas = { cliente: 'clientes', profissional: 'profissionais' };
 const confirmacao = document.querySelector('#form-confirmacao');
 let pendente;
 let ocupado = false;
+const descricaoProfissional = document.querySelector('[data-cadastro="profissional"] textarea[name="descricao"]');
+const contadorPerfilProfissional = document.querySelector('#contador-perfil-profissional');
+function atualizarContadorPerfilProfissional() {
+  contadorPerfilProfissional.textContent = `${descricaoProfissional.value.length}/1000 caracteres`;
+}
+descricaoProfissional.addEventListener('input', atualizarContadorPerfilProfissional);
+
 
 document.querySelector('#aviso-demo').hidden = integrado;
 document.querySelector('#aviso-homologacao').hidden = !integrado;
@@ -53,7 +60,10 @@ function lerPerfil(formulario, tipo) {
   } else {
     perfil.servico = ler('servico');
     perfil.descricao = ler('descricao') || null;
-    if (perfil.servico.length < 2) {
+    if (perfil.descricao && perfil.descricao.length > 1000) {
+      throw new Error('A descrição deve ter no máximo 1.000 caracteres.');
+    }
+    if (perfil.servico.length < 2 || perfil.servico.length > 120) {
       throw new Error('Informe o serviço que você oferece.');
     }
   }
@@ -101,6 +111,7 @@ async function cadastrar(evento) {
   }
   if (!integrado) {
     formulario.reset();
+    atualizarContadorPerfilProfissional();
     resultado('Cadastro de demonstração', 'Formulário validado. Nenhum dado foi enviado.');
     return;
   }
@@ -171,6 +182,7 @@ confirmacao.addEventListener('submit', async (evento) => {
 
     iniciarSessao(pendente.sessao);
     pendente.formulario.reset();
+    atualizarContadorPerfilProfissional();
     pendente = undefined;
     confirmacao.reset();
     resultado('Cadastro concluído', 'Seu perfil foi salvo.');
@@ -193,6 +205,7 @@ for (const botao of document.querySelectorAll('[data-pagina]')) {
     const secao = botao.closest('section');
     const formulario = secao.querySelector('[data-cadastro]');
     formulario?.reset();
+    atualizarContadorPerfilProfissional();
     formulario?.querySelector('[role="alert"]').replaceChildren();
     mostrar(botao.dataset.pagina);
   });
