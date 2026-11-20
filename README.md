@@ -89,12 +89,25 @@ Supabase. Cadastros privados e preparação autenticada aguardam essa liberaçã
 `node scripts/preparar-interface.mjs <pasta>` copia somente HTML e os scripts
 públicos declarados na página, sem código de servidor ou credenciais privadas.
 
-Em 20/11/2026, o conector Supabase recusou tanto `get_project` quanto
-`list_edge_functions` com `You do not have permission to perform this action`.
-Por isso, a nova origem CORS da interface está preparada no código, mas **não
-foi aplicada** ao serviço remoto. Não liberar `autenticacaoPronta` antes de
-restabelecer a conexão e validar envio de e-mail, sessão e chamada autenticada.
-Nenhuma alteração no banco ou função remota foi feita nesta etapa.
+Em 20/11/2026, a conexão correta foi restabelecida para a organização
+Trampo fácil. A conexão da barbearia é separada; não removê-la para resolver
+acesso deste projeto. Usar o projeto `asdszqtpydiowgerxwee` e verificar o nome
+`TrampoFacil-Homologacao` antes de qualquer operação remota.
+
+A função `preparar-pagamento-teste` foi atualizada para a versão 2 com a origem
+CORS exata da interface privada. `npm run test:servico` passou nas seis
+verificações remotas: sem sessão (401), token inválido (401), origem externa
+(403), GET (405), corpo excessivo (413) e preflight da interface (204).
+Nenhuma conta, preparação ou cobrança foi criada nesses testes.
+A autenticação no corpo da função continua obrigatória em cada POST.
+
+A auditoria automática de segurança não retornou alertas. As permissões
+privadas continuam recusando leitura por anon, inserção por authenticated e
+exclusão pelo papel de serviço. Não liberar `autenticacaoPronta` antes de
+validar envio de e-mail, sessão real e chamada autenticada ao serviço.
+O login do painel no navegador é separado do conector e continua pendente;
+não repetir a conexão OAuth nem enfraquecer proteções para resolver isso.
+Nenhuma alteração na produção foi realizada.
 
 O commit `ebc5342866cf2153ff692a61a8c1eabf236fdd15` passou em 54 testes no
 GitHub Actions, sem falhas ou testes ignorados, incluindo navegador, edição
