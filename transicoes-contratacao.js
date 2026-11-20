@@ -11,6 +11,14 @@ const TRANSICOES_CONTRATACAO = Object.freeze({
   cancelada: Object.freeze({}),
 });
 
+function papelNaContratacao(pedido, usuario) {
+  if (typeof usuario !== 'string' || !usuario || !pedido ||
+      pedido.cliente_usuario_id === pedido.profissional_usuario_id) return undefined;
+  if (pedido.cliente_usuario_id === usuario) return 'cliente';
+  if (pedido.profissional_usuario_id === usuario) return 'profissional';
+  return undefined;
+}
+
 function podeMudarContratacao(atual, proximo, papel) {
   if (!Object.prototype.hasOwnProperty.call(TRANSICOES_CONTRATACAO, atual)) return false;
   if (!['cliente', 'profissional'].includes(papel)) return false;
@@ -19,5 +27,5 @@ function podeMudarContratacao(atual, proximo, papel) {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { TRANSICOES_CONTRATACAO, podeMudarContratacao };
+  module.exports = { TRANSICOES_CONTRATACAO, podeMudarContratacao, papelNaContratacao };
 }

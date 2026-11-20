@@ -380,7 +380,12 @@ const proximosPassos = Object.freeze({
 });
 
 function mostrarPedido(pedido) {
+  const papel = papelNaContratacao(pedido, sessaoServicos?.usuario);
   const card = document.createElement('article');
+  if (!papel) {
+    card.append(texto('p', 'Solicitação indisponível para esta conta. Atualize a lista.'));
+    return card;
+  }
   card.dataset.status = pedido.status;
   const cliente = pedido.cliente_usuario_id === sessaoServicos.usuario;
   card.dataset.minhaAcao = (
@@ -538,7 +543,7 @@ async function carregarPedidos(aviso = '', anexar = false) {
 
 async function atualizarPedido(pedido, dados) {
   if (ocupado || !sessaoServicos) return;
-  const papel = pedido.cliente_usuario_id === sessaoServicos.usuario ? 'cliente' : 'profissional';
+  const papel = papelNaContratacao(pedido, sessaoServicos.usuario);
   if (!podeMudarContratacao(pedido.status, dados.status, papel)) {
     elemento('status-solicitacoes').textContent = 'Esta ação não está disponível para sua função ou para o estado atual do serviço.';
     return;
