@@ -156,3 +156,12 @@ nenhuma chamada real ao PagBank foi executada.
 Referências desta consulta:
 - https://developer.pagbank.com.br/reference/consultar-pagamento
 - https://developer.pagbank.com.br/reference/objeto-order
+
+`conferencia-pagbank.js` avalia o resumo mínimo da consulta de sandbox contra
+uma tentativa esperada. Distingue espera, análise, autorização sem captura,
+recusa, cancelamento, pagamento observado e devoluções parciais/totais.
+Divergências e estados novos ficam para revisão sem presumir saldo.
+Mesmo um pagamento observado retorna `liberarRepasse: false`: este módulo
+não autentica a origem de notificações, não atualiza tentativas, não ordena
+eventos e não habilita repasses. Precisa ser integrado no servidor com consulta
+atual ao provedor e persistência transacional antes de uso financeiro.
