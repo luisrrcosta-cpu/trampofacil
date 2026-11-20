@@ -36,7 +36,9 @@ function aplicarFiltroPedidos() {
     const situacao = card.dataset.status;
     card.hidden = filtro === 'ativas'
       ? situacao === 'concluida' || situacao === 'cancelada'
-      : filtro !== 'todas' && situacao !== filtro;
+      : filtro === 'minha_acao'
+        ? card.dataset.minhaAcao !== 'sim'
+        : filtro !== 'todas' && situacao !== filtro;
     if (!card.hidden) visiveis++;
   }
   const status = elemento('status-solicitacoes');
@@ -376,6 +378,10 @@ function mostrarPedido(pedido) {
   const card = document.createElement('article');
   card.dataset.status = pedido.status;
   const cliente = pedido.cliente_usuario_id === sessaoServicos.usuario;
+  card.dataset.minhaAcao = (
+    (cliente && ['proposta', 'entregue'].includes(pedido.status)) ||
+    (!cliente && ['solicitada', 'aceita', 'em_andamento'].includes(pedido.status))
+  ) ? 'sim' : 'nao';
   card.append(texto('h3', pedido.titulo), texto('p', pedido.descricao),
     texto('p', `${cliente ? 'Enviada' : 'Recebida'} · ${nomesStatus[pedido.status] ?? pedido.status}`));
   if (Object.prototype.hasOwnProperty.call(proximosPassos, pedido.status)) {
