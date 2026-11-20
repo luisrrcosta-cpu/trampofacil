@@ -43,7 +43,7 @@ function exibirPreparacao(dados) {
 }
 
 function abrirPreparacao(pedido) {
-  if (ocupado || !sessaoServicos || pedido.cliente_usuario_id !== sessaoServicos.usuario || pedido.status !== 'aceita') return;
+  if (ocupado || preparacaoAtual?.carregando || !sessaoServicos || pedido.cliente_usuario_id !== sessaoServicos.usuario || pedido.status !== 'aceita') return;
   formPreparacao.reset(); resultadoPreparacao.replaceChildren(); statusPreparacao.textContent = '';
   const chave = pedido.id + ':' + pedido.atualizado_em;
   preparacaoAtual = {pedido, chave, usuario:sessaoServicos.usuario, tentativa:tentativasPreparacao.get(chave)};
@@ -64,7 +64,7 @@ formPreparacao.elements.forma.addEventListener('change', () => {
 formPreparacao.addEventListener('submit', async evento => {
   evento.preventDefault();
   const atual = preparacaoAtual;
-  if (ocupado || !atual || !sessaoServicos || atual.usuario !== sessaoServicos.usuario || atual.tentativa?.resultado) return;
+  if (ocupado || !atual || atual.carregando || !sessaoServicos || atual.usuario !== sessaoServicos.usuario || atual.tentativa?.resultado) return;
   atual.tentativa ??= Object.freeze({forma:formPreparacao.elements.forma.value, parcelas:Number(formPreparacao.elements.parcelas.value)});
   tentativasPreparacao.set(atual.chave, atual.tentativa);
   const dados = {solicitacaoId:atual.pedido.id, forma:atual.tentativa.forma, parcelas:atual.tentativa.parcelas};

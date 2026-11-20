@@ -28,7 +28,7 @@ function apiPerfil(tipo, usuario, dados) {
 }
 
 async function carregarPerfil() {
-  if (ocupado || !sessaoServicos) return;
+  if (ocupado || carregandoPerfil || !sessaoServicos) return;
   const versao = ++versaoPerfil;
   const usuario = sessaoServicos.usuario;
   const tipo = tipoPerfil.value;
@@ -71,7 +71,7 @@ async function carregarPerfil() {
 formPerfil.addEventListener('submit', async evento => {
   evento.preventDefault();
   const atual = perfilEmTela;
-  if (ocupado || !atual || atual.usuario !== sessaoServicos?.usuario) return;
+  if (ocupado || carregandoPerfil || !atual || atual.usuario !== sessaoServicos?.usuario) return;
   let dados;
   try {dados = lerPerfil(formPerfil, atual.tipo).perfil;}
   catch (erro) {statusPerfil.textContent = erro.message; return;}
