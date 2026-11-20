@@ -82,7 +82,15 @@ async function procurar(filtros, pagina) {
     if (!resposta.ok) throw new Error();
     const profissionais = await resposta.json();
     if (buscaAtual !== versaoBusca) return;
-    if (!Array.isArray(profissionais)) throw new Error('Resposta de busca inválida');
+    if (!Array.isArray(profissionais) || profissionais.length > 20) {
+      throw new Error('Resposta de busca inválida');
+    }
+    if (!profissionais.every(p => p && typeof p.nome === 'string' &&
+      typeof p.servico === 'string' && typeof p.cidade === 'string' &&
+      typeof p.id === 'string' &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.id))) {
+      throw new Error('Profissional inválido na resposta');
+    }
     for (const profissional of profissionais) {
       const card = document.createElement('article');
       card.append(
