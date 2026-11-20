@@ -146,6 +146,7 @@ busca.addEventListener('reset', () => {
 
 function reiniciarLogin() {
   versaoLogin++;
+  bloquear(elemento('entrar'), false);
   emailLogin = undefined;
   formularioLogin.reset();
   formularioCodigo.reset();
@@ -233,7 +234,8 @@ async function enviarLogin(evento, verificando) {
       ? 'Código inválido ou expirado. Confira o código ou solicite outro.'
       : 'Não foi possível enviar o código. Confira o e-mail e tente novamente.';
   } finally {
-    bloquear(secao, false);
+    // Uma tentativa cancelada não pode liberar os controles de outro login.
+    if (loginAtual === versaoLogin) bloquear(secao, false);
   }
   if (autenticado) proteger(destinoLogin);
 }
