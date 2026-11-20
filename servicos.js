@@ -581,15 +581,24 @@ async function carregarPedidos(aviso = '', anexar = false) {
     }
     if (!resposta.ok) throw new Error();
     const pedidos = await resposta.json();
-    if (!Array.isArray(pedidos)) throw new Error('Resposta de solicitações inválida');
+    if (!Array.isArray(pedidos) || pedidos.length > tamanhoPaginaPedidos + 1 ||
+      !pedidos.every(p => p && typeof p.id === 'string' &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.id) &&
+        typeof p.atualizado_em === 'string' && !Number.isNaN(Date.parse(p.atualizado_em)))) {
+      throw new Error('Resposta de solicitações inválida');
+    }
     // Nunca renderizar dados de uma requisição iniciada em outra sessão ou busca.
     if (sessaoServicos !== sessaoDaBusca || pedidosAtuais !== versaoPedidos) return;
     const pagina = pedidos.slice(0, tamanhoPaginaPedidos);
-    const cards = pagina.map(mostrarPedido);
+    const idsExibidos = new Set(Array.from(listaPedidos.children, card => card.dataset.solicitacaoId));
+    const novosPedidos = anexar ? pagina.filter(p => !idsExibidos.has(p.id)) : pagina;
+    const cards = novosPedidos.map(mostrarPedido);
+    cards.forEach((card, i) => { card.dataset.solicitacaoId = novosPedidos[i].id; });
     if (anexar) listaPedidos.append(...cards);
     else listaPedidos.replaceChildren(...cards);
     cursorPedidos = pagina.at(-1);
-    maisPedidos.hidden = pedidos.length <= tamanhoPaginaPedidos;
+    // Uma página repetida não deve manter o botão de paginação indefinidamente.
+    maisPedidos.hidden = pedidos.length <= tamanhoPaginaPedidos || (anexar && novosPedidos.length === 0);
     status.textContent = aviso || (listaPedidos.childElementCount
       ? `${listaPedidos.childElementCount} solicitações carregadas.`
       : 'Nenhuma solicitação encontrada.');
