@@ -47,14 +47,12 @@ contornar falhas. Os valores SQL são parâmetros de tagged templates.
 A rota externa é `/functions/v1/preparar-pagamento-teste`; caminhos extras e
 query strings são recusados. Não existe rota de cobrança ou de SQL arbitrário.
 As respostas usam Cache-Control no-store e nosniff. CORS aceita apenas uma origem
-HTTPS explícita, sem wildcard. Sem hospedagem de interface definida,
-a origem permitida é a própria API. Uma futura interface separada exigirá
-configurar `TRAMPOFACIL_ORIGEM_HOMOLOGACAO` no servidor e validar a integração.
-`pagamentos.js` agora integra a chamada na interface; o login por e-mail
-continua bloqueado até homologação. O código prepara CORS para a origem privada
-registrada em `supabase/homologacao/site.json`. A publicação dessa nova origem
-no serviço está pendente: em 20/11/2026 o conector Supabase recusou acesso até
-para ler o projeto. O serviço remoto não foi modificado nessa etapa.
+HTTPS explícita, sem wildcard. Na versão 2 remota, a origem padrão é a
+interface privada registrada em `supabase/homologacao/site.json`.
+`pagamentos.js` integra a chamada, mas o login por e-mail continua bloqueado
+até validar modelos, entrega, sessão real e chamada autenticada.
+A conexão correta do Supabase foi restabelecida; ela é separada da conexão
+da barbearia e do login do painel no navegador.
 
 ## Persistência privada
 
@@ -134,3 +132,27 @@ Referências:
 O endpoint documentado de checkout sandbox é
 `https://sandbox.api.pagseguro.com/checkouts`. Nenhuma chamada ao PagBank é
 feita por este serviço.
+
+## Consulta PagBank sandbox preparada
+
+`pagbank-sandbox.js` implementa somente GET no endpoint documentado
+`https://sandbox.api.pagseguro.com/charges/{charge_id}`. É um módulo interno,
+sem rota HTTP, implantação ou credencial configurada. Não cria, captura,
+cancela, estorna ou transfere dinheiro. Não está ligado a webhook nem ao banco.
+
+A futura integração deve fornecer ID, referência e valor esperados a partir
+de uma tentativa financeira persistida e autorizada, nunca de parâmetros do
+navegador ou da notificação recebida. A consulta confere identidade da cobrança,
+referência, centavos, BRL, estado conhecido e resumo pago/devolvido. Retorna
+somente seis campos de reconciliação, sem cartão, CPF, contato ou links.
+Falhas, estados novos e divergências exigem conferência; não há repetição
+automática nem marcação como pago. Devoluções parciais não são descartadas.
+
+A origem sandbox é fixa; redirecionamentos são recusados e há timeout.
+O token deve ser de sandbox e fornecido exclusivamente pelo servidor quando
+essa integração for configurada. Os testes atuais usam transporte simulado;
+nenhuma chamada real ao PagBank foi executada.
+
+Referências desta consulta:
+- https://developer.pagbank.com.br/reference/consultar-pagamento
+- https://developer.pagbank.com.br/reference/objeto-order
