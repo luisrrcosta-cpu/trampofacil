@@ -11,3 +11,18 @@ function propostaEmCentavos(valor) {
   }
   return centavos;
 }
+
+function validarResultadoPreparacao(dados, pedido, condicoes) {
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const valor = dados?.valorServicoCentavos;
+  if (!dados || dados.pagamentoHabilitado !== false || dados.preparacaoRegistrada !== true ||
+      !uuid.test(dados.preparacaoId || '') || dados.solicitacaoId !== pedido.id ||
+      dados.versaoOrcamento !== pedido.atualizado_em || valor !== pedido.valor_centavos ||
+      !Number.isSafeInteger(valor) || valor < 100 || valor > 100000000 ||
+      dados.comissaoCentavos !== Math.floor((valor + 5) / 10) ||
+      dados.profissionalCentavos !== valor - dados.comissaoCentavos ||
+      dados.forma !== condicoes.forma || dados.parcelas !== condicoes.parcelas) {
+    throw new Error('O resultado não corresponde ao orçamento selecionado. Atualize a solicitação.');
+  }
+  return dados;
+}

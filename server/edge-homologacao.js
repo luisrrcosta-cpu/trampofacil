@@ -5,6 +5,7 @@ import {criarHandlerPreparacao} from './handler-preparacao.js';
 export const projetoHomologacao = 'asdszqtpydiowgerxwee';
 export const urlHomologacao = `https://${projetoHomologacao}.supabase.co`;
 export const nomeFuncaoPreparacao = 'preparar-pagamento-teste';
+export const origemInterfaceHomologacao = 'https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site';
 const chavePublicavel = 'sb_publishable_LqyoPHGK1jifRxab6vPgYg_H26zanvz';
 
 // Executado apenas no servidor. Nunca imprimir a URL/objeto retornado: contém
@@ -29,7 +30,7 @@ export function validarConexaoBancoHomologacao(valor) {
   };
 }
 
-export function criarServidorEdgeHomologacao({supabaseUrl, bancoUrl, abrirBanco, fetchImpl=globalThis.fetch, origemPermitida=urlHomologacao}={}) {
+export function criarServidorEdgeHomologacao({supabaseUrl, bancoUrl, abrirBanco, fetchImpl=globalThis.fetch, origemPermitida=origemInterfaceHomologacao}={}) {
   if (supabaseUrl !== urlHomologacao || typeof abrirBanco !== 'function') {
     throw new Error('Serviço restrito ao projeto de homologação.');
   }

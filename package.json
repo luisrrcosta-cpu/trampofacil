@@ -4,14 +4,14 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "test:local": "node --test tests/database.test.js tests/database-pagamento.test.js tests/edge.test.js tests/valores.test.js tests/sessao.test.js tests/simulacao.test.js tests/pagamento.test.js tests/homologacao.test.js tests/ambiente.test.js",
+    "test:local": "node --test tests/database.test.js tests/database-pagamento.test.js tests/edge.test.js tests/valores.test.js tests/resultado-pagamento.test.js tests/sessao.test.js tests/simulacao.test.js tests/pagamento.test.js tests/homologacao.test.js tests/ambiente.test.js",
     "test:browser": "node --test tests/browser.test.js",
     "test:homologacao": "node scripts/verificar-homologacao.mjs",
-    "test:servico": "node scripts/verificar-servico.mjs"
+    "test:servico": "node scripts/verificar-servico.mjs",
+    "test:regressao": "node testes-financeiros.cjs && node testes-valores.cjs && node testes-sessao.cjs && node testes-estados-pagamento.cjs && node testes-contratacao.cjs && node testes-rascunhos.cjs && node testes-regressao.cjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.16",
     "playwright-core": "1.65.1"
   }
 }
-

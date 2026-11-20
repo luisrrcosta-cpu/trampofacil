@@ -24,7 +24,7 @@ function mostrar(id) {
 
 function bloquear(secao, estado) {
   ocupado = estado;
-  for (const campo of secao.querySelectorAll('input, textarea, button')) {
+  for (const campo of secao.querySelectorAll('input, textarea, select, button')) {
     campo.disabled = estado;
   }
 }

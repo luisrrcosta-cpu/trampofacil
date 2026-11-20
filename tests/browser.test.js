@@ -8,7 +8,7 @@ import { chromium } from 'playwright-core';
 test('busca, autenticação e solicitação com repetição segura', async (t) => {
   let autenticacaoProntaTeste = true;
   const server = createServer(async (req, res) => {
-    const arquivos = ['index.html', 'config.js', 'ambiente.js', 'cadastro.js', 'valores.js', 'simulacao.js', 'simulador.js', 'sessao.js', 'servicos.js', 'conversa.js'];
+    const arquivos = ['index.html', 'config.js', 'ambiente.js', 'cadastro.js', 'valores.js', 'simulacao.js', 'simulador.js', 'sessao.js', 'servicos.js', 'conversa.js', 'transicoes-contratacao.js', 'pagamentos.js', 'perfil.js'];
     const arquivo = req.url === '/' ? 'index.html' : req.url.slice(1);
     if (!arquivos.includes(arquivo)) {
       res.writeHead(404).end();
@@ -30,10 +30,11 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   t.after(() => browser.close());
   const page = await browser.newPage();
   page.setDefaultTimeout(4000);
+  page.on('dialog', dialog => dialog.accept());
   const erros = [];
   page.on('pageerror', (error) => erros.push(error.message));
   const profissional = {
-    id: 'perfil-teste', nome: '<img src=x onerror=alert(1)>',
+    id: '77777777-7777-4777-8777-777777777777', nome: '<img src=x onerror=alert(1)>',
     cidade: 'São Paulo', servico: 'Pintura', descricao: 'Paredes internas',
   };
   let pedido;
@@ -50,10 +51,27 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   let perderResposta = false;
   let tentativasMensagem = 0;
   let chamadasApi = 0;
+  const preparacoes = [];
+  let respostaPreparacaoIncerta = true;
+  let aguardarPreparacao = false;
+  let liberarPreparacao;
+  let avisarPreparacaoIniciada;
+  const perfis = {clientes:{usuario_id:'cliente',nome:'Pessoa fictícia',email:'cliente@example.com',telefone:'11999999999',cidade:'São Paulo'},profissionais:{usuario_id:'profissional',nome:'Pessoa profissional',telefone:'11999999999',cidade:'São Paulo',servico:'Pintura',descricao:'Serviço de teste',publicado:false}};
   await page.route('https://asdszqtpydiowgerxwee.supabase.co/**', async (route) => {
     chamadasApi++;
     const req = route.request();
     const url = new URL(req.url());
+    if (url.pathname === '/functions/v1/preparar-pagamento-teste') {
+      const dados = req.postDataJSON();
+      assert.deepEqual(Object.keys(dados).sort(), ['forma','parcelas','solicitacaoId']);
+      assert.equal(req.headers().authorization, 'Bearer cliente');
+      preparacoes.push(dados);
+      if (respostaPreparacaoIncerta) {respostaPreparacaoIncerta = false; return route.abort('failed');}
+      if (aguardarPreparacao) await new Promise(resolve => {liberarPreparacao = resolve; avisarPreparacaoIniciada?.();});
+      return route.fulfill({json:{solicitacaoId:pedido.id,versaoOrcamento:pedido.atualizado_em,
+        valorServicoCentavos:pedido.valor_centavos,comissaoCentavos:1500,profissionalCentavos:13500,
+        ...dados,preparacaoId:'55555555-5555-4555-8555-555555555555',preparacaoRegistrada:true,pagamentoHabilitado:false}});
+    }
     if (url.pathname.endsWith('/buscar_profissionais')) {
       assert.equal(req.headers().authorization, undefined);
       assert.deepEqual(req.postDataJSON(), { termo_servico: 'Pintura %', termo_cidade: 'São Paulo', pagina: 0 });
@@ -70,6 +88,20 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
       return route.fulfill({ json: { access_token: id, user: { id } } });
     }
     assert.match(req.headers().authorization, /^Bearer (cliente|profissional)$/);
+    if (url.pathname.endsWith('/clientes') || url.pathname.endsWith('/profissionais')) {
+      const tipo = url.pathname.split('/').at(-1);
+      const usuario = req.headers().authorization.split(' ').at(-1);
+      assert.equal(url.searchParams.get('usuario_id'),'eq.'+usuario);
+      const perfil = perfis[tipo];
+      if (req.method() === 'PATCH') {
+        const dados = req.postDataJSON();
+        assert.ok(!('usuario_id' in dados)); assert.ok(!('publicado' in dados));
+        assert.equal(perfil.usuario_id, usuario);
+        Object.assign(perfil,dados);
+        return route.fulfill({json:[{usuario_id:usuario}]});
+      }
+      return route.fulfill({json:perfil.usuario_id===usuario?[perfil]:[]});
+    }
     if (url.pathname.endsWith('/historico_solicitacoes')) {
       assert.equal(url.searchParams.get('select'), 'id,criado_em,status,valor_centavos');
       assert.equal(url.searchParams.get('solicitacao_id'), 'eq.' + pedido.id);
@@ -110,7 +142,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
       const dados = req.postDataJSON();
       criacoes.push(dados);
       assert.equal(dados.cliente_usuario_id, 'cliente');
-      assert.equal(dados.profissional_id, 'perfil-teste');
+      assert.equal(dados.profissional_id, '77777777-7777-4777-8777-777777777777');
       if (pedido) return route.fulfill({ status: 409 });
       pedido = { ...dados, status: 'solicitada', valor_centavos: null, atualizado_em: '2026-11-18T00:00:00+00:00' };
       return route.abort('failed');
@@ -200,6 +232,20 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await page.getByRole('button', { name: 'Minhas solicitações' }).click();
   await entrar('profissional@example.com');
   await page.getByText('Recebida · Solicitada').waitFor();
+  await page.locator('#solicitacoes').getByRole('button',{name:'Página inicial',exact:true}).click();
+  await page.getByRole('button',{name:'Meu cadastro',exact:true}).click();
+  await page.locator('#status-perfil').getByText('Você ainda não tem este cadastro.',{exact:false}).waitFor();
+  await page.getByLabel('Tipo de cadastro').selectOption('profissional');
+  await page.locator('#form-perfil').waitFor();
+  await page.locator('#form-perfil').getByLabel('Serviço oferecido').fill('Pintura e acabamento');
+  await page.getByRole('button',{name:'Salvar meu cadastro',exact:true}).click();
+  await page.locator('#status-perfil').getByText('Seu cadastro foi atualizado.',{exact:true}).waitFor();
+  assert.equal(perfis.profissionais.servico,'Pintura e acabamento');
+  assert.equal(perfis.profissionais.publicado,false,'editar perfil não publica automaticamente');
+  await page.locator('#perfil').getByRole('button',{name:'Página inicial',exact:true}).click();
+  await page.getByRole('button',{name:'Minhas solicitações',exact:true}).click();
+  await page.getByText('Recebida · Solicitada').waitFor();
+
   await page.getByLabel('Valor da proposta (R$)').fill('150');
   await page.getByRole('button', { name: 'Enviar proposta' }).click();
   await page.getByText('A solicitação mudou.', { exact: false }).waitFor();
@@ -265,6 +311,59 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await page.locator('#solicitacoes').getByRole('button', { name: 'Atualizar', exact: true }).click();
   await anteriores.waitFor();
   assert.equal(await page.locator('#lista-solicitacoes article').count(), 50);
+  await page.locator('#solicitacoes').getByRole('button',{name:'Página inicial',exact:true}).click();
+  await page.getByRole('button',{name:'Meu cadastro',exact:true}).click();
+  await page.locator('#form-perfil').waitFor();
+  assert.equal(await page.locator('#form-perfil input[name="email"]').getAttribute('readonly'),'');
+  await page.locator('#form-perfil').getByLabel('WhatsApp').fill('(19) 98888-7777');
+  await page.getByRole('button',{name:'Salvar meu cadastro',exact:true}).click();
+  await page.locator('#status-perfil').getByText('Seu cadastro foi atualizado.',{exact:true}).waitFor();
+  assert.equal(perfis.clientes.telefone,'19988887777');
+  await page.locator('#perfil').getByRole('button',{name:'Página inicial',exact:true}).click();
+  await page.getByRole('button',{name:'Minhas solicitações',exact:true}).click();
+  await page.locator('#lista-solicitacoes article').first().waitFor();
+  // Apenas o cliente de proposta aceita prepara um teste; repetir não muda condições.
+  pedidosPaginados = undefined;
+  pedido.status = 'aceita'; pedido.valor_centavos = 15000;
+  await page.locator('#solicitacoes').getByRole('button', {name:'Atualizar',exact:true}).click();
+  await page.getByRole('button', {name:'Preparar pagamento de teste',exact:true}).click();
+  await page.getByLabel('Forma de pagamento de teste').selectOption('credito_parcelado');
+  await page.getByLabel('Parcelas de teste').selectOption('10');
+  await page.getByRole('button', {name:'Registrar preparação de teste',exact:true}).click();
+  await page.locator('#status-preparacao').getByText('Não foi possível confirmar a preparação.', {exact:false}).waitFor();
+  assert.equal(await page.getByLabel('Forma de pagamento de teste').isDisabled(), true);
+  assert.equal(await page.getByLabel('Parcelas de teste').isDisabled(), true);
+  await page.getByRole('button', {name:'Conferir preparação de teste',exact:true}).click();
+  await page.locator('#status-preparacao').getByText('Preparação registrada.', {exact:false}).waitFor();
+  assert.deepEqual(preparacoes[0],preparacoes[1]);
+  assert.deepEqual(preparacoes[1], {solicitacaoId:pedido.id,forma:'credito_parcelado',parcelas:10});
+  assert.match(await page.locator('#resultado-preparacao').innerText(), /135,00/);
+  assert.match(await page.locator('#resultado-preparacao').innerText(), /15,00/);
+  assert.equal(await page.getByRole('button', {name:'Preparação de teste registrada',exact:true}).isDisabled(), true);
+  await page.locator('#preparacao').getByRole('button', {name:'Voltar às solicitações',exact:true}).click();
+  await page.getByRole('button', {name:'Preparar pagamento de teste',exact:true}).click();
+  await page.locator('#status-preparacao').getByText('Preparação registrada.', {exact:false}).waitFor();
+  assert.equal(preparacoes.length,2, 'reabrir resultado já confirmado não repete a chamada');
+  await page.locator('#preparacao').getByRole('button', {name:'Voltar às solicitações',exact:true}).click();
+  pedido.atualizado_em = '2026-11-19T13:00:00Z';
+  await page.locator('#solicitacoes').getByRole('button', {name:'Atualizar',exact:true}).click();
+  await page.getByRole('button', {name:'Preparar pagamento de teste',exact:true}).click();
+  aguardarPreparacao = true;
+  const iniciada = new Promise(resolve => {avisarPreparacaoIniciada = resolve;});
+  await page.getByRole('button', {name:'Registrar preparação de teste',exact:true}).click();
+  await page.locator('#status-preparacao').getByText('Conferindo orçamento', {exact:false}).waitFor();
+  await iniciada;
+  await page.evaluate(() => iniciarSessao(undefined));
+  const recebida = page.waitForResponse(r => r.url().endsWith('/functions/v1/preparar-pagamento-teste'));
+  liberarPreparacao();
+  await (await recebida).finished();
+  await page.evaluate(() => new Promise(requestAnimationFrame));
+  assert.equal(await page.locator('#resultado-preparacao').textContent(), '');
+  assert.equal(await page.locator('#pedido-preparacao').textContent(), '');
+  assert.equal(await page.locator('#form-perfil input[name="email"]').inputValue(),'');
+  assert.equal(await page.locator('#form-perfil input[name="telefone"]').inputValue(),'');
+  await page.locator('#preparacao').getByRole('button', {name:'Voltar às solicitações',exact:true}).click();
+  await page.getByRole('heading', {name:'Entrar na conta',exact:true}).waitFor();
   // A configuração real começa com login pendente. Nenhum OTP deve sair.
   autenticacaoProntaTeste = false;
   const antesDoBloqueio = chamadasApi;

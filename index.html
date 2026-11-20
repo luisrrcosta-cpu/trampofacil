@@ -72,6 +72,7 @@ label input,label select,label textarea{font-weight:400}
 <p id="aviso-demo" hidden>Modo de demonstração. Use dados fictícios. Os formulários não enviam dados.</p>
 <div id="menu-servicos" hidden>
 <button type="button" data-pagina="catalogo">Buscar profissionais</button>
+<button type="button" id="abrir-perfil">Meu cadastro</button>
 <button type="button" id="abrir-solicitacoes">Minhas solicitações</button>
 <button type="button" id="sair" hidden>Sair da conta</button>
 </div>
@@ -195,6 +196,39 @@ label input,label select,label textarea{font-weight:400}
 <p id="status-mensagem" role="status"></p>
 <button class="voltar" type="button" id="voltar-solicitacoes">Voltar às solicitações</button>
 </section>
+<section id="perfil" class="card" hidden>
+<h2>Meu cadastro</h2>
+<label>Tipo de cadastro<select id="tipo-perfil"><option value="cliente">Cliente</option><option value="profissional">Profissional</option></select></label>
+<p id="status-perfil" role="status"></p>
+<p id="visibilidade-perfil"></p>
+<form id="form-perfil" hidden>
+<label>Nome completo<input name="nome" autocomplete="name" minlength="2" maxlength="120" required></label>
+<label id="email-perfil">E-mail confirmado<input name="email" type="email" readonly></label>
+<label>WhatsApp<input name="telefone" type="tel" autocomplete="tel" maxlength="25" required></label>
+<label>Cidade<input name="cidade" autocomplete="address-level2" minlength="2" maxlength="120" required></label>
+<div id="campos-profissional" hidden>
+<label>Serviço oferecido<input name="servico" minlength="2" maxlength="120"></label>
+<label>Descrição profissional<textarea name="descricao" maxlength="1000"></textarea></label>
+</div>
+<button type="submit">Salvar meu cadastro</button>
+</form>
+<button type="button" id="atualizar-perfil">Atualizar cadastro</button>
+<button class="voltar" type="button" data-pagina="inicio">Página inicial</button>
+</section>
+<section id="preparacao" class="card" hidden>
+<h2>Preparação de pagamento de teste</h2>
+<p>Esta ação registra uma preparação no ambiente de testes. Nenhum valor será cobrado.</p>
+<p id="pedido-preparacao"></p>
+<form id="form-preparacao">
+<label>Forma de pagamento de teste<select name="forma"><option value="credito_avista">Crédito à vista</option><option value="credito_parcelado">Crédito parcelado</option></select></label>
+<label>Parcelas de teste<select name="parcelas" disabled><option value="1">1 vez</option><option value="2">2 vezes</option><option value="3">3 vezes</option><option value="4">4 vezes</option><option value="5">5 vezes</option><option value="6">6 vezes</option><option value="7">7 vezes</option><option value="8">8 vezes</option><option value="9">9 vezes</option><option value="10">10 vezes</option></select></label>
+<button type="submit">Registrar preparação de teste</button>
+</form>
+<p id="status-preparacao" role="status"></p>
+<div id="resultado-preparacao" aria-live="polite"></div>
+<p>Taxas online, impostos e total a pagar ainda não foram definidos. A divisão exibida considera somente o valor do serviço, antes de impostos. Não há checkout nesta tela.</p>
+<button class="voltar" type="button" id="voltar-preparacao">Voltar às solicitações</button>
+</section>
 <section id="simulacao" class="card" hidden>
 <h2>Simulação de pagamento</h2>
 <p>Referências da maquininha: 4% à vista e 12% no total em até 10 vezes. Estas condições ainda não foram confirmadas para pagamentos online.</p>
@@ -221,6 +255,8 @@ label input,label select,label textarea{font-weight:400}
     <script src="servicos.js" defer></script>
 <script src="conversa.js" defer></script>
 <script src="simulador.js" defer></script>
+<script src="pagamentos.js" defer></script>
+<script src="perfil.js" defer></script>
 </body>
 </html>
 

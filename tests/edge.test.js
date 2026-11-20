@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {readFile, readdir} from 'node:fs/promises';
 import test, {before, after, beforeEach} from 'node:test';
 import {PGlite} from '@electric-sql/pglite';
-import {criarServidorEdgeHomologacao, validarConexaoBancoHomologacao, urlHomologacao} from '../server/edge-homologacao.js';
+import {criarServidorEdgeHomologacao, validarConexaoBancoHomologacao, urlHomologacao, origemInterfaceHomologacao} from '../server/edge-homologacao.js';
 
 const cliente='11111111-1111-4111-8111-111111111111';
 const profissional='22222222-2222-4222-8222-222222222222';
@@ -111,10 +111,10 @@ test('rotas, métodos e origens externos são recusados antes de autenticar ou a
   assert.equal((await handle(new Request(urlHomologacao+'/functions/v1/preparar-pagamento-teste'))).status,405);
   assert.equal((await handle(requisicao({headers:{Origin:'https://externo.example.invalid','Content-Type':'application/json'}}))).status,403);
   const preflight=await handle(new Request(urlHomologacao+'/functions/v1/preparar-pagamento-teste',{
-    method:'OPTIONS',headers:{Origin:urlHomologacao},
+    method:'OPTIONS',headers:{Origin:origemInterfaceHomologacao},
   }));
   assert.equal(preflight.status,204);
-  assert.equal(preflight.headers.get('Access-Control-Allow-Origin'),urlHomologacao);
+  assert.equal(preflight.headers.get('Access-Control-Allow-Origin'),origemInterfaceHomologacao);
   assert.ok(preflight.headers.get('Access-Control-Allow-Headers').includes('apikey'));
   assert.equal(chamadas.auth,0);assert.equal(chamadas.abertura,0);
 });

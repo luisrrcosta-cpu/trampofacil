@@ -53,6 +53,8 @@ filtroPedidos.addEventListener('change', aplicarFiltroPedidos);
 elemento('menu-servicos').hidden = !integrado;
 
 function iniciarSessao(sessao) {
+  limparPreparacao();
+  limparPerfil();
   // Rascunhos ficam apenas em memória e só reaparecem para a conta de origem.
   trocarSessaoConversa(sessao, sessaoServicos?.usuario);
   sessaoServicos = sessao;
@@ -202,6 +204,7 @@ function proteger(destino) {
   mostrar(destino);
   if (destino === 'solicitacoes') carregarPedidos();
   if (destino === 'conversa') carregarConversa();
+  if (destino === 'perfil') carregarPerfil();
 }
 
 elemento('abrir-solicitacoes').addEventListener('click', () => proteger('solicitacoes'));
@@ -443,6 +446,9 @@ function mostrarPedido(pedido) {
       }
     }));
   }
+  if (cliente && pedido.status === 'aceita') card.append(
+    botaoAcao('Preparar pagamento de teste', () => abrirPreparacao(pedido)),
+  );
   if (!cliente && pedido.status === 'aceita') {
     card.append(botaoAcao('Iniciar serviço', () => {
       if (window.confirm('Confirmar o início do serviço? O cliente poderá acompanhar o andamento.')) {

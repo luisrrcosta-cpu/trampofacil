@@ -32,3 +32,5 @@ jobs:
         run: |
           export TRAMPOFACIL_CHROMIUM="$(node --input-type=module -e 'import {chromium} from "playwright-core"; process.stdout.write(chromium.executablePath())')"
           npm test
+      - name: Executar regressões de contratação, finanças e privacidade
+        run: npm run test:regressao

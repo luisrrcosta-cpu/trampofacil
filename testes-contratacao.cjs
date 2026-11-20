@@ -1,6 +1,8 @@
 'use strict';
 const assert = require('node:assert/strict');
-const { podeMudarContratacao } = require('./transicoes-contratacao.js');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const { podeMudarContratacao } = vm.runInNewContext(fs.readFileSync('transicoes-contratacao.js', 'utf8') + '\n({podeMudarContratacao})');
 const permitidas = [
   ['solicitada','proposta','profissional'],
   ['proposta','proposta','profissional'],
