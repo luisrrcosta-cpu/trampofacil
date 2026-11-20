@@ -115,7 +115,14 @@ async function procurar(filtros, pagina) {
   if (!integrado || ocupado) return;
   const status = elemento('status-busca');
   const buscaAtual = ++versaoBusca;
-  const filtrosAtuais = { ...filtros };
+  const filtrosAtuais = {
+    termo_servico: String(filtros.termo_servico ?? '').trim(),
+    termo_cidade: String(filtros.termo_cidade ?? '').trim(),
+  };
+  if (filtrosAtuais.termo_servico.length > 120 || filtrosAtuais.termo_cidade.length > 120) {
+    status.textContent = 'Profissão e cidade devem ter no máximo 120 caracteres.';
+    return;
+  }
   bloquear(elemento('catalogo'), true);
   status.textContent = 'Buscando…';
   if (pagina === 0) {
