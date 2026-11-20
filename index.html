@@ -168,7 +168,8 @@ label input,label select,label textarea{font-weight:400}
 <label>Cidade<input name="cidade" autocomplete="address-level2" minlength="2" maxlength="120" required></label>
 <label>Profissão ou serviço oferecido<input name="servico" list="sugestoes-profissoes" minlength="2" maxlength="120" placeholder="Ex.: Pedreiro, eletricista, costureira..." required></label>
 <p>Não encontrou sua profissão? Digite livremente o serviço que você oferece. A lista é apenas uma sugestão.</p>
-<label>Descrição do serviço (opcional)<textarea name="descricao" maxlength="1000"></textarea></label>
+<label>Descrição do serviço (opcional)<textarea name="descricao" maxlength="1000" aria-describedby="ajuda-perfil-profissional" placeholder="Descreva sua experiência, tipos de trabalho e região atendida."></textarea></label>
+<p id="ajuda-perfil-profissional">Explique o que você faz e onde atende. Não coloque CPF, endereço completo ou dados bancários. <span id="contador-perfil-profissional">0/1000 caracteres</span></p>
 <button class="verde" type="submit">Continuar</button>
 <p class="erro" role="alert"></p>
 </form>
@@ -208,7 +209,7 @@ label input,label select,label textarea{font-weight:400}
 <button type="submit">Buscar</button>
 <button class="voltar" type="reset" id="limpar-busca">Limpar filtros</button>
 </form>
-<p id="status-busca" role="status"></p>
+<p id="status-busca" role="status" aria-live="polite"></p>
 <div id="resultados-busca"></div>
 <button type="button" id="mais-profissionais" hidden>Ver mais</button>
 <button class="voltar" type="button" data-pagina="inicio">Página inicial</button>
