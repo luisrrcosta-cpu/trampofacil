@@ -286,7 +286,9 @@ function apiPedidos(filtros, dados, metodo) {
 
 function exigirNovoLogin(destino) {
   iniciarSessao(undefined);
-  proteger(destino);
+  // A troca de sessão fecha a conversa. Reabrir pela lista autorizada evita
+  // uma tela vazia e conserva o rascunho apenas para o titular e pedido originais.
+  proteger(destino === 'conversa' ? 'solicitacoes' : destino);
   elemento('status-login').textContent = 'Sua sessão expirou. Entre novamente para continuar.';
 }
 

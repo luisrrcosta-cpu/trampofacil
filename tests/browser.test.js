@@ -266,6 +266,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await botaoMensagem.click();
   await page.getByText('Sua sessão expirou.', { exact: false }).waitFor();
   await entrar('profissional@example.com');
+  await page.getByRole('button', {name:'Ver histórico e mensagens',exact:true}).click();
   await campoMensagem.waitFor();
   assert.equal(await campoMensagem.inputValue(), 'Rascunho de teste');
 
@@ -273,6 +274,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await botaoMensagem.click();
   await page.getByText('Sua sessão expirou.', { exact: false }).waitFor();
   await entrar('cliente@example.com');
+  await page.getByRole('button', {name:'Ver histórico e mensagens',exact:true}).click();
   await campoMensagem.waitFor();
   assert.equal(await campoMensagem.inputValue(), '');
 
