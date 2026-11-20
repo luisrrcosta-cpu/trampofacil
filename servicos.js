@@ -136,6 +136,7 @@ async function procurar(filtros, pagina) {
     const resposta = await enviar('/rest/v1/rpc/buscar_profissionais', {
       ...filtrosAtuais, pagina,
     });
+    if (buscaAtual !== versaoBusca) return;
     if (!resposta.ok) throw new Error();
     const profissionais = await resposta.json();
     if (buscaAtual !== versaoBusca) return;
@@ -151,8 +152,13 @@ async function procurar(filtros, pagina) {
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.id))) {
       throw new Error('Profissional inválido na resposta');
     }
+    // Uma página repetida não deve duplicar o mesmo profissional na tela.
+    const idsExibidos = new Set(Array.from(listaBusca.children, card => card.dataset.profissionalId));
     for (const profissional of profissionais) {
+      if (idsExibidos.has(profissional.id)) continue;
+      idsExibidos.add(profissional.id);
       const card = document.createElement('article');
+      card.dataset.profissionalId = profissional.id;
       const servico = texto('p', profissional.servico);
       servico.className = 'profissional-servico';
       const local = texto('p', `Atende em: ${profissional.cidade}`);
