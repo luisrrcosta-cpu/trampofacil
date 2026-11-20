@@ -68,6 +68,8 @@ function iniciarSessao(sessao) {
   filtrosBusca = undefined;
   paginaBusca = 0;
   versaoPedidos++;
+  filtroPedidos.value = 'todas';
+  elemento('status-solicitacoes').textContent = '';
   bloquear(elemento('solicitacoes'), false);
   listaPedidos.replaceChildren();
   maisPedidos.hidden = true;
@@ -533,8 +535,8 @@ async function carregarPedidos(aviso = '', anexar = false) {
     if (!resposta.ok) throw new Error();
     const pedidos = await resposta.json();
     if (!Array.isArray(pedidos)) throw new Error('Resposta de solicitações inválida');
-    // Nunca renderizar dados de uma requisição iniciada em outra sessão.
-    if (sessaoServicos !== sessaoDaBusca) return;
+    // Nunca renderizar dados de uma requisição iniciada em outra sessão ou busca.
+    if (sessaoServicos !== sessaoDaBusca || pedidosAtuais !== versaoPedidos) return;
     const pagina = pedidos.slice(0, tamanhoPaginaPedidos);
     const cards = pagina.map(mostrarPedido);
     if (anexar) listaPedidos.append(...cards);
