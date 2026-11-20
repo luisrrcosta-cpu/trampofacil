@@ -91,6 +91,8 @@ assert.match(servicos, /registros\.length > 1/);
 assert.match(servicos, /registro\.id === pedido\.id/);
 assert.match(servicos, /Dados da solicitação inválidos\. Atualize a lista antes de continuar/);
 assert.match(servicos, /const alterandoProposta = papel === 'profissional' && dados\.status === 'proposta'/);
+assert.match(servicos, /if \(!pedido \|\| !dados \|\| typeof dados !== 'object' \|\| Array\.isArray\(dados\)/);
+assert.match(servicos, /Dados da alteração inválidos\. Atualize a lista/);
 assert.match(servicos, /Object\.keys\(dados\)\.every\(chave => chavesPermitidas\.includes\(chave\)\)/);
 assert.match(servicos, /Dados da alteração inválidos\. Confira o valor da proposta/);
 assert.match(servicos, /cliente_usuario_id: `eq\.\$\{pedido\.cliente_usuario_id\}`/);
