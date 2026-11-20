@@ -24,11 +24,11 @@ function atualizarContadorDescricaoPedido() {
 }
 campoDescricaoPedido.addEventListener('input', atualizarContadorDescricaoPedido);
 const modelosSolicitacao = Object.freeze({
-  reparo: { titulo: 'Reparo ou manutenção', descricao: 'Preciso de reparo em: .\nProblema observado: .\nBairro ou região aproximada: .\nQuando preciso: .' },
-  instalacao: { titulo: 'Instalação de equipamento', descricao: 'Preciso instalar: .\nLocal aproximado: .\nDetalhes do equipamento: .\nData desejada: .' },
-  reforma: { titulo: 'Obra ou reforma', descricao: 'Serviço desejado: .\nÁrea aproximada e condições: .\nBairro ou região: .\nPrazo desejado: .' },
-  limpeza: { titulo: 'Limpeza ou organização', descricao: 'Tipo de limpeza ou organização: .\nTamanho aproximado do local: .\nBairro ou região: .\nDia desejado: .' },
-  outro: { titulo: 'Solicitação de serviço', descricao: 'O que preciso: .\nLocal aproximado: .\nInformações importantes: .\nQuando preciso: .' },
+  reparo: { titulo: 'Reparo ou manutenção', descricao: 'Preciso de reparo em: [descreva]\nProblema observado: [descreva]\nBairro ou região aproximada: [informe]\nQuando preciso: [informe]' },
+  instalacao: { titulo: 'Instalação de equipamento', descricao: 'Preciso instalar: [descreva]\nLocal aproximado: [informe]\nDetalhes do equipamento: [descreva]\nData desejada: [informe]' },
+  reforma: { titulo: 'Obra ou reforma', descricao: 'Serviço desejado: [descreva]\nÁrea aproximada e condições: [descreva]\nBairro ou região: [informe]\nPrazo desejado: [informe]' },
+  limpeza: { titulo: 'Limpeza ou organização', descricao: 'Tipo de limpeza ou organização: [descreva]\nTamanho aproximado do local: [informe]\nBairro ou região: .\nDia desejado: [informe]' },
+  outro: { titulo: 'Solicitação de serviço', descricao: 'O que preciso: [descreva]\nLocal aproximado: .\nInformações importantes: [descreva]\nQuando preciso: .' },
 });
 const seletorModeloSolicitacao = elemento('modelo-solicitacao');
 seletorModeloSolicitacao.addEventListener('change', () => {
@@ -341,6 +341,10 @@ formularioPedido.addEventListener('submit', async (evento) => {
   const status = elemento('status-envio');
   if (titulo.length < 3 || titulo.length > 120 || descricao.length < 10 || descricao.length > 3000) {
     status.textContent = 'Informe um título de 3 a 120 caracteres e uma descrição de 10 a 3.000 caracteres.';
+    return;
+  }
+  if (/\\[(?:descreva|informe)\\]/i.test(descricao)) {
+    status.textContent = 'Complete os campos entre colchetes do modelo antes de enviar.';
     return;
   }
   if (typeof profissionalEscolhido.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(profissionalEscolhido.id)) {
