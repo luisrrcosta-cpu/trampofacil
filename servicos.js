@@ -509,15 +509,8 @@ async function carregarPedidos(aviso = '', anexar = false) {
     status.textContent = aviso || (listaPedidos.childElementCount
       ? `${listaPedidos.childElementCount} solicitações carregadas.`
       : 'Nenhuma solicitação encontrada.');
-    if (!aviso) aplicarFiltroPedidos();
-    else {
-      for (const card of listaPedidos.children) {
-        const filtro = filtroPedidos.value;
-        card.hidden = filtro === 'ativas'
-          ? ['concluida', 'cancelada'].includes(card.dataset.status)
-          : filtro !== 'todas' && card.dataset.status !== filtro;
-      }
-    }
+    aplicarFiltroPedidos();
+    if (aviso) status.textContent = aviso;
   } catch {
     if (sessaoServicos === sessaoDaBusca && pedidosAtuais === versaoPedidos) {
       status.textContent = anexar
