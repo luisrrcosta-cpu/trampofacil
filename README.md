@@ -82,6 +82,10 @@ checkout ou cobrança. Uma resposta incerta mantém as condições originais par
 conferência; respostas de uma sessão anterior não voltam à tela.
 
 A cópia privada está identificada em `supabase/homologacao/site.json`.
+Acesse: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site/
+O acesso está restrito ao proprietário e pode pedir entrada com ChatGPT.
+O catálogo de homologação e o simulador podem ser usados sem liberar o login
+Supabase. Cadastros privados e preparação autenticada aguardam essa liberação.
 `node scripts/preparar-interface.mjs <pasta>` copia somente HTML e os scripts
 públicos declarados na página, sem código de servidor ou credenciais privadas.
 
@@ -91,6 +95,18 @@ Por isso, a nova origem CORS da interface está preparada no código, mas **não
 foi aplicada** ao serviço remoto. Não liberar `autenticacaoPronta` antes de
 restabelecer a conexão e validar envio de e-mail, sessão e chamada autenticada.
 Nenhuma alteração no banco ou função remota foi feita nesta etapa.
+
+O commit `ebc5342866cf2153ff692a61a8c1eabf236fdd15` passou em 54 testes no
+GitHub Actions, sem falhas ou testes ignorados, incluindo navegador, edição
+de perfil, preparação incerta/repetida e troca de conta. As sete verificações
+adicionais de regressão também passaram. A expiração de sessão na conversa
+agora retorna à lista autorizada antes de reabrir o pedido e seu rascunho.
+Execução: https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/44790604347
+
+A publicação privada usa o snapshot de interface desse commit, preservando
+as funcionalidades existentes de filtros, paginação e confirmação de ações.
+Ela é separada da versão publicada originalmente. A main do GitHub permaneceu
+em `962d999b32d99bbab9e280bfa8144e798b558c6f`.
 
 ## Comandos de verificação
 
