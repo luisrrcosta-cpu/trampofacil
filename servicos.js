@@ -23,6 +23,28 @@ function atualizarContadorDescricaoPedido() {
   contadorDescricaoPedido.textContent = `${campoDescricaoPedido.value.length}/3000 caracteres`;
 }
 campoDescricaoPedido.addEventListener('input', atualizarContadorDescricaoPedido);
+const modelosSolicitacao = Object.freeze({
+  reparo: { titulo: 'Reparo ou manutenção', descricao: 'Preciso de reparo em: .\nProblema observado: .\nBairro ou região aproximada: .\nQuando preciso: .' },
+  instalacao: { titulo: 'Instalação de equipamento', descricao: 'Preciso instalar: .\nLocal aproximado: .\nDetalhes do equipamento: .\nData desejada: .' },
+  reforma: { titulo: 'Obra ou reforma', descricao: 'Serviço desejado: .\nÁrea aproximada e condições: .\nBairro ou região: .\nPrazo desejado: .' },
+  limpeza: { titulo: 'Limpeza ou organização', descricao: 'Tipo de limpeza ou organização: .\nTamanho aproximado do local: .\nBairro ou região: .\nDia desejado: .' },
+  outro: { titulo: 'Solicitação de serviço', descricao: 'O que preciso: .\nLocal aproximado: .\nInformações importantes: .\nQuando preciso: .' },
+});
+const seletorModeloSolicitacao = elemento('modelo-solicitacao');
+seletorModeloSolicitacao.addEventListener('change', () => {
+  const modelo = modelosSolicitacao[seletorModeloSolicitacao.value];
+  if (!modelo) return;
+  const titulo = formularioPedido.elements.titulo;
+  if ((titulo.value.trim() || campoDescricaoPedido.value.trim()) &&
+      !window.confirm('Substituir o título e a descrição já preenchidos pelo modelo?')) {
+    seletorModeloSolicitacao.value = '';
+    return;
+  }
+  titulo.value = modelo.titulo;
+  campoDescricaoPedido.value = modelo.descricao;
+  atualizarContadorDescricaoPedido();
+});
+
 const listaPedidos = elemento('lista-solicitacoes');
 const maisPedidos = elemento('mais-solicitacoes');
 const tamanhoPaginaPedidos = 50;
