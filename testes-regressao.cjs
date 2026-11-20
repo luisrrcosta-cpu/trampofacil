@@ -46,6 +46,8 @@ assert.match(servicos, /servico\.className = 'profissional-servico'/);
 assert.match(servicos, /local\.className = 'profissional-local'/);
 assert.match(servicos, /typeof profissional\.descricao === 'string'/);
 assert.match(servicos, /let versaoPedidos = 0/);
+assert.match(servicos, /versaoPedidos\+\+;\s*filtroPedidos\.value = 'todas'/);
+assert.match(servicos, /Nunca renderizar dados de uma requisição iniciada em outra sessão ou busca\.\s*if \(sessaoServicos !== sessaoDaBusca \|\| pedidosAtuais !== versaoPedidos\) return;/);
 assert.match(html, /id="filtro-solicitacoes"/);
 assert.match(html, /<datalist id="sugestoes-profissoes">/);
 assert.match(html, /id="buscas-populares"/);
