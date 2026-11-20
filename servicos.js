@@ -27,8 +27,8 @@ const modelosSolicitacao = Object.freeze({
   reparo: { titulo: 'Reparo ou manutenção', descricao: 'Preciso de reparo em: [descreva]\nProblema observado: [descreva]\nBairro ou região aproximada: [informe]\nQuando preciso: [informe]' },
   instalacao: { titulo: 'Instalação de equipamento', descricao: 'Preciso instalar: [descreva]\nLocal aproximado: [informe]\nDetalhes do equipamento: [descreva]\nData desejada: [informe]' },
   reforma: { titulo: 'Obra ou reforma', descricao: 'Serviço desejado: [descreva]\nÁrea aproximada e condições: [descreva]\nBairro ou região: [informe]\nPrazo desejado: [informe]' },
-  limpeza: { titulo: 'Limpeza ou organização', descricao: 'Tipo de limpeza ou organização: [descreva]\nTamanho aproximado do local: [informe]\nBairro ou região: .\nDia desejado: [informe]' },
-  outro: { titulo: 'Solicitação de serviço', descricao: 'O que preciso: [descreva]\nLocal aproximado: .\nInformações importantes: [descreva]\nQuando preciso: .' },
+  limpeza: { titulo: 'Limpeza ou organização', descricao: 'Tipo de limpeza ou organização: [descreva]\nTamanho aproximado do local: [informe]\nBairro ou região: [informe]\nDia desejado: [informe]' },
+  outro: { titulo: 'Solicitação de serviço', descricao: 'O que preciso: [descreva]\nLocal aproximado: [informe]\nInformações importantes: [descreva]\nQuando preciso: [informe]' },
 });
 const seletorModeloSolicitacao = elemento('modelo-solicitacao');
 seletorModeloSolicitacao.addEventListener('change', () => {
