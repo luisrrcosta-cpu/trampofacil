@@ -20,6 +20,12 @@ assert.match(servicos, /sessaoServicos !== sessaoOriginal \|\| profissionalEscol
 assert.match(servicos, /Array\.isArray\(registros\)/);
 assert.match(servicos, /select: 'id,titulo,descricao'/);
 assert.match(servicos, /titulo\.length > 120/);
+assert.match(html, /id="modelo-solicitacao"/);
+assert.match(html, /value="reparo">Reparo ou manutenção/);
+assert.match(servicos, /const modelosSolicitacao = Object\.freeze/);
+assert.match(servicos, /seletorModeloSolicitacao\.addEventListener\('change'/);
+assert.match(servicos, /Substituir o título e a descrição já preenchidos pelo modelo/);
+assert.match(servicos, /Complete os campos entre colchetes do modelo antes de enviar/);
 assert.match(servicos, /descricao\.length > 3000/);
 assert.match(servicos, /Profissional inválido\. Volte à busca/);
 assert.match(servicos, /registros\[0\]\.titulo === titulo && registros\[0\]\.descricao === descricao/);
