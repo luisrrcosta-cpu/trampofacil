@@ -144,7 +144,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
       assert.equal(dados.cliente_usuario_id, 'cliente');
       assert.equal(dados.profissional_id, '77777777-7777-4777-8777-777777777777');
       if (pedido) return route.fulfill({ status: 409 });
-      pedido = { ...dados, status: 'solicitada', valor_centavos: null, atualizado_em: '2026-11-18T00:00:00+00:00' };
+      pedido = { ...dados, profissional_usuario_id:'profissional', status: 'solicitada', valor_centavos: null, atualizado_em: '2026-11-18T00:00:00+00:00' };
       return route.abort('failed');
     }
     if (req.method() === 'PATCH') {
