@@ -388,6 +388,18 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
     catch { return true; }
   }), true, 'transporte também deve bloquear autenticação pendente');
   assert.equal(chamadasApi, antesDoBloqueio);
+  assert.equal(await page.evaluate(async () => {
+    const script = document.createElement('script');
+    script.textContent = 'window.codigoInjetadoExecutou = true';
+    document.head.append(script);
+    try {
+      await fetch('https://destino-nao-autorizado.example.invalid/coleta');
+      return false;
+    } catch {
+      return window.codigoInjetadoExecutou !== true;
+    }
+  }), true, 'CSP bloqueia código injetado e conexões fora da homologação');
+  assert.equal(await page.locator('body').evaluate(el => getComputedStyle(el).fontFamily), 'Arial, sans-serif', 'CSS autorizado pelo hash continua aplicado');
   assert.deepEqual(erros, []);
 });
 
