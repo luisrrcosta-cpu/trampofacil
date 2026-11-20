@@ -658,7 +658,10 @@ async function atualizarPedido(pedido, dados) {
     } else {
       const registros = await resposta.json();
       if (sessaoServicos !== sessaoOriginal) return;
-      if (!Array.isArray(registros)) throw new Error('Resposta de atualização inválida');
+      if (!Array.isArray(registros) || registros.length > 1 ||
+        !registros.every(registro => registro && registro.id === pedido.id)) {
+        throw new Error('Resposta de atualização inválida');
+      }
       aviso = registros.length
         ? 'Solicitação atualizada.'
         : 'A solicitação mudou. Confira o estado atual antes de repetir a ação.';
@@ -668,7 +671,8 @@ async function atualizarPedido(pedido, dados) {
       aviso = 'Não foi possível confirmar a alteração. Confira o estado atual.';
     }
   } finally {
-    bloquear(secao, false);
+    // Não liberar controles de uma conta diferente após uma resposta atrasada.
+    if (sessaoServicos === sessaoOriginal) bloquear(secao, false);
   }
   if (sessaoServicos === sessaoOriginal) await carregarPedidos(aviso);
 }
