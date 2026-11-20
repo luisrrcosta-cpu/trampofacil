@@ -68,7 +68,31 @@ ponto de integração opcional, ligado à transação SQL na composição Edge.
 Isso não implementa tentativas financeiras nem habilita cobrança. Os testes
 reais dessa estrutura estão em `supabase/homologacao/validar-preparacao.sql`.
 
-## Verificação
+## Interface integrada de homologação
+
+`Meu cadastro` permite consultar e editar o próprio perfil de cliente ou
+profissional, usando o JWT da sessão e as políticas RLS existentes. E-mail de
+acesso e publicação do profissional não podem ser alterados pela tela.
+Campos privados e resultados pendentes são limpos quando a conta muda.
+
+Em uma solicitação aceita, somente o cliente vê `Preparar pagamento de teste`.
+A tela envia apenas solicitação, forma e parcelas ao serviço de homologação;
+confere o resultado e mostra a divisão 90/10, antes de impostos. Ela não cria
+checkout ou cobrança. Uma resposta incerta mantém as condições originais para
+conferência; respostas de uma sessão anterior não voltam à tela.
+
+A cópia privada está identificada em `supabase/homologacao/site.json`.
+`node scripts/preparar-interface.mjs <pasta>` copia somente HTML e os scripts
+públicos declarados na página, sem código de servidor ou credenciais privadas.
+
+Em 20/11/2026, o conector Supabase recusou tanto `get_project` quanto
+`list_edge_functions` com `You do not have permission to perform this action`.
+Por isso, a nova origem CORS da interface está preparada no código, mas **não
+foi aplicada** ao serviço remoto. Não liberar `autenticacaoPronta` antes de
+restabelecer a conexão e validar envio de e-mail, sessão e chamada autenticada.
+Nenhuma alteração no banco ou função remota foi feita nesta etapa.
+
+## Comandos de verificação
 
 Instale as dependências fixadas com `npm ci --ignore-scripts`.
 

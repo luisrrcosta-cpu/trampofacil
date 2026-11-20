@@ -178,7 +178,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await page.getByLabel('Orçamento do serviço (R$)').fill('100,00');
   await page.getByRole('button', { name: 'Calcular simulação' }).click();
   assert.match(await page.locator('#resultado-simulacao').innerText(), /104,17/);
-  await page.getByLabel('Forma de pagamento', {exact:true}).selectOption('credito_parcelado');
+  await page.locator('#form-simulacao').getByLabel('Forma de pagamento').selectOption('credito_parcelado');
   await page.getByLabel('Quantidade de parcelas').selectOption('10');
   await page.getByRole('button', { name: 'Calcular simulação' }).click();
   assert.match(await page.locator('#resultado-simulacao').innerText(), /113,64/);

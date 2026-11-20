@@ -50,7 +50,11 @@ As respostas usam Cache-Control no-store e nosniff. CORS aceita apenas uma orige
 HTTPS explícita, sem wildcard. Sem hospedagem de interface definida,
 a origem permitida é a própria API. Uma futura interface separada exigirá
 configurar `TRAMPOFACIL_ORIGEM_HOMOLOGACAO` no servidor e validar a integração.
-O aplicativo ainda não chama esse serviço e o login por e-mail continua pendente.
+`pagamentos.js` agora integra a chamada na interface; o login por e-mail
+continua bloqueado até homologação. O código prepara CORS para a origem privada
+registrada em `supabase/homologacao/site.json`. A publicação dessa nova origem
+no serviço está pendente: em 20/11/2026 o conector Supabase recusou acesso até
+para ler o projeto. O serviço remoto não foi modificado nessa etapa.
 
 ## Persistência privada
 
