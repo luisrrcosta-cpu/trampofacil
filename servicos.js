@@ -28,6 +28,25 @@ const maisPedidos = elemento('mais-solicitacoes');
 const tamanhoPaginaPedidos = 50;
 let cursorPedidos;
 let versaoPedidos = 0;
+const filtroPedidos = elemento('filtro-solicitacoes');
+function aplicarFiltroPedidos() {
+  const filtro = filtroPedidos.value;
+  let visiveis = 0;
+  for (const card of listaPedidos.children) {
+    const situacao = card.dataset.status;
+    card.hidden = filtro === 'ativas'
+      ? situacao === 'concluida' || situacao === 'cancelada'
+      : filtro !== 'todas' && situacao !== filtro;
+    if (!card.hidden) visiveis++;
+  }
+  const status = elemento('status-solicitacoes');
+  if (listaPedidos.childElementCount) {
+    status.textContent = visiveis
+      ? `${visiveis} solicitação(ões) exibida(s) neste filtro.`
+      : 'Nenhuma solicitação neste filtro entre as carregadas.';
+  }
+}
+filtroPedidos.addEventListener('change', aplicarFiltroPedidos);
 
 elemento('menu-servicos').hidden = !integrado;
 
@@ -355,6 +374,7 @@ const proximosPassos = Object.freeze({
 
 function mostrarPedido(pedido) {
   const card = document.createElement('article');
+  card.dataset.status = pedido.status;
   const cliente = pedido.cliente_usuario_id === sessaoServicos.usuario;
   card.append(texto('h3', pedido.titulo), texto('p', pedido.descricao),
     texto('p', `${cliente ? 'Enviada' : 'Recebida'} · ${nomesStatus[pedido.status] ?? pedido.status}`));
@@ -487,8 +507,17 @@ async function carregarPedidos(aviso = '', anexar = false) {
     cursorPedidos = pagina.at(-1);
     maisPedidos.hidden = pedidos.length <= tamanhoPaginaPedidos;
     status.textContent = aviso || (listaPedidos.childElementCount
-      ? `${listaPedidos.childElementCount} solicitações exibidas.`
+      ? `${listaPedidos.childElementCount} solicitações carregadas.`
       : 'Nenhuma solicitação encontrada.');
+    if (!aviso) aplicarFiltroPedidos();
+    else {
+      for (const card of listaPedidos.children) {
+        const filtro = filtroPedidos.value;
+        card.hidden = filtro === 'ativas'
+          ? ['concluida', 'cancelada'].includes(card.dataset.status)
+          : filtro !== 'todas' && card.dataset.status !== filtro;
+      }
+    }
   } catch {
     if (sessaoServicos === sessaoDaBusca && pedidosAtuais === versaoPedidos) {
       status.textContent = anexar
