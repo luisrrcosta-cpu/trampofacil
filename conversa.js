@@ -251,7 +251,12 @@ formularioMensagem.addEventListener('submit', async (evento) => {
 elemento('atualizar-conversa').addEventListener('click', carregarConversa);
 elemento('voltar-solicitacoes').addEventListener('click', () => {
   if (ocupado) return;
+  const rascunho = sessaoServicos && pedidoEmConversa && formularioMensagem.elements.texto.value
+    ? {usuario:sessaoServicos.usuario, pedido:pedidoEmConversa,
+      corpo:formularioMensagem.elements.texto.value, incerto:envioIncerto}
+    : rascunhoConversa;
   limparConversa();
+  rascunhoConversa = rascunho;
   pedidoEmConversa = undefined;
   proteger('solicitacoes');
 });

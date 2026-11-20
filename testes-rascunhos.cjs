@@ -11,7 +11,7 @@ function elemento(id) {
   if (id === 'form-mensagem') return formulario;
   if (!elementos.has(id)) elementos.set(id, {
     textContent: '', hidden: false, disabled: false, value: '',
-    replaceChildren() {}, addEventListener() {},
+    replaceChildren() {}, eventos: {}, addEventListener(nome, handler) { this.eventos[nome] = handler; },
   });
   return elementos.get(id);
 }
@@ -47,3 +47,18 @@ rodar("sessaoServicos = {usuario: 'conta-a'}; trocarSessaoConversa(sessaoServico
 rodar("abrirConversa('pedido-diferente')");
 assert.equal(memoria.texto.value, '', 'Rascunho não pode ser exibido em outro pedido.');
 console.log('Isolamento de rascunhos entre contas aprovado.');
+
+// Voltar à lista limpa a tela, mas preserva o texto e a incerteza do envio.
+rodar("sessaoServicos = {usuario:'conta-a'}; abrirConversa('pedido-1'); envioIncerto = true;");
+memoria.texto.value = 'Mensagem ainda não confirmada';
+elemento('voltar-solicitacoes').eventos.click();
+assert.equal(memoria.texto.value, '');
+assert.equal(rodar('pedidoEmConversa'), undefined);
+rodar("abrirConversa('pedido-1')");
+assert.equal(memoria.texto.value, 'Mensagem ainda não confirmada');
+assert.equal(rodar('envioIncerto'), true, 'Voltar não pode liberar o reenvio de resultado incerto.');
+elemento('voltar-solicitacoes').eventos.click();
+rodar("sessaoServicos = {usuario:'conta-b'}; abrirConversa('pedido-1')");
+assert.equal(memoria.texto.value, '', 'Rascunho da navegação não pode aparecer em outra conta.');
+assert.equal(rodar('envioIncerto'), false);
+console.log('Navegação preserva rascunho e resultado incerto apenas para a conta original.');
