@@ -89,6 +89,9 @@ assert.match(servicos, /Object\.prototype\.hasOwnProperty\.call\(nomesStatus, p\
 assert.match(servicos, /p\.valor_centavos <= 100000000/);
 assert.match(servicos, /registros\.length > 1/);
 assert.match(servicos, /registro\.id === pedido\.id/);
+assert.match(servicos, /Dados da solicitação inválidos\. Atualize a lista antes de continuar/);
+assert.match(servicos, /cliente_usuario_id: `eq\.\$\{pedido\.cliente_usuario_id\}`/);
+assert.match(servicos, /profissional_usuario_id: `eq\.\$\{pedido\.profissional_usuario_id\}`/);
 assert.match(servicos, /Não liberar controles de uma conta diferente após uma resposta atrasada/);
 assert.match(servicos, /const novosPedidos = pagina\.filter\(p => \{/);
 assert.match(servicos, /idsExibidos\.add\(p\.id\)/);
