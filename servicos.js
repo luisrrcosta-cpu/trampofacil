@@ -660,6 +660,15 @@ async function atualizarPedido(pedido, dados) {
     elemento('status-solicitacoes').textContent = 'Esta ação não está disponível para sua função ou para o estado atual do serviço.';
     return;
   }
+  const alterandoProposta = papel === 'profissional' && dados.status === 'proposta';
+  const chavesPermitidas = alterandoProposta ? ['status', 'valor_centavos'] : ['status'];
+  if (!dados || Object.keys(dados).length !== chavesPermitidas.length ||
+      !Object.keys(dados).every(chave => chavesPermitidas.includes(chave)) ||
+      (alterandoProposta && (!Number.isSafeInteger(dados.valor_centavos) ||
+        dados.valor_centavos < 100 || dados.valor_centavos > 100000000))) {
+    elemento('status-solicitacoes').textContent = 'Dados da alteração inválidos. Confira o valor da proposta.';
+    return;
+  }
   const sessaoOriginal = sessaoServicos;
   const secao = elemento('solicitacoes');
   const status = elemento('status-solicitacoes');
