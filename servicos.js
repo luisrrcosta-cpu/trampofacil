@@ -27,6 +27,7 @@ const listaPedidos = elemento('lista-solicitacoes');
 const maisPedidos = elemento('mais-solicitacoes');
 const tamanhoPaginaPedidos = 50;
 let cursorPedidos;
+let versaoPedidos = 0;
 
 elemento('menu-servicos').hidden = !integrado;
 
@@ -43,6 +44,8 @@ function iniciarSessao(sessao) {
   maisProfissionais.hidden = true;
   filtrosBusca = undefined;
   paginaBusca = 0;
+  versaoPedidos++;
+  bloquear(elemento('solicitacoes'), false);
   listaPedidos.replaceChildren();
   maisPedidos.hidden = true;
   cursorPedidos = undefined;
@@ -454,6 +457,7 @@ async function carregarPedidos(aviso = '', anexar = false) {
   const secao = elemento('solicitacoes');
   const status = elemento('status-solicitacoes');
   const sessaoDaBusca = sessaoServicos;
+  const pedidosAtuais = ++versaoPedidos;
   bloquear(secao, true);
   status.textContent = 'Carregando…';
   try {
@@ -466,7 +470,7 @@ async function carregarPedidos(aviso = '', anexar = false) {
       filtros.or = `(atualizado_em.lt.${atualizado_em},and(atualizado_em.eq.${atualizado_em},id.lt.${id}))`;
     }
     const resposta = await apiPedidos(filtros);
-    if (sessaoServicos !== sessaoDaBusca) return;
+    if (sessaoServicos !== sessaoDaBusca || pedidosAtuais !== versaoPedidos) return;
     if (resposta.status === 401) {
       exigirNovoLogin('solicitacoes');
       return;
@@ -486,13 +490,13 @@ async function carregarPedidos(aviso = '', anexar = false) {
       ? `${listaPedidos.childElementCount} solicitações exibidas.`
       : 'Nenhuma solicitação encontrada.');
   } catch {
-    if (sessaoServicos === sessaoDaBusca) {
+    if (sessaoServicos === sessaoDaBusca && pedidosAtuais === versaoPedidos) {
       status.textContent = anexar
         ? 'Não foi possível carregar as solicitações anteriores. Tente novamente.'
         : 'Não foi possível carregar as solicitações. Tente atualizar.';
     }
   } finally {
-    bloquear(secao, false);
+    if (sessaoServicos === sessaoDaBusca && pedidosAtuais === versaoPedidos) bloquear(secao, false);
   }
 }
 
