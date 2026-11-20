@@ -76,6 +76,8 @@ assert.match(servicos, /let versaoPedidos = 0/);
 assert.match(servicos, /pedidos\.length > tamanhoPaginaPedidos \+ 1/);
 assert.match(servicos, /Date\.parse\(p\.atualizado_em\)/);
 assert.match(servicos, /Cursor de paginação inválido/);
+assert.match(servicos, /\.test\(atualizado_em\)/);
+assert.match(servicos, /\.test\(p\.atualizado_em\)/);
 assert.match(servicos, /Você pode carregar mais solicitações ou escolher outro filtro/);
 assert.match(servicos, /Nenhuma solicitação carregada para filtrar/);
 assert.match(servicos, /typeof p\.cliente_usuario_id === 'string'/);
