@@ -67,7 +67,9 @@ function aplicarFiltroPedidos() {
   if (listaPedidos.childElementCount) {
     status.textContent = visiveis
       ? `${visiveis} solicitação(ões) exibida(s) neste filtro.`
-      : 'Nenhuma solicitação neste filtro entre as carregadas.';
+      : 'Nenhuma solicitação neste filtro entre as carregadas. Você pode carregar mais solicitações ou escolher outro filtro.';
+  } else if (filtro !== 'todas') {
+    status.textContent = 'Nenhuma solicitação carregada para filtrar.';
   }
 }
 filtroPedidos.addEventListener('change', aplicarFiltroPedidos);
@@ -571,6 +573,11 @@ async function carregarPedidos(aviso = '', anexar = false) {
     };
     if (anexar) {
       const { atualizado_em, id } = cursorPedidos;
+      if (typeof atualizado_em !== 'string' || !Number.isFinite(Date.parse(atualizado_em)) ||
+        typeof id !== 'string' ||
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
+        throw new Error('Cursor de paginação inválido');
+      }
       filtros.or = `(atualizado_em.lt.${atualizado_em},and(atualizado_em.eq.${atualizado_em},id.lt.${id}))`;
     }
     const resposta = await apiPedidos(filtros);
@@ -618,6 +625,7 @@ async function carregarPedidos(aviso = '', anexar = false) {
         ? `${listaPedidos.childElementCount} solicitações carregadas.`
         : 'Nenhuma solicitação encontrada.');
     aplicarFiltroPedidos();
+    // A confirmação de uma alteração não deve ser apagada pela contagem do filtro.
     if (aviso) status.textContent = aviso;
   } catch {
     if (sessaoServicos === sessaoDaBusca && pedidosAtuais === versaoPedidos) {
