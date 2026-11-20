@@ -22,6 +22,8 @@ assert.match(servicos, /if \(buscaAtual === versaoBusca\) bloquear\(elemento\('c
 assert.match(servicos, /let versaoLogin = 0/);
 assert.match(servicos, /const loginAtual = \+\+versaoLogin/);
 assert.match(servicos, /if \(loginAtual !== versaoLogin\) return/);
+assert.match(servicos, /if \(loginAtual === versaoLogin\) bloquear\(secao, false\)/);
+assert.match(servicos, /function reiniciarLogin\(\) \{\s*versaoLogin\+\+;\s*bloquear\(elemento\('entrar'\), false\)/);
 assert.match(servicos, /if \(!filtrosBusca \|\| maisProfissionais\.hidden\) return/);
 assert.match(servicos, /const filtrosAtuais = \{ \.\.\.filtros \}/);
 assert.match(servicos, /if \(buscaAtual !== versaoBusca\) return/);
