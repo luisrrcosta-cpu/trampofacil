@@ -584,7 +584,14 @@ async function carregarPedidos(aviso = '', anexar = false) {
     if (!Array.isArray(pedidos) || pedidos.length > tamanhoPaginaPedidos + 1 ||
       !pedidos.every(p => p && typeof p.id === 'string' &&
         /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.id) &&
-        typeof p.atualizado_em === 'string' && !Number.isNaN(Date.parse(p.atualizado_em)))) {
+        typeof p.atualizado_em === 'string' && !Number.isNaN(Date.parse(p.atualizado_em)) &&
+        typeof p.cliente_usuario_id === 'string' &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.cliente_usuario_id) &&
+        typeof p.titulo === 'string' && p.titulo.trim().length >= 3 && p.titulo.length <= 120 &&
+        typeof p.descricao === 'string' && p.descricao.trim().length >= 10 && p.descricao.length <= 3000 &&
+        Object.prototype.hasOwnProperty.call(nomesStatus, p.status) &&
+        (p.valor_centavos == null || (Number.isSafeInteger(p.valor_centavos) &&
+          p.valor_centavos >= 100 && p.valor_centavos <= 100000000)))) {
       throw new Error('Resposta de solicitações inválida');
     }
     // Nunca renderizar dados de uma requisição iniciada em outra sessão ou busca.
