@@ -405,13 +405,15 @@ formularioPedido.addEventListener('submit', async (evento) => {
         cliente_usuario_id: `eq.${dados.cliente_usuario_id}`,
         profissional_id: `eq.${dados.profissional_id}`,
       });
+      if (sessaoServicos !== sessaoOriginal || profissionalEscolhido !== profissionalOriginal) return;
       if (anterior.status === 401) {
-        if (sessaoServicos === sessaoOriginal) exigirNovoLogin('nova-solicitacao');
+        exigirNovoLogin('nova-solicitacao');
         return;
       }
       const registros = anterior.ok ? await anterior.json() : [];
       if (sessaoServicos !== sessaoOriginal || profissionalEscolhido !== profissionalOriginal) return;
       salvo = Array.isArray(registros) && registros.length === 1
+        && registros[0]?.id === id
         && registros[0].titulo === titulo && registros[0].descricao === descricao;
     }
     if (!salvo) {
