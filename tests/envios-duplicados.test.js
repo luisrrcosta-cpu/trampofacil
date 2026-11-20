@@ -10,7 +10,7 @@ async function interfaceTeste(arquivo) {
   function elemento(id) {
     if (!elementos.has(id)) elementos.set(id, {
       value: id === 'tipo-perfil' ? 'cliente' : '',
-      elements: Object.fromEntries(['forma','parcelas','nome','email','telefone','cidade','servico','descricao']
+      elements: Object.fromEntries(['forma','parcelas','nome','email','telefone','cidade','servico','descricao','texto']
         .map(c => [c, {addEventListener() {}, value:c === 'forma' ? 'credito_avista' : c === 'parcelas' ? '1' : ''}])),
       eventos:{}, addEventListener(nome, handler) {this.eventos[nome] = handler;},
       reset() {}, replaceChildren() {}, querySelector() {return {};}
@@ -69,4 +69,33 @@ test('preparação ignora duplo envio e reabertura durante resposta pendente', a
   ui.concluir(); await primeira;
   await enviar(evento);
   assert.equal(ui.chamadas(), 2, 'resultado incerto permite conferência explícita');
+});
+
+
+test('mensagem pendente bloqueia segundo envio mesmo antes de desabilitar controles', async () => {
+  const ui = await interfaceTeste('conversa.js');
+  ui.executar("pedidoEmConversa='pedido'; podeEnviarMensagem=true");
+  ui.elemento('form-mensagem').elements.texto.value = 'Mensagem em trânsito';
+  const enviar = ui.elemento('form-mensagem').eventos.submit;
+  const primeira = enviar(evento);
+  await enviar(evento);
+  assert.equal(ui.chamadas(),1);
+  assert.equal(ui.executar('envioIncerto'),true);
+  ui.concluir(); await primeira;
+  await enviar(evento);
+  assert.equal(ui.chamadas(),1,'falha não deve repetir automaticamente nem liberar reenvio sem consulta');
+});
+
+test('saída durante envio conserva incerteza para a conta e conversa originais', async () => {
+  const ui = await interfaceTeste('conversa.js');
+  ui.executar("pedidoEmConversa='pedido'; podeEnviarMensagem=true");
+  ui.elemento('form-mensagem').elements.texto.value = 'Resposta ainda desconhecida';
+  const primeira = ui.elemento('form-mensagem').eventos.submit(evento);
+  ui.executar("trocarSessaoConversa(undefined,'cliente'); sessaoServicos={usuario:'outra-conta'}");
+  assert.equal(ui.executar('rascunhoConversa.incerto'),true);
+  assert.equal(ui.executar('rascunhoConversa.usuario'),'cliente');
+  ui.concluir(); await primeira;
+  assert.equal(ui.executar('envioIncerto'),false,'resposta antiga não pode alterar a nova sessão');
+  ui.executar("sessaoServicos={usuario:'cliente'}; abrirConversa('pedido')");
+  assert.equal(ui.executar('envioIncerto'),true);
 });

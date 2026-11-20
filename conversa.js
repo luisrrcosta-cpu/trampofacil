@@ -215,6 +215,9 @@ formularioMensagem.addEventListener('submit', async (evento) => {
   const pedidoOriginal = pedidoEmConversa;
   bloquear(secaoConversa, true);
   statusMensagem.textContent = 'Enviando…';
+  // A partir do envio, sair da conta pode perder a resposta de uma gravação.
+  // Preserve essa incerteza no rascunho até conferir a conversa novamente.
+  envioIncerto = true;
   let atualizar = false;
   try {
     const resposta = await apiConversa(mensagens, {}, { solicitacao_id: pedidoOriginal, texto: corpo });
@@ -224,11 +227,13 @@ formularioMensagem.addEventListener('submit', async (evento) => {
       return;
     }
     if (resposta.status === 403) {
+      envioIncerto = false;
       statusMensagem.textContent = 'O envio foi recusado. Confira se a solicitação ainda está aberta.';
       atualizar = true;
     } else if (!resposta.ok) {
       throw new Error();
     } else {
+      envioIncerto = false;
       formularioMensagem.reset();
       atualizarContadorMensagem();
       statusMensagem.textContent = 'Mensagem enviada.';
