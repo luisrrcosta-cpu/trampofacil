@@ -663,12 +663,21 @@ async function atualizarPedido(pedido, dados) {
   const sessaoOriginal = sessaoServicos;
   const secao = elemento('solicitacoes');
   const status = elemento('status-solicitacoes');
+  if (typeof pedido.id !== 'string' ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(pedido.id) ||
+      typeof pedido.atualizado_em !== 'string' ||
+      !Number.isFinite(Date.parse(pedido.atualizado_em))) {
+    status.textContent = 'Dados da solicitação inválidos. Atualize a lista antes de continuar.';
+    return;
+  }
   bloquear(secao, true);
   status.textContent = 'Atualizando…';
   let aviso;
   try {
     const resposta = await apiPedidos({
       select: 'id', id: `eq.${pedido.id}`,
+      cliente_usuario_id: `eq.${pedido.cliente_usuario_id}`,
+      profissional_usuario_id: `eq.${pedido.profissional_usuario_id}`,
       atualizado_em: `eq.${pedido.atualizado_em}`,
       status: `eq.${pedido.status}`,
       ...(pedido.status === 'proposta' && dados.status === 'aceita'
