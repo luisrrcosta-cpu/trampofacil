@@ -95,6 +95,61 @@ label input,label select,label textarea{font-weight:400}
 <button class="voltar" type="button" data-pagina="inicio">Voltar</button>
 </section>
 
+<datalist id="sugestoes-profissoes">
+<option value="Pedreiro"></option>
+<option value="Servente de obras"></option>
+<option value="Pintor"></option>
+<option value="Eletricista"></option>
+<option value="Encanador"></option>
+<option value="Gesseiro"></option>
+<option value="Azulejista"></option>
+<option value="Telhadista"></option>
+<option value="Serralheiro"></option>
+<option value="Marceneiro"></option>
+<option value="Carpinteiro"></option>
+<option value="Vidraceiro"></option>
+<option value="Instalador de ar-condicionado"></option>
+<option value="Técnico em refrigeração"></option>
+<option value="Montador de móveis"></option>
+<option value="Diarista"></option>
+<option value="Faxineiro"></option>
+<option value="Jardineiro"></option>
+<option value="Piscineiro"></option>
+<option value="Dedetizador"></option>
+<option value="Chaveiro"></option>
+<option value="Mecânico"></option>
+<option value="Eletricista automotivo"></option>
+<option value="Funileiro"></option>
+<option value="Borracheiro"></option>
+<option value="Lavador de veículos"></option>
+<option value="Barbeiro"></option>
+<option value="Cabeleireiro"></option>
+<option value="Manicure"></option>
+<option value="Maquiador"></option>
+<option value="Massagista"></option>
+<option value="Costureira"></option>
+<option value="Sapateiro"></option>
+<option value="Técnico de computadores"></option>
+<option value="Técnico de celulares"></option>
+<option value="Instalador de câmeras"></option>
+<option value="Técnico de redes"></option>
+<option value="Fotógrafo"></option>
+<option value="Videomaker"></option>
+<option value="Garçom"></option>
+<option value="Cozinheiro"></option>
+<option value="Confeiteiro"></option>
+<option value="Decorador de eventos"></option>
+<option value="DJ"></option>
+<option value="Professor particular"></option>
+<option value="Tradutor"></option>
+<option value="Cuidador de idosos"></option>
+<option value="Babá"></option>
+<option value="Passeador de cães"></option>
+<option value="Adestrador de cães"></option>
+<option value="Personal organizer"></option>
+<option value="Entregador"></option>
+<option value="Frete e mudanças"></option>
+</datalist>
 <section id="profissional" class="card" hidden>
 <h2>Cadastro de Profissional</h2>
 <form data-cadastro="profissional" method="post">
@@ -102,7 +157,8 @@ label input,label select,label textarea{font-weight:400}
 <label>E-mail<input name="email" type="email" autocomplete="email" maxlength="254" required></label>
 <label>WhatsApp<input name="telefone" type="tel" autocomplete="tel" maxlength="25" required></label>
 <label>Cidade<input name="cidade" autocomplete="address-level2" minlength="2" maxlength="120" required></label>
-<label>Serviço<input name="servico" minlength="2" maxlength="120" required></label>
+<label>Profissão ou serviço oferecido<input name="servico" list="sugestoes-profissoes" minlength="2" maxlength="120" placeholder="Ex.: Pedreiro, eletricista, costureira..." required></label>
+<p>Não encontrou sua profissão? Digite livremente o serviço que você oferece. A lista é apenas uma sugestão.</p>
 <label>Descrição do serviço (opcional)<textarea name="descricao" maxlength="1000"></textarea></label>
 <button class="verde" type="submit">Continuar</button>
 <p class="erro" role="alert"></p>
@@ -129,7 +185,7 @@ label input,label select,label textarea{font-weight:400}
 <section id="catalogo" class="card" hidden>
 <h2>Buscar profissionais</h2>
 <form id="form-busca">
-<label>Serviço<input name="servico" maxlength="120"></label>
+<label>Profissão ou serviço<input name="servico" list="sugestoes-profissoes" maxlength="120" placeholder="Busque qualquer tipo de mão de obra"></label>
 <label>Cidade<input name="cidade" maxlength="120"></label>
 <button type="submit">Buscar</button>
 <button class="voltar" type="reset" id="limpar-busca">Limpar filtros</button>
