@@ -173,8 +173,10 @@ async function carregarPaginaConversa(fluxo, anexar) {
   for (let indice = 1; indice < registros.length; indice++) {
     const anterior = registros[indice - 1];
     const atual = registros[indice];
-    if (anterior.criado_em < atual.criado_em ||
-        (anterior.criado_em === atual.criado_em && anterior.id <= atual.id)) {
+    const instanteAnterior = Date.parse(anterior.criado_em);
+    const instanteAtual = Date.parse(atual.criado_em);
+    if (instanteAnterior < instanteAtual ||
+        (instanteAnterior === instanteAtual && anterior.id <= atual.id)) {
       throw new Error('Ordem de paginação da conversa inválida');
     }
   }
