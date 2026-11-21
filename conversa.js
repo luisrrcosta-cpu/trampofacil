@@ -323,6 +323,14 @@ for (const fluxo of [historico, mensagens]) {
 formularioMensagem.addEventListener('submit', async (evento) => {
   evento.preventDefault();
   if (ocupado || !sessaoServicos || !podeEnviarMensagem || envioIncerto) return;
+  if (!participantesConversa?.has(sessaoServicos.usuario) ||
+      typeof pedidoEmConversa !== 'string' ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(pedidoEmConversa)) {
+    podeEnviarMensagem = false;
+    formularioMensagem.hidden = true;
+    statusConversa.textContent = 'Não foi possível validar a participação na conversa. Atualize.';
+    return;
+  }
   const corpo = formularioMensagem.elements.texto.value.trim();
   if (!corpo || corpo.length > 2000) {
     statusMensagem.textContent = 'Escreva uma mensagem de até 2.000 caracteres.';
