@@ -93,3 +93,22 @@ test('POST sem autenticação não abre banco nem consulta serviço externo',asy
   assert.equal((await resposta.json()).erro,'NAO_AUTENTICADO');
   assert.equal(chamadas,0);
 });
+
+test('token falso não permite abrir banco financeiro',async()=>{
+  let abriu=0,consultas=0;
+  const handler=criarServidorEdgeHomologacao({
+    supabaseUrl:urlHomologacao,
+    bancoUrl:'postgresql://postgres:senha@db.asdszqtpydiowgerxwee.supabase.co:5432/postgres',
+    abrirBanco(){abriu++;throw new Error('acesso inesperado');},
+    fetchImpl:async()=>{consultas++;return new Response(JSON.stringify({message:'invalid JWT'}),{status:401,headers:{'Content-Type':'application/json'}});}
+  });
+  const resposta=await handler(new Request('https://exemplo.test/functions/v1/preparar-pagamento-teste',{
+    method:'POST',
+    headers:{'Content-Type':'application/json',Authorization:'Bearer token.falso.assinatura'},
+    body:JSON.stringify({solicitacaoId:'11111111-1111-4111-8111-111111111111',forma:'credito_avista',parcelas:1})
+  }));
+  assert.equal(resposta.status,401);
+  assert.equal((await resposta.json()).erro,'NAO_AUTENTICADO');
+  assert.equal(consultas,1);
+  assert.equal(abriu,0);
+});
