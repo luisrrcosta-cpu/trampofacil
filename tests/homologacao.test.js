@@ -5,7 +5,7 @@ import {criarPreparadorPagamento} from '../server/preparar-pagamento.js';
 import {criarHandlerPreparacao} from '../server/handler-preparacao.js';
 const cliente='11111111-1111-4111-8111-111111111111',profissional='22222222-2222-4222-8222-222222222222',id='44444444-4444-4444-8444-444444444444';
 const origem='https://homologacao.example.invalid';
-const config={ambiente:'teste',projetoHomologacaoConfirmado:true,supabaseUrl:'https://abcdefghijklmnopqrst.supabase.co',chavePublicavel:'sb_publishable_ficticia'};
+const config={ambiente:'teste',projetoHomologacaoConfirmado:true,supabaseUrl:'https://asdszqtpydiowgerxwee.supabase.co',chavePublicavel:'sb_publishable_ficticia'};
 const pedido={id,cliente_usuario_id:cliente,profissional_usuario_id:profissional,status:'aceita',valor_centavos:10000,atualizado_em:'2026-11-19T12:00:00Z'};
 const dados={solicitacaoId:id,forma:'credito_avista',parcelas:1};
 const requisicao=(body=JSON.stringify(dados),extras={})=>new Request(origem+'/api/pagamentos/preparar',{
@@ -27,16 +27,16 @@ test('handler valida a identidade no Auth e lê o orçamento via JWT/RLS, sem gr
  assert.equal(resposta.status,200);assert.equal(body.comissaoCentavos,1000);assert.equal(body.pagamentoHabilitado,false);
  assert.equal(resposta.headers.get('Cache-Control'),'no-store');assert.equal(resposta.headers.get('Access-Control-Allow-Origin'),origem);
  assert.equal(chamadas.length,2);
- for(const {url,init} of chamadas){assert.match(url,/^https:\/\/abcdefghijklmnopqrst\.supabase\.co\//);assert.equal(init.method,'GET');assert.equal(init.headers.Authorization,'Bearer token-ficticio');assert.equal(init.redirect,'error');assert.equal(init.credentials,'omit');assert.equal(init.cache,'no-store');}
+ for(const {url,init} of chamadas){assert.match(url,/^https:\/\/asdszqtpydiowgerxwee\.supabase\.co\//);assert.equal(init.method,'GET');assert.equal(init.headers.Authorization,'Bearer token-ficticio');assert.equal(init.redirect,'error');assert.equal(init.credentials,'omit');assert.equal(init.cache,'no-store');}
  const query=new URL(chamadas[1].url).searchParams;
  assert.equal(query.get('cliente_usuario_id'),'eq.'+cliente);assert.equal(query.get('id'),'eq.'+id);
  assert.ok(!query.get('select').includes('telefone'));assert.ok(!JSON.stringify(body).includes('token-ficticio'));
 });
 test('configuração rejeita produção, chaves administrativas e destinos não autorizados',()=>{
  for(const alteracao of [
-  {ambiente:'producao'},{projetoHomologacaoConfirmado:false},{supabaseUrl:'https://flropneedvaimzcmvcza.supabase.co'},
-  {supabaseUrl:'https://abcdefghijklmnopqrst.supabase.co.evil.invalid'},{supabaseUrl:'http://abcdefghijklmnopqrst.supabase.co'},
-  {supabaseUrl:'https://abcdefghijklmnopqrst.supabase.co/rest/v1'},{supabaseUrl:'https://usuario:senha@abcdefghijklmnopqrst.supabase.co'},
+  {ambiente:'producao'},{projetoHomologacaoConfirmado:false},{supabaseUrl:'https://flropneedvaimzcmvcza.supabase.co'},{supabaseUrl:'https://abcdefghijklmnopqrst.supabase.co'},
+  {supabaseUrl:'https://asdszqtpydiowgerxwee.supabase.co.evil.invalid'},{supabaseUrl:'http://asdszqtpydiowgerxwee.supabase.co'},
+  {supabaseUrl:'https://asdszqtpydiowgerxwee.supabase.co/rest/v1'},{supabaseUrl:'https://usuario:senha@asdszqtpydiowgerxwee.supabase.co'},
   {chavePublicavel:'sb_secret_nao_permitida'},{chavePublicavel:'eyJservice_role'},
  ])assert.throws(()=>criarAdaptadoresHomologacao({...config,...alteracao}));
 });
