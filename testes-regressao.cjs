@@ -129,7 +129,7 @@ assert.match(servicos, /Nenhuma solicitação carregada para filtrar/);
 assert.match(servicos, /typeof p\.cliente_usuario_id === 'string'/);
 assert.match(servicos, /id,cliente_usuario_id,profissional_usuario_id,titulo,descricao,status,valor_centavos,atualizado_em/);
 assert.match(servicos, /typeof p\.profissional_usuario_id === 'string'/);
-assert.match(servicos, /p\.cliente_usuario_id !== p\.profissional_usuario_id/);
+assert.match(servicos, /papelNaContratacao\(p, sessaoDaBusca\.usuario\)/);
 assert.match(servicos, /p\.profissional_usuario_id === sessaoDaBusca\.usuario/);
 assert.match(servicos, /p\.titulo\.trim\(\)\.length >= 3/);
 assert.match(servicos, /p\.descricao\.length <= 3000/);
