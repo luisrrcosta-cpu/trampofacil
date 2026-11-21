@@ -121,6 +121,12 @@ as funcionalidades existentes de filtros, paginação e confirmação de ações
 Ela é separada da versão publicada originalmente. A main do GitHub permaneceu
 em `962d999b32d99bbab9e280bfa8144e798b558c6f`.
 
+## Estado verificado em 21/11/2026
+
+A execução isolada [44916672967](https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/44916672967), no commit `6860ea9ff653bb2fad9fdd5a6a3a232b3ca04b69`, terminou com **68 testes aprovados, zero falhas e zero testes ignorados**. As regressões adicionais de contratação, finanças e privacidade também passaram. As últimas correções alinharam os dados fictícios de mensagens, perfis e solicitações paginadas aos UUIDs exigidos pelas validações de segurança.
+
+Esse resultado verifica o código com API simulada, **não** valida o login real, a entrega de e-mail, as políticas RLS em uma sessão autenticada real nem um pagamento online. `autenticacaoPronta` permanece `false`. A homologação real e a eventual publicação dependem de autorização e verificações próprias; nenhum pagamento real está habilitado.
+
 ## Comandos de verificação
 
 Instale as dependências fixadas com `npm ci --ignore-scripts`.
