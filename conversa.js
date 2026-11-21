@@ -179,8 +179,10 @@ async function carregarConversa() {
       statusConversa.textContent = 'Não foi possível carregar todos os dados. Tente atualizar.';
     }
   } finally {
-    bloquear(secaoConversa, false);
-    enviarMensagem.disabled = envioIncerto;
+    if (sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal) {
+      bloquear(secaoConversa, false);
+      enviarMensagem.disabled = envioIncerto;
+    }
   }
 }
 
@@ -197,8 +199,10 @@ for (const fluxo of [historico, mensagens]) {
         statusConversa.textContent = 'Não foi possível carregar a página anterior. Tente novamente.';
       }
     } finally {
-      bloquear(secaoConversa, false);
-    enviarMensagem.disabled = envioIncerto;
+      if (sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal) {
+        bloquear(secaoConversa, false);
+        enviarMensagem.disabled = envioIncerto;
+      }
     }
   });
 }
@@ -245,8 +249,10 @@ formularioMensagem.addEventListener('submit', async (evento) => {
       statusMensagem.textContent = 'Não foi possível confirmar o envio. Atualize as mensagens antes de tentar novamente.';
     }
   } finally {
-    bloquear(secaoConversa, false);
-    enviarMensagem.disabled = envioIncerto;
+    if (sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal) {
+      bloquear(secaoConversa, false);
+      enviarMensagem.disabled = envioIncerto;
+    }
   }
   if (atualizar && sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal) {
     await carregarConversa();
