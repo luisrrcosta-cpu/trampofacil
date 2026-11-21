@@ -80,7 +80,16 @@ test('CORS, tipo e tamanho do corpo são conferidos antes de consultar o Auth',a
  assert.equal((await handle(requisicao('ç'.repeat(2050),{headers:{'Content-Length':'1'}}))).status,413);
  assert.equal(chamadas.length,0);
 });
-test('JSON com UTF-8 inválido é recusado antes de autenticar',async()=>{
+test('payloads JSON inválidos não chegam à autenticação',async()=>{
+ const corpos=['null','[]','"texto"','true','{"solicitacaoId":'];
+ for(const corpo of corpos){
+  const {handle,chamadas}=montar();
+  const resposta=await handle(requisicao(corpo));
+  assert.equal(resposta.status,400);
+  assert.equal(chamadas.length,corpo.endsWith(':')?0:1);
+ }
+});
+
  const {handle,chamadas}=montar();
  const req=new Request(origem+'/api/pagamentos/preparar',{
   method:'POST',headers:{Origin:origem,Authorization:'Bearer token-ficticio','Content-Type':'application/json'},
