@@ -122,7 +122,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
           return route.fulfill({ status: 403 });
         }
         chats.unshift({ id: '00000000-0000-4000-8000-000000000032', criado_em: data, texto: dados.texto,
-          autor_usuario_id: req.headers().authorization.split(' ').at(-1) });
+          autor_usuario_id: req.headers().authorization.endsWith('cliente') ? '11111111-1111-4111-8111-111111111111' : '22222222-2222-4222-8222-222222222222' });
         if (perderResposta) {
           perderResposta = false;
           return route.abort('failed');
