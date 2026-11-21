@@ -91,14 +91,14 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
     if (url.pathname.endsWith('/clientes') || url.pathname.endsWith('/profissionais')) {
       const tipo = url.pathname.split('/').at(-1);
       const usuario = req.headers().authorization.split(' ').at(-1);
-      assert.equal(url.searchParams.get('usuario_id'),'eq.'+usuario);
+      assert.equal(url.searchParams.get('usuario_id'),'eq.'+(usuario === 'cliente' ? '11111111-1111-4111-8111-111111111111' : '22222222-2222-4222-8222-222222222222'));
       const perfil = perfis[tipo];
       if (req.method() === 'PATCH') {
         const dados = req.postDataJSON();
         assert.ok(!('usuario_id' in dados)); assert.ok(!('publicado' in dados));
         assert.equal(perfil.usuario_id, usuario === 'cliente' ? '11111111-1111-4111-8111-111111111111' : '22222222-2222-4222-8222-222222222222');
         Object.assign(perfil,dados);
-        return route.fulfill({json:[{usuario_id:usuario}]});
+        return route.fulfill({json:[{usuario_id:perfil.usuario_id}]});
       }
       return route.fulfill({json:perfil.usuario_id===(usuario === 'cliente' ? '11111111-1111-4111-8111-111111111111' : '22222222-2222-4222-8222-222222222222')?[perfil]:[]});
     }
