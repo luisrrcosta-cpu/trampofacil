@@ -384,9 +384,18 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await cadastro.getByRole('button', { name: 'Continuar' }).click();
   await cadastro.getByRole('alert').getByText('O acesso por e-mail está em preparação', { exact: false }).waitFor();
   assert.equal(await page.evaluate(() => {
-    try { enviar('/auth/v1/otp', {email:'teste@example.invalid'}); return false; }
-    catch { return true; }
-  }), true, 'transporte também deve bloquear autenticação pendente');
+    const caminhos = [
+      '/auth/v1/otp',
+      '/auth/v1/verify',
+      '/auth/v1/token?grant_type=password',
+      '/auth/v1/signup',
+      '/auth/v1/logout',
+    ];
+    return caminhos.every(caminho => {
+      try { enviar(caminho, { email: 'teste@example.invalid', token: 'ficticio' }); return false; }
+      catch { return true; }
+    });
+  }), true, 'transporte deve bloquear todos os endpoints de autenticação enquanto a homologação está pendente');
   assert.equal(chamadasApi, antesDoBloqueio);
   assert.equal(await page.evaluate(async () => {
     const script = document.createElement('script');
