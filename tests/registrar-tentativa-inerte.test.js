@@ -68,3 +68,32 @@ test('duas chamadas paralelas com a mesma chave retornam a mesma tentativa simul
   assert.equal(a.tentativaId,b.tentativaId);
   assert.equal(registros,1);
 });
+
+test('duas operações paralelas com chaves diferentes não são confundidas',async()=>{
+  const outraChave='44444444-4444-4444-8444-444444444444';
+  let primeiraChave=null;
+  let tentativasDeInsercao=0;
+  let fila=Promise.resolve();
+  const banco={
+    begin:fn=>{
+      const tarefa=fila.then(()=>fn((strings,...valores)=>{
+        if(strings[0].includes('set local role')) return Promise.resolve([]);
+        tentativasDeInsercao++;
+        if(primeiraChave===null) primeiraChave=valores[1];
+        if(primeiraChave!==valores[1]) throw new Error('chave divergente');
+        return Promise.resolve([{id:tentativaId}]);
+      }));
+      fila=tarefa.catch(()=>{});
+      return tarefa;
+    }
+  };
+  const registrador=criarRegistradorTentativaInerte({ambiente:'teste',banco});
+  const resultados=await Promise.allSettled([
+    registrador.registrar({preparacaoId,chaveIdempotencia}),
+    registrador.registrar({preparacaoId,chaveIdempotencia:outraChave})
+  ]);
+  assert.equal(resultados[0].status,'fulfilled');
+  assert.equal(resultados[1].status,'rejected');
+  assert.equal(resultados[1].reason.message,'Não foi possível confirmar a tentativa de teste.');
+  assert.equal(tentativasDeInsercao,2);
+});
