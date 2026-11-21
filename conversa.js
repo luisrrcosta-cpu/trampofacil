@@ -199,6 +199,16 @@ async function carregarPaginaConversa(fluxo, anexar) {
       throw new Error('Ordem de paginação da conversa inválida');
     }
   }
+  // O banco pode devolver representações de data diferentes para o mesmo instante.
+  // Normalizar a chave evita falsos duplicados e cursores inconsistentes.
+  const idsDaPagina = new Set();
+  for (const item of registros) {
+    const idNormalizado = item.id.toLowerCase();
+    if (idsDaPagina.has(idNormalizado)) {
+      throw new Error('Página da conversa contém identificadores repetidos');
+    }
+    idsDaPagina.add(idNormalizado);
+  }
   const pagina = registros.slice(0, tamanhoPaginaConversa);
   const idsExibidos = new Set(anexar
     ? Array.from(fluxo.lista.children, item => item.dataset.registroId?.toLowerCase()).filter(Boolean)
