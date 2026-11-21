@@ -16,6 +16,8 @@ assert.match(cadastro, /perfil\.servico\.length > 120/);
 assert.match(cadastro, /perfil\.descricao\.length > 1000/);
 assert.match(cadastro, /atualizarContadorPerfilProfissional\(\)/);
 assert.match(servicos, /sessaoServicos !== sessaoDaBusca/);
+assert.match(conversa, /if \(sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal\) \{\s*bloquear\(secaoConversa, false\);\s*enviarMensagem\.disabled = envioIncerto;/);
+assert.doesNotMatch(conversa, /\} finally \{\s*bloquear\(secaoConversa, false\);/);
 assert.match(servicos, /sessaoServicos !== sessaoOriginal \|\| profissionalEscolhido !== profissionalOriginal/);
 assert.match(servicos, /Array\.isArray\(registros\)/);
 assert.match(servicos, /select: 'id,titulo,descricao'/);
