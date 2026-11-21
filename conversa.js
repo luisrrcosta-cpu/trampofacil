@@ -191,7 +191,12 @@ async function carregarConversa() {
     if (sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return;
     const pedidos = await lerConversa(resposta);
     if (!pedidos || sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return;
-    if (!Array.isArray(pedidos)) throw new Error('Resposta de solicitação inválida');
+    if (!Array.isArray(pedidos) || pedidos.length > 1 ||
+        !pedidos.every(item => item && typeof item.titulo === 'string' &&
+          item.titulo.trim().length >= 3 && item.titulo.length <= 120 &&
+          Object.prototype.hasOwnProperty.call(nomesStatus, item.status))) {
+      throw new Error('Resposta de solicitação inválida');
+    }
     const pedido = pedidos[0];
     if (!pedido) {
       limparConversa();
