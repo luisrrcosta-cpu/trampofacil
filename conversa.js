@@ -186,13 +186,18 @@ async function carregarConversa() {
   podeEnviarMensagem = false;
   try {
     const resposta = await apiPedidos({
-      select: 'titulo,status', id: `eq.${pedidoOriginal}`, limit: '1',
+      select: 'id,cliente_usuario_id,profissional_usuario_id,titulo,status', id: `eq.${pedidoOriginal}`, limit: '1',
     });
     if (sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return;
     const pedidos = await lerConversa(resposta);
     if (!pedidos || sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return;
     if (!Array.isArray(pedidos) || pedidos.length > 1 ||
-        !pedidos.every(item => item && typeof item.titulo === 'string' &&
+        !pedidos.every(item => item && item.id === pedidoOriginal &&
+          typeof item.cliente_usuario_id === 'string' &&
+          typeof item.profissional_usuario_id === 'string' &&
+          item.cliente_usuario_id !== item.profissional_usuario_id &&
+          papelNaContratacao(item, sessaoOriginal.usuario) &&
+          typeof item.titulo === 'string' &&
           item.titulo.trim().length >= 3 && item.titulo.length <= 120 &&
           Object.prototype.hasOwnProperty.call(nomesStatus, item.status))) {
       throw new Error('Resposta de solicitação inválida');
