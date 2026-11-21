@@ -74,7 +74,7 @@ test('preparação ignora duplo envio e reabertura durante resposta pendente', a
 
 test('mensagem pendente bloqueia segundo envio mesmo antes de desabilitar controles', async () => {
   const ui = await interfaceTeste('conversa.js');
-  ui.executar("pedidoEmConversa='pedido'; podeEnviarMensagem=true");
+  ui.executar("pedidoEmConversa='123e4567-e89b-42d3-a456-426614174001'; participantesConversa=new Set(['cliente','profissional']); podeEnviarMensagem=true");
   ui.elemento('form-mensagem').elements.texto.value = 'Mensagem em trânsito';
   const enviar = ui.elemento('form-mensagem').eventos.submit;
   const primeira = enviar(evento);
@@ -88,7 +88,7 @@ test('mensagem pendente bloqueia segundo envio mesmo antes de desabilitar contro
 
 test('saída durante envio conserva incerteza para a conta e conversa originais', async () => {
   const ui = await interfaceTeste('conversa.js');
-  ui.executar("pedidoEmConversa='pedido'; podeEnviarMensagem=true");
+  ui.executar("pedidoEmConversa='123e4567-e89b-42d3-a456-426614174001'; participantesConversa=new Set(['cliente','profissional']); podeEnviarMensagem=true");
   ui.elemento('form-mensagem').elements.texto.value = 'Resposta ainda desconhecida';
   const primeira = ui.elemento('form-mensagem').eventos.submit(evento);
   ui.executar("trocarSessaoConversa(undefined,'cliente'); sessaoServicos={usuario:'outra-conta'}");
@@ -96,6 +96,6 @@ test('saída durante envio conserva incerteza para a conta e conversa originais'
   assert.equal(ui.executar('rascunhoConversa.usuario'),'cliente');
   ui.concluir(); await primeira;
   assert.equal(ui.executar('envioIncerto'),false,'resposta antiga não pode alterar a nova sessão');
-  ui.executar("sessaoServicos={usuario:'cliente'}; abrirConversa('pedido')");
+  ui.executar("sessaoServicos={usuario:'cliente'}; abrirConversa('123e4567-e89b-42d3-a456-426614174001')");
   assert.equal(ui.executar('envioIncerto'),true);
 });
