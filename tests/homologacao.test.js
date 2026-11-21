@@ -51,6 +51,20 @@ test('usuário anônimo ou e-mail não confirmado é recusado pelo adaptador',as
   assert.equal((await handle(requisicao())).status,401);
  }
 });
+test('identidades malformadas não chegam à leitura de solicitações',async()=>{
+ for(const usuario of [
+  {id:'nao-e-uuid',is_anonymous:false,email_confirmed_at:'2026-11-19'},
+  {id:profissional+'-extra',is_anonymous:false,email_confirmed_at:'2026-11-19'},
+  {id:cliente,is_anonymous:'false',email_confirmed_at:'2026-11-19'},
+  {id:cliente,is_anonymous:false,email_confirmed_at:null},
+ ]){
+  let chamadas=0;
+  const {handle}=montar({fetchImpl:async()=>{chamadas++;return new Response(JSON.stringify(usuario));}});
+  const resposta=await handle(requisicao());
+  assert.equal(resposta.status,401);
+  assert.equal(chamadas,1,'identidade inválida não pode consultar solicitações');
+ }
+});
 test('consulta vazia e pedido de outro cliente não revelam dados',async()=>{
  for(const registros of [[],[{...pedido,cliente_usuario_id:profissional}]]){
   const {handle}=montar({fetchImpl:async(url)=>new Response(JSON.stringify(url.endsWith('/auth/v1/user')?{id:cliente,is_anonymous:false,email_confirmed_at:'2026-11-19'}:registros))});
