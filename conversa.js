@@ -168,6 +168,16 @@ async function carregarPaginaConversa(fluxo, anexar) {
             item.texto.length <= 2000))) {
     throw new Error('Resposta de conversa inválida');
   }
+  // O histórico e as mensagens precisam permanecer em ordem decrescente
+  // para que o cursor não pule nem repita registros ao buscar páginas antigas.
+  for (let indice = 1; indice < registros.length; indice++) {
+    const anterior = registros[indice - 1];
+    const atual = registros[indice];
+    if (anterior.criado_em < atual.criado_em ||
+        (anterior.criado_em === atual.criado_em && anterior.id <= atual.id)) {
+      throw new Error('Ordem de paginação da conversa inválida');
+    }
+  }
   const pagina = registros.slice(0, tamanhoPaginaConversa);
   const idsExibidos = new Set(anexar
     ? Array.from(fluxo.lista.children, item => item.dataset.registroId).filter(Boolean)
