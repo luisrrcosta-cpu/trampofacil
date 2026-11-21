@@ -56,7 +56,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   let aguardarPreparacao = false;
   let liberarPreparacao;
   let avisarPreparacaoIniciada;
-  const perfis = {clientes:{usuario_id:'cliente',nome:'Pessoa fictícia',email:'cliente@example.com',telefone:'11999999999',cidade:'São Paulo'},profissionais:{usuario_id:'profissional',nome:'Pessoa profissional',telefone:'11999999999',cidade:'São Paulo',servico:'Pintura',descricao:'Serviço de teste',publicado:false}};
+  const perfis = {clientes:{usuario_id:'11111111-1111-4111-8111-111111111111',nome:'Pessoa fictícia',email:'cliente@example.com',telefone:'11999999999',cidade:'São Paulo'},profissionais:{usuario_id:'22222222-2222-4222-8222-222222222222',nome:'Pessoa profissional',telefone:'11999999999',cidade:'São Paulo',servico:'Pintura',descricao:'Serviço de teste',publicado:false}};
   await page.route('https://asdszqtpydiowgerxwee.supabase.co/**', async (route) => {
     chamadasApi++;
     const req = route.request();
@@ -85,7 +85,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
       const { email, token } = req.postDataJSON();
       if (token !== '123456') return route.fulfill({ status: 400 });
       const id = email.startsWith('cliente') ? 'cliente' : 'profissional';
-      return route.fulfill({ json: { access_token: id, user: { id } } });
+      return route.fulfill({ json: { access_token: id, user: { id: id === 'cliente' ? '11111111-1111-4111-8111-111111111111' : '22222222-2222-4222-8222-222222222222' } } });
     }
     assert.match(req.headers().authorization, /^Bearer (cliente|profissional)$/);
     if (url.pathname.endsWith('/clientes') || url.pathname.endsWith('/profissionais')) {
@@ -96,11 +96,11 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
       if (req.method() === 'PATCH') {
         const dados = req.postDataJSON();
         assert.ok(!('usuario_id' in dados)); assert.ok(!('publicado' in dados));
-        assert.equal(perfil.usuario_id, usuario);
+        assert.equal(perfil.usuario_id, usuario === 'cliente' ? '11111111-1111-4111-8111-111111111111' : '22222222-2222-4222-8222-222222222222');
         Object.assign(perfil,dados);
         return route.fulfill({json:[{usuario_id:usuario}]});
       }
-      return route.fulfill({json:perfil.usuario_id===usuario?[perfil]:[]});
+      return route.fulfill({json:perfil.usuario_id===(usuario === 'cliente' ? '11111111-1111-4111-8111-111111111111' : '22222222-2222-4222-8222-222222222222')?[perfil]:[]});
     }
     if (url.pathname.endsWith('/historico_solicitacoes')) {
       assert.equal(url.searchParams.get('select'), 'id,criado_em,status,valor_centavos');
@@ -141,10 +141,10 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
     if (req.method() === 'POST') {
       const dados = req.postDataJSON();
       criacoes.push(dados);
-      assert.equal(dados.cliente_usuario_id, 'cliente');
+      assert.equal(dados.cliente_usuario_id, '11111111-1111-4111-8111-111111111111');
       assert.equal(dados.profissional_id, '77777777-7777-4777-8777-777777777777');
       if (pedido) return route.fulfill({ status: 409 });
-      pedido = { ...dados, profissional_usuario_id:'profissional', status: 'solicitada', valor_centavos: null, atualizado_em: '2026-11-18T00:00:00+00:00' };
+      pedido = { ...dados, profissional_usuario_id:'22222222-2222-4222-8222-222222222222', status: 'solicitada', valor_centavos: null, atualizado_em: '2026-11-18T00:00:00+00:00' };
       return route.abort('failed');
     }
     if (req.method() === 'PATCH') {
