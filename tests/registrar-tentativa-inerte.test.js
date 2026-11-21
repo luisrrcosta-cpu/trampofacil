@@ -97,3 +97,29 @@ test('duas operações paralelas com chaves diferentes não são confundidas',as
   assert.equal(resultados[1].reason.message,'Não foi possível confirmar a tentativa de teste.');
   assert.equal(tentativasDeInsercao,2);
 });
+
+
+test('resposta vazia ou UUID malformado nunca confirma tentativa',async()=>{
+  for(const resposta of [[],[{id:'invalido'}],[{id:tentativaId},{id:tentativaId}]]) {
+    let transacoes=0;
+    const banco={begin:async fn=>{
+      transacoes++;
+      return fn((strings)=>strings[0].includes('set local role')
+        ? Promise.resolve([])
+        : Promise.resolve(resposta));
+    }};
+    const registrador=criarRegistradorTentativaInerte({ambiente:'teste',banco});
+    await assert.rejects(registrador.registrar({preparacaoId,chaveIdempotencia}),
+      e=>e.message==='Não foi possível confirmar a tentativa de teste.');
+    assert.equal(transacoes,1);
+  }
+});
+
+test('falha antes de iniciar transação não vaza detalhes nem gera nova tentativa',async()=>{
+  let chamadas=0;
+  const banco={begin:async()=>{chamadas++;throw new Error('credencial confidencial');}};
+  const registrador=criarRegistradorTentativaInerte({ambiente:'teste',banco});
+  await assert.rejects(registrador.registrar({preparacaoId,chaveIdempotencia}),
+    e=>e.message==='Não foi possível confirmar a tentativa de teste.'&&!e.message.includes('credencial'));
+  assert.equal(chamadas,1);
+});
