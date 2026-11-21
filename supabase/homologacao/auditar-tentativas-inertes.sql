@@ -36,5 +36,10 @@ select
     where k.conrelid='private.eventos_tentativa_pagamento_teste'::regclass
     and k.conname in ('eventos_tentativa_pagamento_teste_tentativa_id_fkey',
       'eventos_tentativa_pagamento_teste_tipo_check')) as eventos_vinculados_e_limitados,
+  (not has_table_privilege('service_role','private.preparacoes_pagamento','UPDATE')
+    and pg_get_functiondef('private.registrar_tentativa_inerte(uuid,uuid)'::regprocedure)
+      like '%pg_advisory_xact_lock%'
+    and pg_get_functiondef('private.registrar_tentativa_inerte(uuid,uuid)'::regprocedure)
+      not like '%preparacoes_pagamento where id=p_preparacao_id for update%') as bloqueio_sem_update_preparacao,
   (select count(*) from private.tentativas_pagamento_teste) as tentativas_registradas,
   (select count(*) from private.eventos_tentativa_pagamento_teste) as eventos_registrados;
