@@ -20,11 +20,11 @@ assert.match(conversa, /if \(sessaoServicos === sessaoOriginal && pedidoEmConver
 assert.match(conversa, /Cursor de conversa inválido/);
 assert.match(conversa, /Ordem de paginação da conversa inválida/);
 assert.match(conversa, /Página da conversa ultrapassou o cursor/);
-assert.match(conversa, /instante === limite && item\.id >= fluxo\.cursor\.id/);
+assert.match(conversa, /instante === limite && item\.id\.toLowerCase\(\) >= fluxo\.cursor\.id\.toLowerCase\(\)/);
 assert.match(conversa, /const instanteAnterior = Date\.parse\(anterior\.criado_em\)/);
 assert.match(conversa, /const instanteAtual = Date\.parse\(atual\.criado_em\)/);
 assert.match(conversa, /instanteAnterior < instanteAtual/);
-assert.match(conversa, /instanteAnterior === instanteAtual && anterior\.id <= atual\.id/);
+assert.match(conversa, /anterior\.id\.toLowerCase\(\) <= atual\.id\.toLowerCase\(\)/);
 assert.match(conversa, /Solicitação inválida\. Atualize a lista/);
 assert.match(conversa, /Identificador da conversa inválido/);
 assert.match(conversa, /typeof pedidoEmConversa !== 'string'/);
