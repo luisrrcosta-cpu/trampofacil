@@ -19,4 +19,10 @@ assert.ok(base < chaveTemporal('2026-11-21T10:00:00.123457Z'));
 assert.equal(chaveTemporal('2026-11-21T10:00:00Z'),
   chaveTemporal('2026-11-21T10:00:00.000000Z'));
 assert.throws(() => chaveTemporal('data-invalida'));
+assert.equal(chaveTemporal('2026-11-21T10:00:00.1Z'),
+  chaveTemporal('2026-11-21T10:00:00.100000Z'));
+assert.ok(chaveTemporal('2026-11-21T10:00:01.000000Z') >
+  chaveTemporal('2026-11-21T10:00:00.999999Z'));
+assert.equal(chaveTemporal('2026-11-21T10:00:00.123456789Z'),
+  chaveTemporal('2026-11-21T10:00:00.123456Z'));
 console.log('Precisão e fusos da paginação de conversas verificados.');
