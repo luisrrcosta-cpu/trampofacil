@@ -297,7 +297,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   assert.deepEqual(await page.evaluate(() => [localStorage.length, sessionStorage.length]), [0, 0]);
   pedidosPaginados = Array.from({ length: 52 }, (_, i) => ({
     ...pedido, titulo: `Solicitação fictícia ${52 - i}`,
-    id: '00000000-0000-0000-0000-' + String(52 - i).padStart(12, '0'),
+    id: '00000000-0000-4000-8000-' + String(52 - i).padStart(12, '0'),
   }));
   await page.getByRole('button', { name: 'Voltar às solicitações' }).click();
   const anteriores = page.getByRole('button', { name: 'Ver solicitações anteriores' });
