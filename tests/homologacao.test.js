@@ -100,6 +100,21 @@ test('JSON com UTF-8 inválido é recusado antes de autenticar',async()=>{
  assert.equal(resposta.status,400);
  assert.equal(chamadas.length,0,'JSON inválido não pode chegar ao Auth');
 });
+test('preflight de origem externa e requisição sem sessão não consultam o Auth',async()=>{
+ const {handle,chamadas}=montar();
+ const preflight=new Request(origem+'/api/pagamentos/preparar',{
+  method:'OPTIONS',headers:{Origin:'https://externo.example.invalid'},
+ });
+ const rejeitada=await handle(preflight);
+ assert.equal(rejeitada.status,403);
+ assert.equal(rejeitada.headers.get('Access-Control-Allow-Origin'),null);
+ const semSessao=new Request(origem+'/api/pagamentos/preparar',{
+  method:'POST',headers:{Origin:origem,'Content-Type':'application/json'},body:JSON.stringify(dados),
+ });
+ const resposta=await handle(semSessao);
+ assert.equal(resposta.status,401);
+ assert.equal(chamadas.length,0,'origem externa ou ausência de sessão não pode consultar o Auth');
+});
 test('rotas de cobrança e métodos de gravação adicionais não existem',async()=>{
  const {handle,chamadas}=montar();
  for(const metodo of ['GET','PUT','PATCH','DELETE']){
