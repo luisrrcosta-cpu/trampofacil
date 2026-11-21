@@ -249,10 +249,11 @@ async function carregarConversa() {
     const pedidos = await lerConversa(resposta);
     if (!pedidos || sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return;
     if (!Array.isArray(pedidos) || pedidos.length > 1 ||
-        !pedidos.every(item => item && item.id === pedidoOriginal &&
+        !pedidos.every(item => item && item.id.toLowerCase() === pedidoOriginal.toLowerCase() &&
           typeof item.cliente_usuario_id === 'string' &&
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(item.cliente_usuario_id) &&
           typeof item.profissional_usuario_id === 'string' &&
-          item.cliente_usuario_id !== item.profissional_usuario_id &&
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(item.profissional_usuario_id) &&
           papelNaContratacao(item, sessaoOriginal.usuario) &&
           typeof item.titulo === 'string' &&
           item.titulo.trim().length >= 3 && item.titulo.length <= 120 &&
