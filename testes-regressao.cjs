@@ -48,6 +48,9 @@ assert.match(servicos, /if \(loginAtual === versaoLogin\) bloquear\(secao, false
 assert.match(servicos, /function reiniciarLogin\(\) \{\s*versaoLogin\+\+;\s*bloquear\(elemento\('entrar'\), false\)/);
 assert.match(servicos, /if \(!filtrosBusca \|\| maisProfissionais\.hidden\) return/);
 assert.match(servicos, /const filtrosAtuais = \{/);
+assert.match(servicos, /Number\.isSafeInteger\(pagina\)/);
+assert.match(servicos, /pagina < 0 \|\| pagina > 10000/);
+assert.match(servicos, /Parâmetros de busca inválidos\. Faça uma nova busca/);
 assert.match(servicos, /String\(filtros\.termo_servico \?\? ''\)\.trim\(\)/);
 assert.match(servicos, /filtrosAtuais\.termo_cidade\.length > 120/);
 assert.match(servicos, /if \(buscaAtual !== versaoBusca\) return/);
