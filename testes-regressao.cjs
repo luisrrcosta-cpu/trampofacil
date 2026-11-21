@@ -38,6 +38,8 @@ assert.match(conversa, /item\.id === pedidoOriginal/);
 assert.match(conversa, /papelNaContratacao\(item, sessaoOriginal\.usuario\)/);
 assert.match(conversa, /participantesConversa = new Set\(\[pedido\.cliente_usuario_id, pedido\.profissional_usuario_id\]\)/);
 assert.match(conversa, /participantesConversa\?\.has\(item\.autor_usuario_id\)/);
+assert.match(conversa, /!participantesConversa\?\.has\(sessaoServicos\.usuario\)/);
+assert.match(conversa, /Não foi possível validar a participação na conversa\. Atualize/);
 assert.match(conversa, /participantesConversa = undefined/);
 assert.match(conversa, /Não mostrar dados parciais nem permitir envio após falha de validação/);
 assert.match(conversa, /fluxo\.lista\.replaceChildren\(\);\s*fluxo\.cursor = undefined;\s*fluxo\.mais\.hidden = true/);
