@@ -47,6 +47,7 @@ assert.match(conversa, /fluxo\.lista\.replaceChildren\(\);\s*fluxo\.cursor = und
 assert.match(conversa, /item\.titulo\.trim\(\)\.length >= 3 && item\.titulo\.length <= 120/);
 assert.match(conversa, /Object\.prototype\.hasOwnProperty\.call\(nomesStatus, item\.status\)/);
 assert.match(conversa, /Página da conversa contém identificadores repetidos/);
+assert.match(conversa, /if \(evento\.valor_centavos != null\) \{/);
 assert.match(conversa, /if \(idsDaPagina\.has\(idNormalizado\)\)/);
 assert.match(conversa, /const idsExibidos = new Set\(anexar/);
 assert.match(conversa, /item\.dataset\.registroId\?\.toLowerCase\(\)/);
