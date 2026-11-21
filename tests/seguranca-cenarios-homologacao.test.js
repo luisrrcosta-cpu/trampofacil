@@ -10,6 +10,7 @@ const casos = [
   'testar-acesso-financeiro-autenticado.sql',
   'testar-insercao-financeira-anonima.sql',
   'testar-immutabilidade-financeira-servico.sql',
+  'testar-bloqueio-pagamento-real.sql',
 ];
 
 for (const nome of casos) {
