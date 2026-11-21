@@ -154,11 +154,25 @@ async function carregarPaginaConversa(fluxo, anexar) {
     throw new Error('Resposta de conversa inválida');
   }
   const pagina = registros.slice(0, tamanhoPaginaConversa);
-  const itens = pagina.map(fluxo.renderizar);
-  if (anexar) fluxo.lista.append(...itens);
-  else fluxo.lista.replaceChildren(...(itens.length ? itens : [texto('li', fluxo.vazio)]));
+  const idsExibidos = new Set(anexar
+    ? Array.from(fluxo.lista.children, item => item.dataset.registroId).filter(Boolean)
+    : []);
+  const novosRegistros = pagina.filter(item => {
+    if (idsExibidos.has(item.id)) return false;
+    idsExibidos.add(item.id);
+    return true;
+  });
+  const itens = novosRegistros.map(fluxo.renderizar);
+  itens.forEach((item, indice) => { item.dataset.registroId = novosRegistros[indice].id; });
+  if (anexar) {
+    fluxo.lista.querySelectorAll('li:not([data-registro-id])').forEach(item => item.remove());
+    fluxo.lista.append(...itens);
+  } else {
+    fluxo.lista.replaceChildren(...(itens.length ? itens : [texto('li', fluxo.vazio)]));
+  }
   fluxo.cursor = pagina.at(-1);
-  fluxo.mais.hidden = registros.length <= tamanhoPaginaConversa;
+  fluxo.mais.hidden = registros.length <= tamanhoPaginaConversa ||
+    (anexar && novosRegistros.length === 0);
   return true;
 }
 
