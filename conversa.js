@@ -163,7 +163,7 @@ async function carregarPaginaConversa(fluxo, anexar) {
             (item.valor_centavos == null || (Number.isSafeInteger(item.valor_centavos) &&
               item.valor_centavos >= 100 && item.valor_centavos <= 100000000))
           : typeof item.autor_usuario_id === 'string' &&
-            participantesConversa?.has(item.autor_usuario_id) &&
+            participantesConversa?.has(item.autor_usuario_id.toLowerCase()) &&
             typeof item.texto === 'string' && item.texto.trim().length > 0 &&
             item.texto.length <= 2000))) {
     throw new Error('Resposta de conversa inválida');
@@ -267,7 +267,7 @@ async function carregarConversa() {
       statusConversa.textContent = 'Solicitação indisponível.';
       return;
     }
-    participantesConversa = new Set([pedido.cliente_usuario_id, pedido.profissional_usuario_id]);
+    participantesConversa = new Set([pedido.cliente_usuario_id.toLowerCase(), pedido.profissional_usuario_id.toLowerCase()]);
     elemento('titulo-conversa').textContent = pedido.titulo;
     if (!(await carregarPaginaConversa(historico, false))) return;
     if (!(await carregarPaginaConversa(mensagens, false))) return;
@@ -324,7 +324,7 @@ for (const fluxo of [historico, mensagens]) {
 formularioMensagem.addEventListener('submit', async (evento) => {
   evento.preventDefault();
   if (ocupado || !sessaoServicos || !podeEnviarMensagem || envioIncerto) return;
-  if (!participantesConversa?.has(sessaoServicos.usuario) ||
+  if (!participantesConversa?.has(sessaoServicos.usuario.toLowerCase()) ||
       typeof pedidoEmConversa !== 'string' ||
       !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(pedidoEmConversa)) {
     podeEnviarMensagem = false;
