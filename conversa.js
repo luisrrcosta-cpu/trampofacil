@@ -168,6 +168,15 @@ async function carregarPaginaConversa(fluxo, anexar) {
             item.texto.length <= 2000))) {
     throw new Error('Resposta de conversa inválida');
   }
+  // Uma página antiga nunca pode conter registros iguais ou posteriores ao cursor.
+  if (anexar && registros.some(item => {
+    const instante = Date.parse(item.criado_em);
+    const limite = Date.parse(fluxo.cursor.criado_em);
+    return instante > limite ||
+      (instante === limite && item.id >= fluxo.cursor.id);
+  })) {
+    throw new Error('Página da conversa ultrapassou o cursor');
+  }
   // O histórico e as mensagens precisam permanecer em ordem decrescente
   // para que o cursor não pule nem repita registros ao buscar páginas antigas.
   for (let indice = 1; indice < registros.length; indice++) {
