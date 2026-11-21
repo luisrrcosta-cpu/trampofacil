@@ -28,7 +28,7 @@ const historico = {
   vazio: 'Nenhum evento registrado.',
   renderizar(evento) {
     const item = texto('li', `${dataConversa.format(new Date(evento.criado_em))} · ${nomesStatus[evento.status] ?? evento.status}`);
-    if (evento.valor_centavos !== null) {
+    if (evento.valor_centavos != null) {
       item.append(texto('span', ` · ${moeda.format(evento.valor_centavos / 100)}`));
     }
     return item;
