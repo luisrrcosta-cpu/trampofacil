@@ -41,3 +41,30 @@ test('erro ou resposta incerta não provoca repetição automática',async()=>{
     e=>e.message==='Não foi possível confirmar a tentativa de teste.');
   assert.equal(chamadas,1);
 });
+
+test('duas chamadas paralelas com a mesma chave retornam a mesma tentativa simulada',async()=>{
+  let registros=0;
+  let fila=Promise.resolve();
+  const banco={
+    begin:fn=>{
+      const tarefa=fila.then(async()=>{
+        const tx=(strings,...valores)=>{
+          if(strings[0].includes('set local role')) return Promise.resolve([]);
+          assert.deepEqual(valores,[preparacaoId,chaveIdempotencia]);
+          if(registros===0) registros++;
+          return Promise.resolve([{id:tentativaId}]);
+        };
+        return fn(tx);
+      });
+      fila=tarefa.then(()=>undefined,()=>undefined);
+      return tarefa;
+    },
+  };
+  const registrador=criarRegistradorTentativaInerte({ambiente:'teste',banco});
+  const [a,b]=await Promise.all([
+    registrador.registrar({preparacaoId,chaveIdempotencia}),
+    registrador.registrar({preparacaoId,chaveIdempotencia}),
+  ]);
+  assert.equal(a.tentativaId,b.tentativaId);
+  assert.equal(registros,1);
+});
