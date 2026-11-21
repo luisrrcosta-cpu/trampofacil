@@ -669,6 +669,14 @@ async function atualizarPedido(pedido, dados) {
     elemento('status-solicitacoes').textContent = 'Dados da alteração inválidos. Atualize a lista.';
     return;
   }
+  const uuidValido = valor => typeof valor === 'string' &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(valor);
+  if (!uuidValido(pedido.cliente_usuario_id) ||
+      !uuidValido(pedido.profissional_usuario_id) ||
+      pedido.cliente_usuario_id.toLowerCase() === pedido.profissional_usuario_id.toLowerCase()) {
+    elemento('status-solicitacoes').textContent = 'Participantes da solicitação inválidos. Atualize a lista.';
+    return;
+  }
   const papel = papelNaContratacao(pedido, sessaoServicos.usuario);
   if (!podeMudarContratacao(pedido.status, dados.status, papel)) {
     elemento('status-solicitacoes').textContent = 'Esta ação não está disponível para sua função ou para o estado atual do serviço.';
