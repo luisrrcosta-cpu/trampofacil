@@ -6,6 +6,9 @@ select
    where n.nspname='private' and c.relname in
    ('tentativas_pagamento_teste','eventos_tentativa_pagamento_teste')
    and c.relrowsecurity) as rls_ambas_tabelas,
+  (not has_schema_privilege('anon','private','USAGE')
+    and not has_schema_privilege('authenticated','private','USAGE')
+    and has_schema_privilege('service_role','private','USAGE')) as schema_privado_restrito,
   not has_function_privilege('anon','private.registrar_tentativa_inerte(uuid,uuid)','EXECUTE') as anon_bloqueado,
   not has_function_privilege('authenticated','private.registrar_tentativa_inerte(uuid,uuid)','EXECUTE') as autenticado_bloqueado,
   has_function_privilege('service_role','private.registrar_tentativa_inerte(uuid,uuid)','EXECUTE') as servico_autorizado,
