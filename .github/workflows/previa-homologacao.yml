@@ -80,6 +80,9 @@ jobs:
       - name: Testar regressoes da interface
         shell: bash
         run: node testes-regressao.cjs
+      - name: Testar precisao da paginacao das conversas
+        shell: bash
+        run: node testes-paginacao-conversa.cjs
       - name: Empacotar somente a interface estatica
         shell: bash
         run: |
