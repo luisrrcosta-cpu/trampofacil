@@ -17,8 +17,9 @@ begin
  if p_preparacao_id is null or p_chave_idempotencia is null then
    raise exception 'Tentativa inválida';
  end if;
+ perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(p_preparacao_id::text, 0));
  select * into v_preparacao from private.preparacoes_pagamento
- where id=p_preparacao_id for update;
+ where id=p_preparacao_id;
  if not found or v_preparacao.ambiente<>'teste'
    or v_preparacao.estado<>'preparada'
    or v_preparacao.pagamento_habilitado<>false then
