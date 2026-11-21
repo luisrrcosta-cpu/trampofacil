@@ -116,6 +116,11 @@ function botaoAcao(rotulo, acao) {
 async function procurar(filtros, pagina) {
   if (!integrado || ocupado) return;
   const status = elemento('status-busca');
+  if (!filtros || typeof filtros !== 'object' || !Number.isSafeInteger(pagina) ||
+      pagina < 0 || pagina > 10000) {
+    status.textContent = 'Parâmetros de busca inválidos. Faça uma nova busca.';
+    return;
+  }
   const buscaAtual = ++versaoBusca;
   const filtrosAtuais = {
     termo_servico: String(filtros.termo_servico ?? '').trim(),
