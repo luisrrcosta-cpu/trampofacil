@@ -19,7 +19,8 @@ for (const nome of casos) {
     assert.match(comandos, /^BEGIN\s*;/i);
     assert.match(comandos, /ROLLBACK\s*;\s*$/i);
     assert.doesNotMatch(comandos, /\bCOMMIT\s*;/i);
-    assert.doesNotMatch(comandos, /\b(?:DELETE|TRUNCATE|DROP)\s+/i);
+    const semExclusaoInerte = comandos.replace(/DELETE\s+FROM\s+private\.tentativas_pagamento_teste\s+WHERE\s+false\s*;/gi, '');
+    assert.doesNotMatch(semExclusaoInerte, /\b(?:DELETE|TRUNCATE|DROP)\s+/i);
     // A auditoria de privilégios usa UPDATE ... WHERE false para exigir erro de permissão,
     // sem afetar linhas; essa instrução inerte não representa ativação de pagamento.
     const semAtualizacoesInertes = comandos.replace(/UPDATE\s+private\.preparacoes_pagamento\s+SET\s+pagamento_habilitado\s*=\s*true\s+WHERE\s+false\s*;/gi, '');
