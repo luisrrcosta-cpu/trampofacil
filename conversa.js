@@ -249,7 +249,8 @@ async function carregarConversa() {
     const pedidos = await lerConversa(resposta);
     if (!pedidos || sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return;
     if (!Array.isArray(pedidos) || pedidos.length > 1 ||
-        !pedidos.every(item => item && item.id.toLowerCase() === pedidoOriginal.toLowerCase() &&
+        !pedidos.every(item => item && typeof item.id === 'string' &&
+          item.id.toLowerCase() === pedidoOriginal.toLowerCase() &&
           typeof item.cliente_usuario_id === 'string' &&
           /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(item.cliente_usuario_id) &&
           typeof item.profissional_usuario_id === 'string' &&
