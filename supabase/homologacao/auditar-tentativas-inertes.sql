@@ -32,5 +32,9 @@ select
   (select count(*)=4 from pg_constraint k where k.conrelid='private.tentativas_pagamento_teste'::regclass
     and k.conname in ('cobranca_sem_pagamento_real','tentativas_pagamento_teste_ambiente_check',
       'tentativas_pagamento_teste_pagamento_habilitado_check','tentativas_pagamento_teste_repasse_habilitado_check')) as restricoes_sandbox_presentes,
+  (select count(*)=2 from pg_constraint k
+    where k.conrelid='private.eventos_tentativa_pagamento_teste'::regclass
+    and k.conname in ('eventos_tentativa_pagamento_teste_tentativa_id_fkey',
+      'eventos_tentativa_pagamento_teste_tipo_check')) as eventos_vinculados_e_limitados,
   (select count(*) from private.tentativas_pagamento_teste) as tentativas_registradas,
   (select count(*) from private.eventos_tentativa_pagamento_teste) as eventos_registrados;
