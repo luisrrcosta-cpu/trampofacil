@@ -13,9 +13,14 @@ const TRANSICOES_CONTRATACAO = Object.freeze({
 
 function papelNaContratacao(pedido, usuario) {
   if (typeof usuario !== 'string' || !usuario || !pedido ||
-      pedido.cliente_usuario_id === pedido.profissional_usuario_id) return undefined;
-  if (pedido.cliente_usuario_id === usuario) return 'cliente';
-  if (pedido.profissional_usuario_id === usuario) return 'profissional';
+      typeof pedido.cliente_usuario_id !== 'string' ||
+      typeof pedido.profissional_usuario_id !== 'string') return undefined;
+  const cliente = pedido.cliente_usuario_id.toLowerCase();
+  const profissional = pedido.profissional_usuario_id.toLowerCase();
+  const usuarioAtual = usuario.toLowerCase();
+  if (cliente === profissional) return undefined;
+  if (cliente === usuarioAtual) return 'cliente';
+  if (profissional === usuarioAtual) return 'profissional';
   return undefined;
 }
 
