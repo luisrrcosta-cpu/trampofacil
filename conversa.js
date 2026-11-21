@@ -168,10 +168,19 @@ async function carregarPaginaConversa(fluxo, anexar) {
             item.texto.length <= 2000))) {
     throw new Error('Resposta de conversa inválida');
   }
+  // Compare os instantes com precisão de microssegundos do PostgreSQL.
+  // Date.parse arredonda para milissegundos e pode confundir mensagens distintas.
+  const chaveTemporal = (valor) => {
+    const partes = /^(.{19})(?:\.(\d+))?(Z|[+-]\d{2}:\d{2})$/.exec(valor);
+    if (!partes) throw new Error('Data da conversa inválida');
+    const segundos = Date.parse(`${partes[1]}${partes[3]}`);
+    return BigInt(segundos) * 1000000n +
+      BigInt((partes[2] || '').padEnd(6, '0').slice(0, 6));
+  };
   // Uma página antiga nunca pode conter registros iguais ou posteriores ao cursor.
   if (anexar && registros.some(item => {
-    const instante = Date.parse(item.criado_em);
-    const limite = Date.parse(fluxo.cursor.criado_em);
+    const instante = chaveTemporal(item.criado_em);
+    const limite = chaveTemporal(fluxo.cursor.criado_em);
     return instante > limite ||
       (instante === limite && item.id.toLowerCase() >= fluxo.cursor.id.toLowerCase());
   })) {
@@ -182,8 +191,8 @@ async function carregarPaginaConversa(fluxo, anexar) {
   for (let indice = 1; indice < registros.length; indice++) {
     const anterior = registros[indice - 1];
     const atual = registros[indice];
-    const instanteAnterior = Date.parse(anterior.criado_em);
-    const instanteAtual = Date.parse(atual.criado_em);
+    const instanteAnterior = chaveTemporal(anterior.criado_em);
+    const instanteAtual = chaveTemporal(atual.criado_em);
     if (instanteAnterior < instanteAtual ||
         (instanteAnterior === instanteAtual &&
           anterior.id.toLowerCase() <= atual.id.toLowerCase())) {
