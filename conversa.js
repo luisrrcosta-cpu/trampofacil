@@ -270,6 +270,15 @@ async function carregarConversa() {
     statusConversa.textContent = podeEnviarMensagem ? '' : 'Solicitação encerrada. As mensagens continuam disponíveis para leitura.';
   } catch {
     if (sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal) {
+      // Não mostrar dados parciais nem permitir envio após falha de validação.
+      participantesConversa = undefined;
+      podeEnviarMensagem = false;
+      formularioMensagem.hidden = true;
+      for (const fluxo of [historico, mensagens]) {
+        fluxo.lista.replaceChildren();
+        fluxo.cursor = undefined;
+        fluxo.mais.hidden = true;
+      }
       statusConversa.textContent = 'Não foi possível carregar todos os dados. Tente atualizar.';
     }
   } finally {
