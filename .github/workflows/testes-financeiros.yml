@@ -17,4 +17,4 @@ jobs:
         with:
           node-version: '22'
       - name: Testar tentativas financeiras inertes
-        run: node --test tests/registrar-tentativa-inerte.test.js
+        run: node --test tests/registrar-tentativa-inerte.test.js tests/isolamento-homologacao-financeira.test.js
