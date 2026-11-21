@@ -5,6 +5,27 @@ Plataforma de contratação de profissionais em desenvolvimento.
 O trabalho atual está na ramificação `codex/v16-seguranca-integracoes`.
 A versão publicada, a main e o banco de produção não são alterados por estes testes.
 
+## Lote validado em 21/11/2026
+
+Código: `611bf2189cd858c65d4a54a7ec51318468d5fda1`. A suíte completa passou
+em 104 testes, zero falhas/ignorados, e nas regressões adicionais:
+https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/44956310228
+A concorrência com duas conexões PostgreSQL reais também passou, em banco
+isolado e descartável, sem acessar o Supabase:
+https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/44956310312
+
+A prévia privada foi atualizada para a versão 2, mantendo acesso só ao dono:
+https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site
+A interface publicada corresponde aos arquivos públicos desse commit.
+A versão 1 e seus checkpoints abaixo são registros históricos, não o snapshot
+atual. A publicação não inclui módulos do servidor, SQL ou credenciais.
+
+O empacotamento Edge agora confere as sete dependências. Nenhuma implantação
+no Supabase foi feita neste lote: a função remota continua na versão 2 anterior.
+`autenticacaoPronta: false` e pagamentos/repasses reais continuam bloqueados.
+Faltam SMTP/login real, chamada autenticada remota, credenciais PagBank sandbox
+e integração financeira completa. A main e o banco de produção não foram alterados.
+
 ## Ambiente conectado de testes
 
 `config.js` usa exclusivamente o projeto Supabase `TrampoFacil-Homologacao`,

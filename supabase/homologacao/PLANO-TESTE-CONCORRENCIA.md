@@ -37,3 +37,12 @@ no PostgreSQL isolado; não substitui ensaio autenticado do serviço remoto/TLS.
 
 Workflow: `.github/workflows/concorrencia-isolada.yml`. Consultar sua execução
 antes de declarar o cenário aprovado; não há resultado presumido ou teste ignorado.
+
+### Resultado confirmado
+
+[Execução 44956310312](https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/44956310312)
+aprovada no commit `611bf2189cd858c65d4a54a7ec51318468d5fda1`.
+O log confirmou disputa pelo advisory lock entre duas conexões independentes,
+mesmo UUID, uma tentativa/evento e recusa de chave divergente. O container foi
+encerrado pelo job. A concorrência no PostgreSQL isolado está comprovada;
+a validação autenticada do serviço remoto permanece pendente.
