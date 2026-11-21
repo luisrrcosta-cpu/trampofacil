@@ -1,6 +1,7 @@
 import {criarAdaptadoresHomologacao} from './supabase-homologacao.js';
 import {criarPreparadorPagamento} from './preparar-pagamento.js';
 import {criarHandlerPreparacao} from './handler-preparacao.js';
+import {criarRegistradorTentativaInerte} from './registrar-tentativa-inerte.js';
 
 export const projetoHomologacao = 'asdszqtpydiowgerxwee';
 export const urlHomologacao = `https://${projetoHomologacao}.supabase.co`;
@@ -53,6 +54,14 @@ export function criarServidorEdgeHomologacao({supabaseUrl, bancoUrl, abrirBanco,
       return {id: linhas[0].id};
     });
   };
+  // Adaptador pronto somente para chamadas internas autorizadas; não expõe rota HTTP.
+  // A chave idempotente deve ser criada e preservada por um orquestrador autenticado.
+  const registrarTentativaInterna = async ({preparacaoId, chaveIdempotencia}) => {
+    banco ??= abrirBanco(validarConexaoBancoHomologacao(bancoUrl));
+    return criarRegistradorTentativaInerte({ambiente:'teste', banco}).registrar({preparacaoId, chaveIdempotencia});
+  };
+  // Referência interna, sem uso pela rota pública de preparação nesta etapa.
+  void registrarTentativaInterna;
   const preparador = criarPreparadorPagamento({ambiente:'teste', ...adaptadores, registrarPreparacao});
   const handle = criarHandlerPreparacao({preparador, origemPermitida});
   return async request => {
