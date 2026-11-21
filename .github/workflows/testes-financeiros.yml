@@ -1,0 +1,20 @@
+name: Testes financeiros
+on:
+  push:
+    branches:
+      - codex/v16-seguranca-integracoes
+  pull_request:
+  workflow_dispatch:
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Testar tentativas financeiras inertes
+        run: node --test tests/registrar-tentativa-inerte.test.js
