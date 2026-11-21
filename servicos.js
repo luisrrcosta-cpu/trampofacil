@@ -615,9 +615,7 @@ async function carregarPedidos(aviso = '', anexar = false) {
         /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.cliente_usuario_id) &&
         typeof p.profissional_usuario_id === 'string' &&
         /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.profissional_usuario_id) &&
-        p.cliente_usuario_id !== p.profissional_usuario_id &&
-        (p.cliente_usuario_id === sessaoDaBusca.usuario ||
-          p.profissional_usuario_id === sessaoDaBusca.usuario) &&
+        papelNaContratacao(p, sessaoDaBusca.usuario) &&
         typeof p.titulo === 'string' && p.titulo.trim().length >= 3 && p.titulo.length <= 120 &&
         typeof p.descricao === 'string' && p.descricao.trim().length >= 10 && p.descricao.length <= 3000 &&
         Object.prototype.hasOwnProperty.call(nomesStatus, p.status) &&
