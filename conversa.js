@@ -192,11 +192,12 @@ async function carregarPaginaConversa(fluxo, anexar) {
   }
   const pagina = registros.slice(0, tamanhoPaginaConversa);
   const idsExibidos = new Set(anexar
-    ? Array.from(fluxo.lista.children, item => item.dataset.registroId).filter(Boolean)
+    ? Array.from(fluxo.lista.children, item => item.dataset.registroId?.toLowerCase()).filter(Boolean)
     : []);
   const novosRegistros = pagina.filter(item => {
-    if (idsExibidos.has(item.id)) return false;
-    idsExibidos.add(item.id);
+    const idNormalizado = item.id.toLowerCase();
+    if (idsExibidos.has(idNormalizado)) return false;
+    idsExibidos.add(idNormalizado);
     return true;
   });
   const itens = novosRegistros.map(fluxo.renderizar);
