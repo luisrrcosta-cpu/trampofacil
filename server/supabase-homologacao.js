@@ -1,12 +1,12 @@
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const projetoProducao='flropneedvaimzcmvcza';
+const projetoHomologacao='asdszqtpydiowgerxwee';
 
 export function criarAdaptadoresHomologacao({ambiente,projetoHomologacaoConfirmado,supabaseUrl,chavePublicavel,fetchImpl=globalThis.fetch,timeoutMs=15000}={}) {
   if(ambiente!=='teste'||projetoHomologacaoConfirmado!==true)throw new Error('Selecione e confirme um projeto de homologação.');
   let url;
   try{url=new URL(supabaseUrl);}catch{throw new Error('URL de homologação inválida.');}
   const projeto=/^([a-z0-9]{20})\.supabase\.co$/.exec(url.hostname)?.[1];
-  if(!projeto||projeto===projetoProducao||url.protocol!=='https:'||url.port||url.username||url.password||url.pathname!=='/'||url.search||url.hash)throw new Error('Use exclusivamente a URL HTTPS de um projeto Supabase de homologação.');
+  if(projeto!==projetoHomologacao||url.protocol!=='https:'||url.port||url.username||url.password||url.pathname!=='/'||url.search||url.hash)throw new Error('Use exclusivamente a URL HTTPS de um projeto Supabase de homologação.');
   if(typeof chavePublicavel!=='string'||!/^sb_publishable_[A-Za-z0-9_-]{1,450}$/.test(chavePublicavel))throw new Error('Use somente uma chave publicável de homologação.');
   if(typeof fetchImpl!=='function'||!Number.isInteger(timeoutMs)||timeoutMs<1||timeoutMs>30000)throw new Error('Transporte inválido.');
   const tokenValido=token=>typeof token==='string'&&token.length<=8192&&/^[A-Za-z0-9._-]+$/.test(token);
