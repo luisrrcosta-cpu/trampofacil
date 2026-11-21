@@ -26,3 +26,18 @@ test('conexão de consulta não libera login sem confirmação explícita', () =
   }
   assert.equal(validar({ ...base, autenticacaoPronta: true }).autenticacaoPronta, true);
 });
+
+test('configuração publicada nesta ramificação mantém somente homologação e login bloqueado', async () => {
+  const configCodigo = await readFile(new URL('../config.js', import.meta.url), 'utf8');
+  const contexto = { window: {} };
+  runInNewContext(configCodigo, contexto);
+  const config = contexto.window.TRAMPOFACIL_SUPABASE;
+  assert.equal(config.ambiente, 'homologacao');
+  assert.equal(config.url, base.url);
+  assert.match(config.chavePublicavel, /^sb_publishable_[A-Za-z0-9_-]+$/);
+  assert.equal(config.autenticacaoPronta, false);
+  assert.equal(validar(config).integrado, true);
+  assert.equal(validar(config).autenticacaoPronta, false);
+  assert.equal(Object.isFrozen(config), true);
+  assert.doesNotMatch(configCodigo, /sb_secret_|service_role/);
+});
