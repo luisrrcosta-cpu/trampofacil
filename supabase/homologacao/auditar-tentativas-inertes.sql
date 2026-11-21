@@ -9,6 +9,7 @@ select
   not has_function_privilege('anon','private.registrar_tentativa_inerte(uuid,uuid)','EXECUTE') as anon_bloqueado,
   not has_function_privilege('authenticated','private.registrar_tentativa_inerte(uuid,uuid)','EXECUTE') as autenticado_bloqueado,
   has_function_privilege('service_role','private.registrar_tentativa_inerte(uuid,uuid)','EXECUTE') as servico_autorizado,
+  (select not p.prosecdef from pg_proc p where p.oid='private.registrar_tentativa_inerte(uuid,uuid)'::regprocedure) as funcao_sem_security_definer,
   exists(select 1 from pg_indexes where schemaname='private'
     and tablename='tentativas_pagamento_teste'
     and indexname='tentativas_unicas_por_preparacao_teste'
