@@ -76,3 +76,20 @@ test('origem não autorizada é rejeitada antes da autenticação',async()=>{
   assert.equal((await resposta.json()).erro,'ORIGEM_NAO_PERMITIDA');
   assert.equal(chamadas,0);
 });
+
+test('POST sem autenticação não abre banco nem consulta serviço externo',async()=>{
+  let chamadas=0;
+  const handler=criarServidorEdgeHomologacao({
+    supabaseUrl:urlHomologacao,
+    bancoUrl:'postgresql://postgres:senha@db.asdszqtpydiowgerxwee.supabase.co:5432/postgres',
+    abrirBanco(){chamadas++;throw new Error('acesso inesperado');},
+    fetchImpl:async()=>{chamadas++;throw new Error('consulta inesperada');}
+  });
+  const resposta=await handler(new Request('https://exemplo.test/functions/v1/preparar-pagamento-teste',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({solicitacaoId:'11111111-1111-4111-8111-111111111111',forma:'credito_avista',parcelas:1})
+  }));
+  assert.equal(resposta.status,401);
+  assert.equal((await resposta.json()).erro,'NAO_AUTENTICADO');
+  assert.equal(chamadas,0);
+});
