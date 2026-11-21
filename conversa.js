@@ -294,7 +294,7 @@ async function carregarConversa() {
   } finally {
     if (sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal) {
       bloquear(secaoConversa, false);
-      enviarMensagem.disabled = envioIncerto;
+      enviarMensagem.disabled = envioIncerto || !podeEnviarMensagem;
     }
   }
 }
@@ -314,7 +314,7 @@ for (const fluxo of [historico, mensagens]) {
     } finally {
       if (sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal) {
         bloquear(secaoConversa, false);
-        enviarMensagem.disabled = envioIncerto;
+        enviarMensagem.disabled = envioIncerto || !podeEnviarMensagem;
       }
     }
   });
@@ -372,7 +372,7 @@ formularioMensagem.addEventListener('submit', async (evento) => {
   } finally {
     if (sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal) {
       bloquear(secaoConversa, false);
-      enviarMensagem.disabled = envioIncerto;
+      enviarMensagem.disabled = envioIncerto || !podeEnviarMensagem;
     }
   }
   if (atualizar && sessaoServicos === sessaoOriginal && pedidoEmConversa === pedidoOriginal) {
