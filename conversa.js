@@ -114,6 +114,10 @@ async function lerConversa(resposta) {
 }
 
 async function carregarPaginaConversa(fluxo, anexar) {
+  if (anexar && !fluxo.cursor) {
+    fluxo.mais.hidden = true;
+    return false;
+  }
   const sessaoOriginal = sessaoServicos;
   const pedidoOriginal = pedidoEmConversa;
   const filtros = {
@@ -122,7 +126,7 @@ async function carregarPaginaConversa(fluxo, anexar) {
     order: 'criado_em.desc,id.desc',
     limit: tamanhoPaginaConversa + 1,
   };
-  if (anexar && fluxo.cursor) {
+  if (anexar) {
     const { criado_em, id } = fluxo.cursor;
     if (typeof criado_em !== 'string' ||
         !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(criado_em) ||
