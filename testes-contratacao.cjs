@@ -37,4 +37,8 @@ for (const usuario of ['terceiro','',undefined,null]) {
 }
 assert.equal(papelNaContratacao(null,'cliente'),undefined);
 assert.equal(papelNaContratacao({cliente_usuario_id:'cliente',profissional_usuario_id:'cliente'},'cliente'),undefined);
+assert.equal(papelNaContratacao({cliente_usuario_id:'ABC',profissional_usuario_id:'DEF'},'abc'),'cliente');
+assert.equal(papelNaContratacao({cliente_usuario_id:'ABC',profissional_usuario_id:'DEF'},'def'),'profissional');
+assert.equal(papelNaContratacao({cliente_usuario_id:'ABC',profissional_usuario_id:'abc'},'ABC'),undefined);
+assert.equal(papelNaContratacao({cliente_usuario_id:null,profissional_usuario_id:'DEF'},'DEF'),undefined);
 console.log('Ações de terceiros e identidade ambígua bloqueadas na interface.');
