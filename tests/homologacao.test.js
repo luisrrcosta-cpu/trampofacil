@@ -40,6 +40,14 @@ test('configuração rejeita produção, chaves administrativas e destinos não 
   {chavePublicavel:'sb_secret_nao_permitida'},{chavePublicavel:'eyJservice_role'},
  ])assert.throws(()=>criarAdaptadoresHomologacao({...config,...alteracao}));
 });
+test('tokens malformados são rejeitados sem acessar o Supabase',async()=>{
+ for(const authorization of ['Bearer token com espaco','Bearer token\\nquebrado','Basic token-ficticio','Bearer ','Bearer '+ 'x'.repeat(8193)]){
+  const {handle,chamadas}=montar();
+  const resposta=await handle(requisicao(undefined,{headers:{Authorization:authorization}}));
+  assert.equal(resposta.status,401);
+  assert.equal(chamadas.length,0,'token malformado não deve gerar consulta externa');
+ }
+});
 test('token recusado não chega à consulta do orçamento nem revela o erro do Auth',async()=>{
  let chamadas=0;const {handle}=montar({fetchImpl:async()=>{chamadas++;return new Response(JSON.stringify({erro:'detalhe privado'}),{status:401});}});
  const resposta=await handle(requisicao());assert.equal(resposta.status,401);assert.equal(chamadas,1);
