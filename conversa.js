@@ -86,6 +86,11 @@ function limparConversa() {
 
 function abrirConversa(id) {
   if (ocupado) return;
+  if (typeof id !== 'string' ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
+    elemento('status-solicitacoes').textContent = 'Solicitação inválida. Atualize a lista.';
+    return;
+  }
   const rascunho = rascunhoConversa;
   limparConversa();
   pedidoEmConversa = id;
@@ -114,6 +119,10 @@ async function lerConversa(resposta) {
 }
 
 async function carregarPaginaConversa(fluxo, anexar) {
+  if (!sessaoServicos || typeof pedidoEmConversa !== 'string' ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(pedidoEmConversa)) {
+    throw new Error('Identificador da conversa inválido');
+  }
   if (anexar && !fluxo.cursor) {
     fluxo.mais.hidden = true;
     return false;
