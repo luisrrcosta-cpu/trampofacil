@@ -112,3 +112,20 @@ test('token falso não permite abrir banco financeiro',async()=>{
   assert.equal(consultas,1);
   assert.equal(abriu,0);
 });
+
+test('corpo excessivo é bloqueado antes de consultar Auth ou banco',async()=>{
+  let consultas=0;
+  const handler=criarServidorEdgeHomologacao({
+    supabaseUrl:urlHomologacao,
+    bancoUrl:'postgresql://postgres:senha@db.asdszqtpydiowgerxwee.supabase.co:5432/postgres',
+    abrirBanco(){consultas++;throw new Error('banco não deve abrir');},
+    fetchImpl:async()=>{consultas++;throw new Error('Auth não deve ser consultado');}
+  });
+  const resposta=await handler(new Request('https://exemplo.test/functions/v1/preparar-pagamento-teste',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({dados:'x'.repeat(5000)})
+  }));
+  assert.equal(resposta.status,413);
+  assert.equal((await resposta.json()).erro,'CORPO_MUITO_GRANDE');
+  assert.equal(consultas,0);
+});
