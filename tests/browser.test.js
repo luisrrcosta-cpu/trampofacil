@@ -258,7 +258,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   assert.equal(await page.locator('#mensagens-conversa li').first().locator('strong').textContent(), 'Outra parte');
   await page.getByRole('textbox', { name: 'Mensagem', exact: true }).fill('Resposta fictícia');
   await page.getByRole('button', { name: 'Enviar mensagem' }).click();
-  await page.getByText('Resposta fictícia', { exact: true }).waitFor();
+  await page.getByText('Resposta fictícia', { exact: true }).waitFor().catch(async erro => { throw new Error(`Mensagem não apareceu: ${await page.locator('#status-mensagem').innerText().catch(()=> 'sem status')} / ${await page.locator('#status-conversa').innerText().catch(()=> 'sem conversa')} / ${JSON.stringify(erros)}`, {cause:erro}); });
   const campoMensagem = page.getByRole('textbox', { name: 'Mensagem', exact: true });
   const botaoMensagem = page.getByRole('button', { name: 'Enviar mensagem' });
   expirarSessao = true;
