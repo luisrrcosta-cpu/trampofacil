@@ -124,13 +124,35 @@ async function carregarPaginaConversa(fluxo, anexar) {
   };
   if (anexar && fluxo.cursor) {
     const { criado_em, id } = fluxo.cursor;
+    if (typeof criado_em !== 'string' ||
+        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(criado_em) ||
+        !Number.isFinite(Date.parse(criado_em)) ||
+        typeof id !== 'string' ||
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
+      throw new Error('Cursor de conversa inválido');
+    }
     filtros.or = `(criado_em.lt.${criado_em},and(criado_em.eq.${criado_em},id.lt.${id}))`;
   }
   const resposta = await apiConversa(fluxo, filtros);
   if (sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return false;
   const registros = await lerConversa(resposta);
   if (!registros || sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return false;
-  if (!Array.isArray(registros)) throw new Error('Resposta de conversa inválida');
+  if (!Array.isArray(registros) || registros.length > tamanhoPaginaConversa + 1 ||
+      !registros.every(item => item && typeof item.id === 'string' &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(item.id) &&
+        typeof item.criado_em === 'string' &&
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(item.criado_em) &&
+        Number.isFinite(Date.parse(item.criado_em)) &&
+        (fluxo === historico
+          ? Object.prototype.hasOwnProperty.call(nomesStatus, item.status) &&
+            (item.valor_centavos == null || (Number.isSafeInteger(item.valor_centavos) &&
+              item.valor_centavos >= 100 && item.valor_centavos <= 100000000))
+          : typeof item.autor_usuario_id === 'string' &&
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(item.autor_usuario_id) &&
+            typeof item.texto === 'string' && item.texto.trim().length > 0 &&
+            item.texto.length <= 2000))) {
+    throw new Error('Resposta de conversa inválida');
+  }
   const pagina = registros.slice(0, tamanhoPaginaConversa);
   const itens = pagina.map(fluxo.renderizar);
   if (anexar) fluxo.lista.append(...itens);
