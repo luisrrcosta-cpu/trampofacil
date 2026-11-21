@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "test:local": "node --test tests/conferencia-pagbank.test.js tests/pagbank-sandbox.test.js tests/seguranca-interface.test.js tests/envios-duplicados.test.js tests/database.test.js tests/database-pagamento.test.js tests/edge.test.js tests/valores.test.js tests/resultado-pagamento.test.js tests/sessao.test.js tests/simulacao.test.js tests/pagamento.test.js tests/homologacao.test.js tests/ambiente.test.js tests/registrar-tentativa-inerte.test.js tests/isolamento-homologacao-financeira.test.js tests/migracao-financeira-homologacao.test.js tests/seguranca-cenarios-homologacao.test.js",
+    "test:local": "node --test tests/pacote-edge.test.js tests/conferencia-pagbank.test.js tests/pagbank-sandbox.test.js tests/seguranca-interface.test.js tests/envios-duplicados.test.js tests/database.test.js tests/database-pagamento.test.js tests/edge.test.js tests/valores.test.js tests/resultado-pagamento.test.js tests/sessao.test.js tests/simulacao.test.js tests/pagamento.test.js tests/homologacao.test.js tests/ambiente.test.js tests/registrar-tentativa-inerte.test.js tests/isolamento-homologacao-financeira.test.js tests/migracao-financeira-homologacao.test.js tests/seguranca-cenarios-homologacao.test.js",
     "test:browser": "node --test tests/browser.test.js",
     "test:homologacao": "node scripts/verificar-homologacao.mjs",
     "test:servico": "node scripts/verificar-servico.mjs",
@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.16",
-    "playwright-core": "1.65.1"
+    "playwright-core": "1.65.1",
+    "postgres": "4.1.1"
   }
 }

@@ -23,3 +23,15 @@ Conferência de 21/11/2026. Somente ambiente de homologação `asdszqtpydiowgerx
 ## Pendência independente
 
 A idempotência no banco foi testada sequencialmente, mas o teste com **duas conexões PostgreSQL realmente simultâneas** ainda precisa de comprovação.
+
+## Empacotamento revisado
+
+`scripts/pacote-edge.mjs` percorre as importações locais do entrypoint e inclui
+`deno.json` e `server/registrar-tentativa-inerte.js`. Dependências fora das
+pastas do serviço e importações externas não revisadas são recusadas. O único
+pacote externo permitido é `npm:postgres@4.1.1`.
+
+O teste `tests/pacote-edge.test.js` confere o inventário. Gerar o pacote não
+implanta a função, não cria rota nova e não resolve a diferença remota por si
+só. A versão 2 do Supabase fica preservada neste lote; qualquer implantação
+remota exige autorização separada.

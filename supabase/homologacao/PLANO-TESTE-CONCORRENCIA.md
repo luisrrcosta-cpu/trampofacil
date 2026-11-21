@@ -20,3 +20,20 @@
 **Atenção:** fixtures criadas em transações independentes não ficam visíveis entre conexões antes do commit. Não criar dados persistentes nem executar limpeza destrutiva para contornar essa limitação. Se não houver mecanismo de isolamento apropriado, manter o teste pendente.
 
 Não usar produção, não desativar RLS, não habilitar PagBank real.
+
+## Teste isolado implementado em 21/11/2026
+
+`scripts/testar-concorrencia-pg.mjs` executa a função SQL real e as tabelas
+financeiras em um PostgreSQL 17.12 descartável do GitHub Actions. Requer banco
+novo em loopback com nome exato `trampofacil_concorrencia_test`; não aceita
+conexão Supabase nem parâmetros de URL extras. Fixtures são confirmadas apenas
+nesse banco efêmero, que é descartado com o job. Nenhum registro de projeto é apagado.
+
+A conexão A mantém a transação aberta após registrar. A conexão B tenta o
+mesmo registro; uma terceira conexão confirma em `pg_stat_activity` que B está
+aguardando o advisory lock antes de liberar A. O teste exige mesmo UUID, uma
+tentativa, um evento e recusa de chave diferente. Isso comprova concorrência
+no PostgreSQL isolado; não substitui ensaio autenticado do serviço remoto/TLS.
+
+Workflow: `.github/workflows/concorrencia-isolada.yml`. Consultar sua execução
+antes de declarar o cenário aprovado; não há resultado presumido ou teste ignorado.
