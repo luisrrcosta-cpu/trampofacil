@@ -34,6 +34,7 @@ assert.match(conversa, /if \(anexar && !fluxo\.cursor\) \{\s*fluxo\.mais\.hidden
 assert.match(conversa, /if \(anexar\) \{\s*const \{ criado_em, id \} = fluxo\.cursor/);
 assert.match(conversa, /pedidos\.length > 1/);
 assert.match(conversa, /select: 'id,cliente_usuario_id,profissional_usuario_id,titulo,status'/);
+assert.match(conversa, /typeof item\.id === 'string' &&\s*item\.id\.toLowerCase\(\) === pedidoOriginal\.toLowerCase\(\)/);
 assert.match(conversa, /item\.id\.toLowerCase\(\) === pedidoOriginal\.toLowerCase\(\)/);
 assert.match(conversa, /papelNaContratacao\(item, sessaoOriginal\.usuario\)/);
 assert.match(conversa, /item\.id\.toLowerCase\(\) === pedidoOriginal\.toLowerCase\(\)/);
