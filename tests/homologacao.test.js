@@ -41,7 +41,7 @@ test('configuração rejeita produção, chaves administrativas e destinos não 
  ])assert.throws(()=>criarAdaptadoresHomologacao({...config,...alteracao}));
 });
 test('tokens malformados são rejeitados sem acessar o Supabase',async()=>{
- for(const authorization of ['Bearer token com espaco','Bearer token\\nquebrado','Basic token-ficticio','Bearer ','Bearer '+ 'x'.repeat(8193)]){
+ for(const authorization of ['Bearer token com espaco','Bearer token@invalido','Basic token-ficticio','Bearer ','Bearer '+ 'x'.repeat(8193)]){
   const {handle,chamadas}=montar();
   const resposta=await handle(requisicao(undefined,{headers:{Authorization:authorization}}));
   assert.equal(resposta.status,401);
