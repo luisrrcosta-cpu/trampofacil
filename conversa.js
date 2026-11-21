@@ -173,7 +173,7 @@ async function carregarPaginaConversa(fluxo, anexar) {
     const instante = Date.parse(item.criado_em);
     const limite = Date.parse(fluxo.cursor.criado_em);
     return instante > limite ||
-      (instante === limite && item.id >= fluxo.cursor.id);
+      (instante === limite && item.id.toLowerCase() >= fluxo.cursor.id.toLowerCase());
   })) {
     throw new Error('Página da conversa ultrapassou o cursor');
   }
@@ -185,7 +185,8 @@ async function carregarPaginaConversa(fluxo, anexar) {
     const instanteAnterior = Date.parse(anterior.criado_em);
     const instanteAtual = Date.parse(atual.criado_em);
     if (instanteAnterior < instanteAtual ||
-        (instanteAnterior === instanteAtual && anterior.id <= atual.id)) {
+        (instanteAnterior === instanteAtual &&
+          anterior.id.toLowerCase() <= atual.id.toLowerCase())) {
       throw new Error('Ordem de paginação da conversa inválida');
     }
   }
