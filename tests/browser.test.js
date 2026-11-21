@@ -42,7 +42,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   const criacoes = [];
   const data = '2026-11-18T12:00:00+00:00';
   const chats = Array.from({ length: 31 }, (_, i) => ({
-    id: String(31 - i), criado_em: data, autor_usuario_id: 'profissional', texto: `Mensagem fictícia ${31 - i}`,
+    id: `00000000-0000-4000-8000-${String(31 - i).padStart(12, '0')}`, criado_em: data, autor_usuario_id: '22222222-2222-4222-8222-222222222222', texto: `Mensagem fictícia ${31 - i}`,
   }));
   let rejeitarMensagem = false;
   let pedidosPaginados;
@@ -105,7 +105,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
     if (url.pathname.endsWith('/historico_solicitacoes')) {
       assert.equal(url.searchParams.get('select'), 'id,criado_em,status,valor_centavos');
       assert.equal(url.searchParams.get('solicitacao_id'), 'eq.' + pedido.id);
-      return route.fulfill({ json: [{ id: 'evento', criado_em: data, status: 'solicitada', valor_centavos: null }] });
+      return route.fulfill({ json: [{ id: '00000000-0000-4000-8000-000000000090', criado_em: data, status: 'solicitada', valor_centavos: null }] });
     }
     if (url.pathname.endsWith('/mensagens_solicitacoes')) {
       if (req.method() === 'POST') {
@@ -121,7 +121,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
           pedido.status = 'cancelada';
           return route.fulfill({ status: 403 });
         }
-        chats.unshift({ id: '32', criado_em: data, texto: dados.texto,
+        chats.unshift({ id: '00000000-0000-4000-8000-000000000032', criado_em: data, texto: dados.texto,
           autor_usuario_id: req.headers().authorization.split(' ').at(-1) });
         if (perderResposta) {
           perderResposta = false;
@@ -133,7 +133,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
       assert.equal(url.searchParams.get('solicitacao_id'), 'eq.' + pedido.id);
       const anterior = url.searchParams.get('or');
       if (anterior) {
-        assert.equal(anterior, `(criado_em.lt.${data},and(criado_em.eq.${data},id.lt.2))`);
+        assert.equal(anterior, `(criado_em.lt.${data},and(criado_em.eq.${data},id.lt.00000000-0000-4000-8000-000000000002))`);
         return route.fulfill({ json: chats.slice(-1) });
       }
       return route.fulfill({ json: chats.slice(0, 31) });
