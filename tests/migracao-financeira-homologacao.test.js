@@ -25,10 +25,10 @@ test('migração não habilita pagamentos ou repasses', () => {
 
 test('migração inicial mantém os mesmos controles críticos da atualização', () => {
   for (const fonte of [sqlInicial, sql]) {
-    assert.match(fonte, /security\\s+invoker/i);
-    assert.match(fonte, /pg_catalog\\.pg_advisory_xact_lock\\s*\\(/i);
-    assert.match(fonte, /v_solicitacao\\.atualizado_em\\s+is\\s+distinct\\s+from\\s+v_preparacao\\.versao_orcamento/i);
-    assert.match(fonte, /v_solicitacao\\.status\\s*<>\\s*'aceita'/i);
-    assert.doesNotMatch(fonte, /from\\s+private\\.preparacoes_pagamento\\s+where\\s+id\\s*=\\s*p_preparacao_id\\s+for\\s+update/i);
+    assert.match(fonte, /security\s+invoker/i);
+    assert.match(fonte, /pg_catalog\.pg_advisory_xact_lock\s*\(/i);
+    assert.match(fonte, /v_solicitacao\.atualizado_em\s+is\s+distinct\s+from\s+v_preparacao\.versao_orcamento/i);
+    assert.match(fonte, /v_solicitacao\.status\s*<>\s*'aceita'/i);
+    assert.doesNotMatch(fonte, /from\s+private\.preparacoes_pagamento\s+where\s+id\s*=\s*p_preparacao_id\s+for\s+update/i);
   }
 });
