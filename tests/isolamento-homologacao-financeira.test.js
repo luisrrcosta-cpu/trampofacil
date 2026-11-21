@@ -45,3 +45,34 @@ test('rota inexistente não abre banco nem ativa pagamentos',async()=>{
   assert.equal((await resposta.json()).erro,'ROTA_INDISPONIVEL');
   assert.equal(abriu,false);
 });
+
+test('requisição GET não consulta Auth nem abre banco',async()=>{
+  let chamadas=0;
+  const handler=criarServidorEdgeHomologacao({
+    supabaseUrl:urlHomologacao,
+    bancoUrl:'postgresql://postgres:senha@db.asdszqtpydiowgerxwee.supabase.co:5432/postgres',
+    abrirBanco(){chamadas++;throw new Error('acesso inesperado');},
+    fetchImpl:async()=>{chamadas++;throw new Error('consulta inesperada');}
+  });
+  const resposta=await handler(new Request('https://exemplo.test/functions/v1/preparar-pagamento-teste',{method:'GET'}));
+  assert.equal(resposta.status,405);
+  assert.equal(chamadas,0);
+});
+
+test('origem não autorizada é rejeitada antes da autenticação',async()=>{
+  let chamadas=0;
+  const handler=criarServidorEdgeHomologacao({
+    supabaseUrl:urlHomologacao,
+    bancoUrl:'postgresql://postgres:senha@db.asdszqtpydiowgerxwee.supabase.co:5432/postgres',
+    abrirBanco(){chamadas++;throw new Error('acesso inesperado');},
+    fetchImpl:async()=>{chamadas++;throw new Error('consulta inesperada');}
+  });
+  const resposta=await handler(new Request('https://exemplo.test/functions/v1/preparar-pagamento-teste',{
+    method:'POST',
+    headers:{Origin:'https://site-nao-autorizado.example', 'Content-Type':'application/json'},
+    body:'{}'
+  }));
+  assert.equal(resposta.status,403);
+  assert.equal((await resposta.json()).erro,'ORIGEM_NAO_PERMITIDA');
+  assert.equal(chamadas,0);
+});
