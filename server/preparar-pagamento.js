@@ -7,6 +7,20 @@ export class ErroPreparacaoPagamento extends Error {
 }
 const falhar=(codigo,status,mensagem)=>{throw new ErroPreparacaoPagamento(codigo,status,mensagem);};
 
+
+// Registra somente categorias fixas. Nunca registrar mensagem, stack, URL ou credenciais.
+export function classificarFalhaRegistro(erro) {
+  const codigo = String(erro?.code || '');
+  if (['22023','P0002','42501','42P01','42883','23505','28P01','28000','53300','57P01'].includes(codigo)) return codigo;
+  const mensagem = String(erro?.message || '');
+  if (/certificate|unknownissuer|self.signed|cert.*valid|tls/i.test(mensagem)) return 'TLS';
+  if (/homologa|configurad/i.test(mensagem)) return 'CONFIGURACAO';
+  if (/password authentication|authentication failed/i.test(mensagem)) return 'AUTENTICACAO_BANCO';
+  if (/timeout|timed out/i.test(mensagem)) return 'TEMPO_CONEXAO';
+  if (/connect|network|dns|hostname|ENOTFOUND|ECONN/i.test(mensagem + ' ' + codigo)) return 'CONEXAO';
+  return 'OUTRA';
+}
+
 export function criarPreparadorPagamento({ambiente,autenticar,consultarSolicitacao,registrarPreparacao}={}) {
   if(ambiente!=='teste')throw new Error('A preparação de pagamentos está disponível somente em testes.');
   if(typeof autenticar!=='function'||typeof consultarSolicitacao!=='function')throw new Error('Configure os adaptadores de autenticação e consulta.');
@@ -51,6 +65,7 @@ export function criarPreparadorPagamento({ambiente,autenticar,consultarSolicitac
           if(!uuid.test(registro?.id||''))throw new Error();
           preparacaoId=registro.id;
         } catch (erro) {
+          console.error(JSON.stringify({evento:'falha_registro_preparacao',categoria:classificarFalhaRegistro(erro)}));
           if(erro?.code==='22023')falhar('PREPARACAO_DIVERGENTE',409,'Orçamento ou condições alteradas. Atualize a solicitação antes de continuar.');
           if(erro?.code==='P0002')falhar('SOLICITACAO_INDISPONIVEL',404,'Solicitação indisponível.');
           // Uma resposta perdida pode ter sido gravada. Não gerar nova chave
