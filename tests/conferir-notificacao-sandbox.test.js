@@ -13,7 +13,7 @@ const entrada={corpoBruto,cabecalhoAssinatura:assinatura,tentativa,referenciaEsp
 const revisar={situacao:'revisao_necessaria',liberarRepasse:false};
 test('consulta somente após assinatura válida e ignora valor declarado na mensagem',async()=>{
   let chamadas=0;
-  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async esperado=>{
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',chavePublicaBase64,consultar:async esperado=>{
     chamadas++;assert.deepEqual(esperado,{cobrancaId:tentativa.cobrancaId,referenciaEsperada:'ref-teste',valorEsperadoCentavos:15000});return consulta;
   }});
   assert.equal((await servico.conferir(entrada)).situacao,'pagamento_observado');
@@ -21,41 +21,41 @@ test('consulta somente após assinatura válida e ignora valor declarado na mens
   assert.equal((await servico.conferir(entrada)).liberarRepasse,false);
 });
 test('assinatura adulterada impede consulta ao provedor',async()=>{
-  let chamadas=0;const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  let chamadas=0;const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
   assert.deepEqual(await servico.conferir({...entrada,corpoBruto:Buffer.from(corpoBruto.toString()+' ')}),revisar);
   assert.equal(chamadas,0);
 });
 test('identificador da notificação divergente não consulta',async()=>{
   let chamadas=0;const corpo=Buffer.from(JSON.stringify({id:'CHAR_OUTRO'}));
-  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
   assert.deepEqual(await servico.conferir({...entrada,corpoBruto:corpo,cabecalhoAssinatura:sign('sha256',corpo,privateKey).toString('base64')}),revisar);
   assert.equal(chamadas,0);
 });
 test('erro da consulta não vaza informação e não libera repasse',async()=>{
-  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>{throw new Error('segredo do provedor');}});
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',chavePublicaBase64,consultar:async()=>{throw new Error('segredo do provedor');}});
   assert.deepEqual(await servico.conferir(entrada),revisar);
 });
-test('produção não pode ser configurada',()=>assert.throws(()=>criarConferenciaNotificacaoSandbox({ambiente:'producao',chavePublicaBase64,consultar:async()=>consulta})));
+test('produção não pode ser configurada',()=>assert.throws(()=>criarConferenciaNotificacaoSandbox({ambiente:'producao',modeloAssinatura:'ecdsa',chavePublicaBase64,consultar:async()=>consulta})));
 
 test('JSON inválido mesmo assinado não consulta o provedor',async()=>{
   let chamadas=0;const corpo=Buffer.from('{');
-  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
   assert.deepEqual(await servico.conferir({...entrada,corpoBruto:corpo,cabecalhoAssinatura:sign('sha256',corpo,privateKey).toString('base64')}),revisar);
   assert.equal(chamadas,0);
 });
 test('contexto de contratação inválido impede consulta',async()=>{
-  let chamadas=0;const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  let chamadas=0;const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
   for(const alteracao of [{ambiente:'producao'},{valorCentavos:0},{valorCentavos:99},{valorCentavos:100000001},{valorCentavos:1.5},{cobrancaId:'CHAR_../fora'}]) {
     assert.deepEqual(await servico.conferir({...entrada,tentativa:{...tentativa,...alteracao}}),revisar);
   }
   assert.equal(chamadas,0);
 });
 test('consulta divergente não confirma pagamento',async()=>{
-  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>({...consulta,cobrancaId:'CHAR_OUTRO'})});
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',chavePublicaBase64,consultar:async()=>({...consulta,cobrancaId:'CHAR_OUTRO'})});
   assert.deepEqual(await servico.conferir(entrada),revisar);
 });
 test('pagamento apenas autorizado não é tratado como recebido',async()=>{
-  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>({...consulta,statusProvedor:'AUTHORIZED',pagoCentavos:0})});
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',chavePublicaBase64,consultar:async()=>({...consulta,statusProvedor:'AUTHORIZED',pagoCentavos:0})});
   const resultado=await servico.conferir(entrada);
   assert.equal(resultado.situacao,'somente_autorizado');
   assert.equal(resultado.liberarRepasse,false);
@@ -98,4 +98,8 @@ test('SHA256-token rejeita notificação com os dois cabeçalhos',async()=>{
     tokenAutenticidade,consultar:async()=>{chamadas++;return consulta;}});
   assert.deepEqual(await servico.conferir({...entrada,cabecalhoAutenticidade}),revisar);
   assert.equal(chamadas,0);
+});
+
+test('modelo de assinatura omitido é rejeitado por padrão',()=>{
+  assert.throws(()=>criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>consulta}));
 });
