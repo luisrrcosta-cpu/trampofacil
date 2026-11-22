@@ -207,6 +207,12 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
 
   await entrar('cliente@example.com', true);
   await page.getByLabel('Título').fill('Pintar sala');
+  for (const incompleta of ['Pintar uma parede. Bairro: [informe]', 'Local: [ INFORME ]', 'Detalhes: [descreva]']) {
+    await page.locator('#form-solicitacao').getByLabel('Descrição').fill(incompleta);
+    await page.getByRole('button', { name: 'Enviar solicitação' }).click();
+    await page.getByText('Complete os campos entre colchetes do modelo antes de enviar.', { exact: true }).waitFor();
+    assert.equal(criacoes.length, 0, 'modelo incompleto não pode criar solicitação');
+  }
   await page.locator('#form-solicitacao').getByLabel('Descrição').fill('Pintar uma parede.');
   await page.getByRole('button', { name: 'Enviar solicitação' }).click();
   await page.getByText('Não foi possível confirmar o envio.', { exact: false }).waitFor();

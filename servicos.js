@@ -375,7 +375,7 @@ formularioPedido.addEventListener('submit', async (evento) => {
     status.textContent = 'Informe um título de 3 a 120 caracteres e uma descrição de 10 a 3.000 caracteres.';
     return;
   }
-  if (/\\[(?:descreva|informe)\\]/i.test(descricao)) {
+  if (/\[\s*(?:descreva|informe)\s*\]/i.test(descricao)) {
     status.textContent = 'Complete os campos entre colchetes do modelo antes de enviar.';
     return;
   }
