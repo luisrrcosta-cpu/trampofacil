@@ -27,10 +27,11 @@ jobs:
           const config=fs.readFileSync('config.js','utf8');
           const ambiente=fs.readFileSync('ambiente.js','utf8');
           assert.match(config,/asdszqtpydiowgerxwee\.supabase\.co/);
-          assert.match(config,/autenticacaoPronta:\s*false/);
+          assert.match(config,/autenticacaoPronta:\s*true/);
+          assert.match(config,/ambiente:\s*'homologacao'/);
           assert.match(ambiente,/asdszqtpydiowgerxwee/);
           assert.ok(fs.existsSync('index.html'));
-          console.log('Previa restrita: autenticacao e pagamentos nao liberados.');
+          console.log('Previa restrita: OTP habilitado somente na homologacao; pagamentos reais bloqueados.');
           NODE
       - name: Verificar sintaxe e integridade da interface
         shell: bash
@@ -86,9 +87,8 @@ jobs:
       - name: Empacotar somente a interface estatica
         shell: bash
         run: |
-          mkdir -p previa
-          cp index.html *.js previa/
-          printf 'PREVIA DE HOMOLOGACAO. Nao publicar sem validar autenticacao, redirect URLs e origem permitida. Pagamentos desativados.\n' > previa/LEIA-ANTES.txt
+          node scripts/preparar-interface.mjs previa
+          printf 'PREVIA DE HOMOLOGACAO. OTP validado na previa privada. Preservar origem e acesso restrito. Pagamentos reais desativados.\n' > previa/LEIA-ANTES.txt
       - uses: actions/upload-artifact@v4
         with:
           name: trampofacil-previa-homologacao

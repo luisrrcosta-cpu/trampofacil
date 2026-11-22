@@ -41,3 +41,13 @@ A descrição da solicitação de teste ainda continha [informe]. A expressão r
 - Aprovação separada antes de publicação em produção ou ativação financeira real.
 
 A preparação não equivale a pagamento, reserva, autorização de cartão ou repasse. A divisão 90/10 considera apenas o valor do serviço, antes de impostos e taxas.
+
+## Próxima integração financeira
+
+Documentação oficial consultada em 22/11/2026:
+- https://developer.pagbank.com.br/docs/token-de-autenticacao — token sandbox obtido no Portal do Desenvolvedor, aba Tokens. Não enviar esse token em mensagens nem incluir no frontend/Git.
+- https://developer.pagbank.com.br/docs/servicos-de-pedidos-e-pagamentos — separar pedido e pagamento, considerar taxas do recebedor primário e validar cancelamentos/chargebacks. O token, sozinho, não habilita todas as funcionalidades.
+
+Usar somente ambiente sandbox e dados fictícios. O próximo bloqueio externo é a autenticação da conta do desenvolvedor e o provisionamento seguro da credencial no servidor. Nenhuma credencial foi solicitada por chat ou presumida disponível.
+
+A prévia privada versão 6 publicou a validação dos modelos. O CI de preparação antigo ainda exigia autenticacaoPronta=false, apesar de OTP já validado; atualizado para exigir a configuração atual de homologação e usar o empacotamento por lista permitida.
