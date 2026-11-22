@@ -11,7 +11,7 @@ export function criarConsultaValidadorSandbox({ambiente,token,fetchImpl=globalTh
       if(pendente)return pendente;
       pendente=(async()=>{
         try {
-          const r=await fetchImpl('https://sandbox.api.pagseguro.com/public-keys?type=webhook',{
+          const r=await fetchImpl('https://sandbox.api.pagseguro.com/public-keys/webhook',{
             method:'GET',headers:{Authorization:'Bearer '+token,Accept:'application/json'},
             redirect:'error',credentials:'omit',cache:'no-store',signal:AbortSignal.timeout(8000)
           });

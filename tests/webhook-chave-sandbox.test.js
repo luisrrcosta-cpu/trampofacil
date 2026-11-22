@@ -6,7 +6,7 @@ test('chave webhook usa consulta fixa, cache limitado e verifica assinatura real
  const {privateKey,publicKey}=generateKeyPairSync('ec',{namedCurve:'prime256v1'});
  let chamadas=0,tempo=0;
  const consulta=criarConsultaValidadorSandbox({ambiente:'sandbox',token:'ficticio',agora:()=>tempo,fetchImpl:async(url,op)=>{
-  chamadas++;assert.equal(url,'https://sandbox.api.pagseguro.com/public-keys?type=webhook');
+  chamadas++;assert.equal(url,'https://sandbox.api.pagseguro.com/public-keys/webhook');
   assert.equal(op.method,'GET');assert.equal(op.redirect,'error');assert.equal(op.credentials,'omit');
   if(chamadas>1)return new Response(null,{status:503});
   return Response.json({public_key:publicKey.export({type:'spki',format:'der'}).toString('base64')});

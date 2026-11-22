@@ -75,3 +75,10 @@ Documentação consultada: https://developer.pagbank.com.br/reference/validacao-
 O novo modelo usa x-payload-signature e chave type=webhook; a chave card e o modelo anterior de hash com token não são intercambiáveis. Antes de produção, confirmar disponibilidade do novo serviço e a URL de produção, conforme ressalva do provedor.
 
 Faltam compor leitura limitada do corpo HTTP, persistência idempotente/rejeição de replays e associação do evento à tentativa e valor esperados, seguida de conferência no provedor. Assinatura válida sozinha não registra pagamento nem libera repasse. Nenhum endpoint de webhook foi ativado.
+
+### Consulta real da chave de webhook
+
+O endereço com query string publicado no guia de autenticidade retornou HTTP 403. A referência de consulta informa o tipo no caminho; usando GET https://sandbox.api.pagseguro.com/public-keys/webhook a mesma credencial retornou HTTP 200 e uma chave SPKI do tipo EC foi reconhecida. Corrigidos módulo e teste para usar o caminho verificado, sem reduzir validação ou trocar o token.
+
+Referência correta para a chamada testada: https://developer.pagbank.com.br/reference/consultar-chave-publica
+As sondagens temporárias foram removidas; função de preparação restaurada na versão remota 15. Não foi recebido um webhook real assinado, e o receptor ainda não foi ativado.
