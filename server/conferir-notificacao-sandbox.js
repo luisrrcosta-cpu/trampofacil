@@ -4,7 +4,7 @@ import {conferirConsultaPagBank} from './conferencia-pagbank.js';
 
 // Pipeline interno, sem rota HTTP, gravação no banco ou liberação de repasses.
 // O contexto esperado deve vir do banco após autenticação/autorização, nunca do webhook.
-export function criarConferenciaNotificacaoSandbox({ambiente, modeloAssinatura='ecdsa', chavePublicaBase64, tokenAutenticidade, consultar}={}) {
+export function criarConferenciaNotificacaoSandbox({ambiente, modeloAssinatura, chavePublicaBase64, tokenAutenticidade, consultar}={}) {
   if (ambiente!=='sandbox' || !['ecdsa','sha256-token'].includes(modeloAssinatura) ||
       (modeloAssinatura==='ecdsa' && (typeof chavePublicaBase64!=='string' || tokenAutenticidade!==undefined)) ||
       (modeloAssinatura==='sha256-token' && (typeof tokenAutenticidade!=='string' || chavePublicaBase64!==undefined)) ||
