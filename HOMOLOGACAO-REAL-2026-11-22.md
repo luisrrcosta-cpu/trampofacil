@@ -62,3 +62,16 @@ O módulo server/chave-pagbank-sandbox.js prepara a mesma consulta somente de le
 
 Documentação: https://developer.pagbank.com.br/reference/consultar-chave-publica
 A autenticação aprovada neste endpoint não comprova habilitação para split, cobrança, captura ou repasse. Checkout, persistência de tentativa, assinatura de notificações, conciliação e políticas comerciais continuam pendentes.
+
+## Verificação criptográfica de notificações preparada
+
+Implementados módulos internos (sem rota pública e sem atualização financeira):
+- server/webhook-assinatura-sandbox.js valida SHA-256/ECDSA sobre Uint8Array com bytes originais e chave SPKI EC confiável, separada do corpo recebido.
+- server/webhook-chave-sandbox.js consulta somente GET sandbox /public-keys?type=webhook, mantém cache por dez minutos, compartilha consultas simultâneas e falha sem reutilizar chave expirada.
+
+Seis testes passaram com pares de chaves e assinaturas criptográficas reais geradas isoladamente. Cobrem alteração de status e reserialização do corpo, outra chave, ausência e má formação da assinatura, rotação com uma assinatura válida, limites de tamanho e quantidade, recusa de produção e chave de cartão RSA, cache e indisponibilidade do provedor. Não são notificações reais recebidas do PagBank.
+
+Documentação consultada: https://developer.pagbank.com.br/reference/validacao-de-autenticidade
+O novo modelo usa x-payload-signature e chave type=webhook; a chave card e o modelo anterior de hash com token não são intercambiáveis. Antes de produção, confirmar disponibilidade do novo serviço e a URL de produção, conforme ressalva do provedor.
+
+Faltam compor leitura limitada do corpo HTTP, persistência idempotente/rejeição de replays e associação do evento à tentativa e valor esperados, seguida de conferência no provedor. Assinatura válida sozinha não registra pagamento nem libera repasse. Nenhum endpoint de webhook foi ativado.
