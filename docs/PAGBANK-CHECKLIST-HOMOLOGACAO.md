@@ -41,3 +41,6 @@ A função `validarNotificacoesCheckoutSandbox` valida apenas a **forma da URL**
 
 ### Evidência local
 Em 22/11/2026, a execução local com Node.js 22 de `tests/configuracao-checkout-sandbox.test.js` e `tests/conferencia-pagbank.test.js` terminou com **8 testes aprovados e 0 falhas**. Não equivale à execução da suíte integral ou do GitHub Actions. A consulta de status do commit `48e1feb0ab58486ae057b4b7bf9fcc6c2d978526` não retornou verificações; isso **não comprova** que o workflow foi executado.
+
+### Reexecução local em 22/11/2026
+Foi reconstruído localmente o conteúdo atual dos arquivos `server/configuracao-checkout-sandbox.js` e `tests/configuracao-checkout-sandbox.test.js` e executado `node --test tests/configuracao-checkout-sandbox.test.js` no Node.js. **Resultado observado: 6 testes aprovados, 0 falhas, 0 ignorados**. Isso cobre apenas esse módulo e **não** equivale a um checkout completo do repositório nem à aprovação do GitHub Actions.
