@@ -6,7 +6,7 @@ export function conferirConsultaPagBank(consulta, tentativa) {
   if (!consulta || !tentativa || consulta.ambiente !== 'sandbox' || tentativa.ambiente !== 'sandbox' ||
       typeof tentativa.cobrancaId !== 'string' || !/^CHAR_[A-Za-z0-9-]{1,100}$/.test(tentativa.cobrancaId) ||
       consulta.cobrancaId !== tentativa.cobrancaId || !inteiro(tentativa.valorCentavos) ||
-      tentativa.valorCentavos < 1 || consulta.valorCentavos !== tentativa.valorCentavos ||
+      (tentativa.valorCentavos < 100 || tentativa.valorCentavos > 100000000) || consulta.valorCentavos !== tentativa.valorCentavos ||
       !inteiro(consulta.pagoCentavos) || !inteiro(consulta.devolvidoCentavos) ||
       consulta.pagoCentavos > consulta.valorCentavos || consulta.devolvidoCentavos > consulta.pagoCentavos) return revisar();
   const {statusProvedor:status,pagoCentavos:pago,devolvidoCentavos:devolvido,valorCentavos:valor} = consulta;
