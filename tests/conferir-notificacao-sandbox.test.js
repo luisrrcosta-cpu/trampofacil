@@ -113,3 +113,15 @@ test('evento de checkout CHEC assinado não é confundido com pagamento CHAR',as
     cabecalhoAssinatura:sign('sha256',corpo,privateKey).toString('base64')}),revisar);
   assert.equal(chamadas,0);
 });
+
+test('webhook assinado com objeto sem id ou id de tipo inválido não consulta',async()=>{
+  let chamadas=0;
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  for(const mensagem of [{status:'PAID'},{id:null},{id:123},{id:['CHAR_TESTE-123']},{id:{value:'CHAR_TESTE-123'}}]) {
+    const corpo=Buffer.from(JSON.stringify(mensagem));
+    assert.deepEqual(await servico.conferir({...entrada,corpoBruto:corpo,
+      cabecalhoAssinatura:sign('sha256',corpo,privateKey).toString('base64')}),revisar);
+  }
+  assert.equal(chamadas,0);
+});
