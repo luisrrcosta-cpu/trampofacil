@@ -36,3 +36,27 @@ test('erro da consulta não vaza informação e não libera repasse',async()=>{
   assert.deepEqual(await servico.conferir(entrada),revisar);
 });
 test('produção não pode ser configurada',()=>assert.throws(()=>criarConferenciaNotificacaoSandbox({ambiente:'producao',chavePublicaBase64,consultar:async()=>consulta})));
+
+test('JSON inválido mesmo assinado não consulta o provedor',async()=>{
+  let chamadas=0;const corpo=Buffer.from('{');
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  assert.deepEqual(await servico.conferir({...entrada,corpoBruto:corpo,cabecalhoAssinatura:sign('sha256',corpo,privateKey).toString('base64')}),revisar);
+  assert.equal(chamadas,0);
+});
+test('contexto de contratação inválido impede consulta',async()=>{
+  let chamadas=0;const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  for(const alteracao of [{ambiente:'producao'},{valorCentavos:0},{valorCentavos:1.5},{cobrancaId:'CHAR_../fora'}]) {
+    assert.deepEqual(await servico.conferir({...entrada,tentativa:{...tentativa,...alteracao}}),revisar);
+  }
+  assert.equal(chamadas,0);
+});
+test('consulta divergente não confirma pagamento',async()=>{
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>({...consulta,cobrancaId:'CHAR_OUTRO'})});
+  assert.deepEqual(await servico.conferir(entrada),revisar);
+});
+test('pagamento apenas autorizado não é tratado como recebido',async()=>{
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>({...consulta,statusProvedor:'AUTHORIZED',pagoCentavos:0})});
+  const resultado=await servico.conferir(entrada);
+  assert.equal(resultado.situacao,'somente_autorizado');
+  assert.equal(resultado.liberarRepasse,false);
+});
