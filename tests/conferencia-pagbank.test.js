@@ -31,3 +31,16 @@ test('outra cobrança, produção e resumos incoerentes ficam para revisão sem 
     assert.equal(conferirConsultaPagBank(consulta,entrada).situacao,'revisao_necessaria');
   }
 });
+
+test('limites financeiros do sandbox são obrigatórios mesmo para estado PAID',()=>{
+  for(const valorCentavos of [0,99,100000001]) {
+    const contexto={...tentativa,valorCentavos};
+    const resposta={...consulta,valorCentavos,pagoCentavos:valorCentavos};
+    assert.deepEqual(conferirConsultaPagBank(resposta,contexto),{situacao:'revisao_necessaria',liberarRepasse:false});
+  }
+  for(const valorCentavos of [100,100000000]) {
+    const contexto={...tentativa,valorCentavos};
+    const resposta={...consulta,valorCentavos,pagoCentavos:valorCentavos};
+    assert.equal(conferirConsultaPagBank(resposta,contexto).situacao,'pagamento_observado');
+  }
+});
