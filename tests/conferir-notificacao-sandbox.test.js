@@ -233,3 +233,14 @@ test('notificação assinada de pedido não aceita cobrança CHAR de outro contr
     cabecalhoAssinatura:sign('sha256',corpo,privateKey).toString('base64')}),revisar);
   assert.equal(chamadas,0);
 });
+
+test('status PAID no webhook assinado não substitui consulta WAITING do provedor',async()=>{
+  let chamadas=0;
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>{chamadas++;return {...consulta,statusProvedor:'WAITING',pagoCentavos:0};}});
+  const resultado=await servico.conferir(entrada);
+  assert.equal(resultado.situacao,'aguardando_pagamento');
+  assert.equal(resultado.saldoObservadoCentavos,0);
+  assert.equal(resultado.liberarRepasse,false);
+  assert.equal(chamadas,1);
+});
