@@ -223,3 +223,13 @@ test('referência simples continua aceita após validar caracteres de controle',
   assert.equal(resultado.liberarRepasse,false);
   assert.equal(chamadas,1);
 });
+
+test('notificação assinada de pedido não aceita cobrança CHAR de outro contrato',async()=>{
+  let chamadas=0;
+  const corpo=Buffer.from(JSON.stringify({id:'ORDE_TESTE-123',charges:[{id:'CHAR_OUTRO-999'}]}));
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  assert.deepEqual(await servico.conferir({...entrada,corpoBruto:corpo,
+    cabecalhoAssinatura:sign('sha256',corpo,privateKey).toString('base64')}),revisar);
+  assert.equal(chamadas,0);
+});
