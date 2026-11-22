@@ -19,3 +19,14 @@ test('rejeita produção, URLs iguais e listas de checkout inválidas',()=>{
   assert.throws(()=>validarNotificacoesCheckoutSandbox({ambiente:'sandbox',payment_notification_urls:[pagamento],notification_urls:[pagamento]}));
   assert.throws(()=>validarNotificacoesCheckoutSandbox({ambiente:'sandbox',payment_notification_urls:[pagamento],notification_urls:[]}));
 });
+
+test('rejeita destinos internos, IPs e variantes equivalentes da mesma URL',()=>{
+  for(const destino of ['https://192.168.1.1/webhook','https://10.0.0.2/hook',
+    'https://[::1]/hook','https://servico.local/hook','https://servico.internal/hook',
+    'https://localhost.localhost/hook','https://servidor/hook']) {
+    assert.throws(()=>validarNotificacoesCheckoutSandbox({ambiente:'sandbox',payment_notification_urls:[destino]}),destino);
+  }
+  assert.throws(()=>validarNotificacoesCheckoutSandbox({ambiente:'sandbox',
+    payment_notification_urls:['https://exemplo.com:443/webhook/pagamento'],
+    notification_urls:[pagamento]}));
+});
