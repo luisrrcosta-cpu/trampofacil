@@ -21,3 +21,10 @@ Estado em 2026-11-22: **não implantar rota pública, não habilitar pagamento r
 7. Obter autorização explícita antes de qualquer implantação ou mudança fora da branch e projeto de homologação.
 
 **Não confundir:** um teste com chaves fictícias demonstra comportamento do código, não prova compatibilidade com notificações reais do PagBank. Nenhuma resposta de webhook deve liberar repasse automaticamente.
+
+## Evidência oficial sobre eventos do Checkout
+- A documentação de Checkout informa notificações **transacionais** e notificações de **checkout**. Eventos de checkout como `EXPIRED` podem conter `id: CHEC_...`; não equivalem a confirmação de pagamento.
+- A documentação de webhooks também identifica `x-product-origin: CHECKOUT` e `x-product-id: CHEC_...`. Esses cabeçalhos não substituem autenticação criptográfica.
+- O pipeline atual de cobrança espera `id: CHAR_...` e rejeita `CHEC_...` sem consultar o provedor; o processamento de eventos de checkout exige fluxo separado e revisão posterior.
+- O guia de Checkout aponta para a validação SHA-256 do cabeçalho `x-authenticity-token`; há documentação geral mais nova de ECDSA com `x-payload-signature`. O método precisa ser confirmado no produto/ambiente real, **sem fallback automático**.
+- Fontes: https://developer.pagbank.com.br/reference/webhooks-checkout ; https://developer.pagbank.com.br/reference/webhooks ; https://developer.pagbank.com.br/reference/confirmar-autenticidade-da-notificacao ; https://developer.pagbank.com.br/reference/validacao-de-autenticidade
