@@ -12,7 +12,7 @@ export function criarConferenciaNotificacaoSandbox({ambiente, chavePublicaBase64
       if (!verificarAssinaturaWebhook({corpoBruto,cabecalhoAssinatura,chavePublicaBase64})) return revisar();
       if (!tentativa || tentativa.ambiente!=='sandbox' ||
           !/^CHAR_[A-Za-z0-9-]{1,100}$/.test(tentativa.cobrancaId || '') ||
-          !Number.isSafeInteger(tentativa.valorCentavos) || tentativa.valorCentavos<1 ||
+          !Number.isSafeInteger(tentativa.valorCentavos) || tentativa.valorCentavos<100 || tentativa.valorCentavos>100000000 ||
           typeof referenciaEsperada!=='string' || !referenciaEsperada || referenciaEsperada.length>64) return revisar();
       let mensagem;
       try {mensagem=JSON.parse(corpoBruto.toString('utf8'));}
