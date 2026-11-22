@@ -17,9 +17,14 @@ export function validarConexaoBancoHomologacao(valor) {
   const usuario = decodeURIComponent(url.username);
   const direto = url.hostname === `db.${projetoHomologacao}.supabase.co` && usuario === 'postgres';
   const pool = /^[a-z0-9-]+\.pooler\.supabase\.com$/.test(url.hostname) && usuario === `postgres.${projetoHomologacao}`;
+  // O ambiente hospedado pode acrescentar sslmode. Aceitar somente exigências
+  // de TLS; as opções efetivas abaixo sempre verificam o certificado.
+  const parametrosSeguros = [...url.searchParams].every(([chave, valor]) =>
+    chave === 'sslmode' && ['require', 'verify-full'].includes(valor)) &&
+    url.searchParams.getAll('sslmode').length <= 1;
   if (!['postgres:', 'postgresql:'].includes(url.protocol) || !(direto || pool) ||
       !['', '5432', '6543'].includes(url.port) || url.pathname !== '/postgres' ||
-      url.search || url.hash || !url.password) {
+      !parametrosSeguros || url.hash || !url.password) {
     throw new Error('Conexão permitida somente ao banco de homologação.');
   }
   return {
