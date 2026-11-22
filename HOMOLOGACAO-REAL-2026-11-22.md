@@ -106,3 +106,19 @@ Verificações CI do código 3b1562374be4939be1cc7f12e1f356d3cece0c5a: testes is
 
 Advisories: a nova tabela privada recebeu INFO de RLS sem política; a ausência de grants para clientes e o bloqueio por padrão são intencionais. Referência: https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy
 O aviso preexistente de proteção contra senhas vazadas permanece; o fluxo atual usa OTP. Referência: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
+
+## Checkout hospedado sandbox vinculado à preparação
+
+Criados adaptador, orquestrador, endpoint autenticado criar-checkout-sandbox e botão opcional após preparação à vista. O navegador envia somente preparacaoId. A identidade vem do Auth; o banco confere cliente, estado aceita, versão, valor salvo, crédito à vista e uma parcela.
+
+Uma tabela privada nova (checkouts_pagbank_sandbox) mantém um único envio por preparação. O envio é reservado antes do POST; uma resposta incerta não autoriza outra criação. Não presumimos garantia específica de idempotência do provedor para o endpoint /checkouts. Falha exige conferência, sem reenviar automaticamente.
+
+O POST é fixo em https://sandbox.api.pagseguro.com/checkouts, sem cartão, CPF, telefone ou e-mail. O comprador informa somente dados fictícios na página sandbox. O payload configura item genérico, valor salvo, uma parcela, expiração em quinze minutos e payment_notification_urls para o receptor já publicado. Não há recorrência, split ou taxa presumida.
+
+Respostas conferem referência, checkout ACTIVE e link PAY HTTPS em origem sandbox/QA permitida. Links de produção ou externos são recusados. Confirmação final verifica se o orçamento mudou durante a rede e bloqueia a exposição do link nesse caso. Retornar do checkout não confirma pagamento.
+
+O teste cobre identidade, valor/versão/status, parcelamento não suportado, resposta incerta, reutilização, bloqueio após cancelamento, expiração, dados mínimos e destinos externos. A interface inclui confirmação, link noopener/noreferrer e proteção contra resposta de sessão anterior.
+
+Pendências explícitas: ainda sem checkout real de sandbox criado; requer nova solicitação aceita (a anterior foi concluída). Cancelamento depois de um link já exibido ainda precisa ser conectado à inativação no provedor antes de produção. Conferência das notificações e vínculo das cobranças ao checkout serão implementados na sequência. Taxas reais, tributos e divisão continuam indefinidos. Nenhum pagamento ou repasse real foi habilitado.
+
+Documentação: https://developer.pagbank.com.br/reference/criar-checkout e https://developer.pagbank.com.br/reference/objeto-checkout

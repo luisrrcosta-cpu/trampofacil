@@ -61,6 +61,12 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
     chamadasApi++;
     const req = route.request();
     const url = new URL(req.url());
+    if (url.pathname === '/functions/v1/criar-checkout-sandbox') {
+      assert.deepEqual(req.postDataJSON(), {preparacaoId:'55555555-5555-4555-8555-555555555555'});
+      assert.equal(req.headers().authorization, 'Bearer cliente');
+      return route.fulfill({json:{ambiente:'sandbox',pagamentoRealHabilitado:false,repasseHabilitado:false,
+        checkoutId:'CHEC_ficticio',url:'https://qa.pagamento.pagseguro.uol.com.br/pagamento?code=ficticio'}});
+    }
     if (url.pathname === '/functions/v1/preparar-pagamento-teste') {
       const dados = req.postDataJSON();
       assert.deepEqual(Object.keys(dados).sort(), ['forma','parcelas','solicitacaoId']);
@@ -352,6 +358,17 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await page.getByRole('button', {name:'Preparar pagamento de teste',exact:true}).click();
   await page.locator('#status-preparacao').getByText('Preparação registrada.', {exact:false}).waitFor();
   assert.equal(preparacoes.length,2, 'reabrir resultado já confirmado não repete a chamada');
+  await page.locator('#preparacao').getByRole('button', {name:'Voltar às solicitações',exact:true}).click();
+  pedido.atualizado_em = '2026-11-19T12:45:00Z';
+  await page.locator('#solicitacoes').getByRole('button', {name:'Atualizar',exact:true}).click();
+  await page.getByRole('button', {name:'Preparar pagamento de teste',exact:true}).click();
+  await page.getByRole('button', {name:'Registrar preparação de teste',exact:true}).click();
+  await page.getByRole('button', {name:'Gerar checkout sandbox',exact:true}).click();
+  const linkSandbox = page.getByRole('link', {name:'Abrir PagBank — sandbox',exact:true});
+  await linkSandbox.waitFor();
+  assert.equal(await linkSandbox.getAttribute('href'),'https://qa.pagamento.pagseguro.uol.com.br/pagamento?code=ficticio');
+  assert.equal(await linkSandbox.getAttribute('rel'),'noopener noreferrer');
+  assert.equal(await page.getByRole('button', {name:'Gerar checkout sandbox',exact:true}).isDisabled(),true);
   await page.locator('#preparacao').getByRole('button', {name:'Voltar às solicitações',exact:true}).click();
   pedido.atualizado_em = '2026-11-19T13:00:00Z';
   await page.locator('#solicitacoes').getByRole('button', {name:'Atualizar',exact:true}).click();
