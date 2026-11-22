@@ -60,3 +60,24 @@ test('pagamento apenas autorizado não é tratado como recebido',async()=>{
   assert.equal(resultado.situacao,'somente_autorizado');
   assert.equal(resultado.liberarRepasse,false);
 });
+
+test('modo token SHA256 aceita apenas o cabeçalho legado válido',async()=>{
+  const {createHash}=await import('node:crypto');
+  const tokenAutenticidade='token-ficticio';
+  const cabecalhoAutenticidade=createHash('sha256').update(tokenAutenticidade).update('-').update(corpoBruto).digest('hex');
+  let chamadas=0;
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'sha256-token',tokenAutenticidade,
+    consultar:async()=>{chamadas++;return consulta;}});
+  assert.equal((await servico.conferir({...entrada,cabecalhoAssinatura:undefined,cabecalhoAutenticidade})).situacao,'pagamento_observado');
+  assert.equal(chamadas,1);
+  assert.deepEqual(await servico.conferir({...entrada,cabecalhoAutenticidade}),revisar);
+  assert.equal(chamadas,1);
+});
+test('configuração não aceita dois mecanismos de autenticação simultaneamente',()=>{
+  assert.throws(()=>criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'sha256-token',
+    tokenAutenticidade:'token',chavePublicaBase64,consultar:async()=>consulta}));
+  assert.throws(()=>criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    tokenAutenticidade:'token',chavePublicaBase64,consultar:async()=>consulta}));
+  assert.throws(()=>criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'qualquer',
+    chavePublicaBase64,consultar:async()=>consulta}));
+});
