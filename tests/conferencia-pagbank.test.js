@@ -44,3 +44,10 @@ test('limites financeiros do sandbox são obrigatórios mesmo para estado PAID',
     assert.equal(conferirConsultaPagBank(resposta,contexto).situacao,'pagamento_observado');
   }
 });
+
+test('entrada sem status financeiro conhecido nunca libera repasse',()=>{
+  for(const statusProvedor of [null,undefined,'','PENDING','PAID ',123,{},[]]) {
+    const r=conferirConsultaPagBank({...consulta,statusProvedor},tentativa);
+    assert.deepEqual(r,{situacao:'revisao_necessaria',liberarRepasse:false});
+  }
+});
