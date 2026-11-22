@@ -103,3 +103,13 @@ test('SHA256-token rejeita notificação com os dois cabeçalhos',async()=>{
 test('modelo de assinatura omitido é rejeitado por padrão',()=>{
   assert.throws(()=>criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>consulta}));
 });
+
+test('evento de checkout CHEC assinado não é confundido com pagamento CHAR',async()=>{
+  let chamadas=0;
+  const corpo=Buffer.from(JSON.stringify({id:'CHEC_120301FA-8B8B-4C25-B07D-A4541EB78EB5',status:'EXPIRED'}));
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  assert.deepEqual(await servico.conferir({...entrada,corpoBruto:corpo,
+    cabecalhoAssinatura:sign('sha256',corpo,privateKey).toString('base64')}),revisar);
+  assert.equal(chamadas,0);
+});
