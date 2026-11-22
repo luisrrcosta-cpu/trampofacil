@@ -5,6 +5,28 @@ Plataforma de contratação de profissionais em desenvolvimento.
 O trabalho atual está na ramificação `codex/v16-seguranca-integracoes`.
 A versão publicada, a main e o banco de produção não são alterados por estes testes.
 
+## Acesso integrado na prévia privada — 22/11/2026
+
+O proprietário concluiu o diagnóstico real: OTP de oito dígitos aceito,
+identidade confirmada pelo Auth e sessão de teste encerrada. Após essa evidência,
+`autenticacaoPronta` passou a true exclusivamente na homologação privada.
+O aplicativo aceita códigos completos de seis ou oito dígitos no cadastro e login.
+Nenhum modelo, credencial, política RLS, banco de produção ou pagamento real
+foi alterado neste lote.
+
+Código: `859c055d634ba7cdef58ddc8685edb2ecb19b0d8`. Suíte completa: 112 testes,
+zero falhas/ignorados; regressões aprovadas. O teste adicional de cadastro com
+API simulada comprova que falha de gravação reutiliza a sessão sem consumir
+outro OTP. Entrada por código, contratação e mensagens continuam protegidas.
+Execução: https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/45047282635
+
+A prévia privada foi atualizada para versão 5. O próximo passo manual é entrar
+no aplicativo e salvar o próprio perfil de teste. Cadastro real, fluxo entre duas
+contas, isolamento HTTP e preparação autenticada remota ainda exigem validação;
+os testes simulados não equivalem a essa validação ponta a ponta.
+
+Os registros abaixo sobre login bloqueado descrevem etapas históricas anteriores.
+
 ## Revisão e diagnóstico de login — 22/11/2026
 
 A [revisão estruturada](REVISAO-2026-11-22.md) registra evidências, limites,
