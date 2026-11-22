@@ -9,12 +9,13 @@ export function validarNotificacoesCheckoutSandbox({ambiente,notification_urls,p
     if (endereco.length<5 || endereco.length>100 || /[\\\s]/.test(endereco)) return false;
     try {
       const url=new URL(endereco);
+      const host=url.hostname.toLowerCase().replace(/\\.$/,'');
       return url.protocol==='https:' && !!url.hostname && !url.username && !url.password &&
-        !url.hash && !isIP(url.hostname.replace(/^\[|\]$/g,'')) &&
-        url.hostname.includes('.') && url.hostname.toLowerCase()!=='localhost' &&
-        !url.hostname.toLowerCase().endsWith('.localhost') &&
-        !url.hostname.toLowerCase().endsWith('.local') &&
-        !url.hostname.toLowerCase().endsWith('.internal');
+        !url.hash && !isIP(host.replace(/^\[|\]$/g,'')) &&
+        host.includes('.') && host!=='localhost' &&
+        !host.endsWith('.localhost') &&
+        !host.endsWith('.local') &&
+        !host.endsWith('.internal');
     } catch {return false;}
   };
   if (!validar(payment_notification_urls) ||
