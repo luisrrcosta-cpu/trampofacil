@@ -47,3 +47,19 @@ test('devolução parcial é preservada e erro do provedor não vaza nem repete 
     erro=>erro.message==='Não foi possível conferir a cobrança de teste.');
   assert.equal(chamadas,1);
 });
+
+test('não aceita respostas HTTP com erro, redirecionamento ou JSON inválido',async()=>{
+  for(const resposta of [
+    new Response('',{status:401}),
+    new Response('',{status:500}),
+    new Response('não é JSON',{status:200,headers:{'content-type':'application/json'}}),
+    new Response('',{status:302,headers:{Location:'https://externo.invalid'}}),
+  ]) {
+    await assert.rejects(configurar(async()=>resposta.clone()).consultar(esperado),
+      erro=>erro.message==='Não foi possível conferir a cobrança de teste.');
+  }
+});
+test('não confia em status pago quando o resumo ainda não indica pagamento integral',async()=>{
+  const incompleto={...dados,amount:{...dados.amount,summary:{total:15000,paid:10000,refunded:0}}};
+  await assert.rejects(configurar(async()=>Response.json(incompleto)).consultar(esperado));
+});
