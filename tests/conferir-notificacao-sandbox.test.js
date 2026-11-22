@@ -125,3 +125,26 @@ test('webhook assinado com objeto sem id ou id de tipo inválido não consulta',
   }
   assert.equal(chamadas,0);
 });
+
+test('notificação transacional ORDE com cobrança CHAR única é conferida pelo provedor',async()=>{
+  let chamadas=0;
+  const corpo=Buffer.from(JSON.stringify({id:'ORDE_TESTE-123',charges:[{id:tentativa.cobrancaId,status:'PAID',amount:{value:1}}]}));
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  const resultado=await servico.conferir({...entrada,corpoBruto:corpo,
+    cabecalhoAssinatura:sign('sha256',corpo,privateKey).toString('base64')});
+  assert.equal(resultado.situacao,'pagamento_observado');
+  assert.equal(resultado.liberarRepasse,false);
+  assert.equal(chamadas,1);
+});
+test('notificação ORDE com cobranças ambíguas ou divergentes é recusada',async()=>{
+  let chamadas=0;
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  for(const charges of [[],[{id:'CHAR_OUTRA'}],[{id:tentativa.cobrancaId},{id:'CHAR_OUTRA'}],null]) {
+    const corpo=Buffer.from(JSON.stringify({id:'ORDE_TESTE-123',charges}));
+    assert.deepEqual(await servico.conferir({...entrada,corpoBruto:corpo,
+      cabecalhoAssinatura:sign('sha256',corpo,privateKey).toString('base64')}),revisar);
+  }
+  assert.equal(chamadas,0);
+});
