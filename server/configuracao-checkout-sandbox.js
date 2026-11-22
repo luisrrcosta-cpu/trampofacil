@@ -9,7 +9,7 @@ export function validarNotificacoesCheckoutSandbox({ambiente,notification_urls,p
     if (endereco.length<5 || endereco.length>100 || /[\\\s]/.test(endereco)) return false;
     try {
       const url=new URL(endereco);
-      const host=url.hostname.toLowerCase().replace(/\\.$/,'');
+      const host=url.hostname.toLowerCase().replace(/\.$/,'');
       return url.protocol==='https:' && !!url.hostname && !url.username && !url.password &&
         !url.hash && !isIP(host.replace(/^\[|\]$/g,'')) &&
         host.includes('.') && host!=='localhost' &&
