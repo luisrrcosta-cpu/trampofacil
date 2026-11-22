@@ -20,7 +20,7 @@ export function criarConferenciaNotificacaoSandbox({ambiente, modeloAssinatura, 
       if (!tentativa || tentativa.ambiente!=='sandbox' ||
           !/^CHAR_[A-Za-z0-9-]{1,100}$/.test(tentativa.cobrancaId || '') ||
           !Number.isSafeInteger(tentativa.valorCentavos) || tentativa.valorCentavos<100 || tentativa.valorCentavos>100000000 ||
-          typeof referenciaEsperada!=='string' || !referenciaEsperada || referenciaEsperada.length>64) return revisar();
+          typeof referenciaEsperada!=='string' || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/.test(referenciaEsperada)) return revisar();
       let mensagem;
       try {mensagem=JSON.parse(corpoBruto.toString('utf8'));}
       catch {return revisar();}
