@@ -5,6 +5,22 @@ Plataforma de contratação de profissionais em desenvolvimento.
 O trabalho atual está na ramificação `codex/v16-seguranca-integracoes`.
 A versão publicada, a main e o banco de produção não são alterados por estes testes.
 
+## Revisão e diagnóstico de login — 22/11/2026
+
+A [revisão estruturada](REVISAO-2026-11-22.md) registra evidências, limites,
+avisos de segurança e ordem dos próximos testes. SMTP entregou convite conforme
+confirmado pelo proprietário; ainda falta validar OTP e sessão reais.
+
+A página [login-teste.html](login-teste.html) foi adicionada à versão 3 da
+mesma prévia privada. Ela pede código somente por ação explícita, para conta já
+existente, valida a identidade no Auth e encerra apenas a sessão de teste.
+Não cria usuários, não guarda tokens e não libera o aplicativo principal.
+`autenticacaoPronta` continua false. Produção e pagamentos reais preservados.
+
+O commit de código `40aa45e67081ca75cb58c89ee50269b01799f765` passou em 110 testes,
+zero falhas/ignorados, além das regressões e concorrência PostgreSQL isolada:
+https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/45043737925
+
 ## Lote validado em 21/11/2026
 
 Código: `611bf2189cd858c65d4a54a7ec51318468d5fda1`. A suíte completa passou
