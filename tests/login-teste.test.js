@@ -43,8 +43,17 @@ test('identidade divergente e erro de consulta também encerram a sessão de tes
 });
 test('código inválido não chama API; falha ao encerrar nunca retorna sucesso; erros não vazam resposta',async()=>{
   const cliente=criarTesteLogin(config,async()=>{throw Error('não chamar');});
-  await assert.rejects(cliente.verificar(email,'12345'),/seis/);
+  await assert.rejects(cliente.verificar(email,'12345'),/6 ou 8/);
   const fila=[resposta({access_token:'ficticio'}),resposta({id:uuid,email}),resposta({secret:'nao-expor'},500)];
   await assert.rejects(criarTesteLogin(config,async()=>fila.shift()).verificar(email,'123456'),/encerramento não foi confirmado/);
   await assert.rejects(criarTesteLogin(config,async()=>resposta({secret:'nao-expor'},400)).solicitar(email),e=>!e.message.includes('nao-expor'));
 });
+
+ test('aceita oito dígitos completos e rejeita sete ou nove antes de enviar',async()=>{
+ const chamadas=[]; const fila=[resposta({access_token:'ficticio'}),resposta({id:uuid,email}),resposta({})];
+ const cliente=criarTesteLogin(config,async(u,o)=>{chamadas.push([u,o]);return fila.shift();});
+ for(const codigo of ['1234567','123456789','abcdefgh'])await assert.rejects(cliente.verificar(email,codigo));
+ assert.equal(chamadas.length,0);
+ await cliente.verificar(email,'12345678');
+ assert.equal(JSON.parse(chamadas[0][1].body).token,'12345678');
+ });

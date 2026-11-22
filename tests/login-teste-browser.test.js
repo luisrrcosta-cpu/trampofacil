@@ -34,9 +34,10 @@ test('página isolada valida OTP sem criar conta, guardar token ou liberar aplic
   assert.deepEqual(chamadas[0].body,{email:'teste@example.com',create_user:false});
   await page.getByRole('button',{name:'Enviar código de teste'}).click();
   assert.equal(chamadas.length,1,'reenvio imediato bloqueado');
-  await page.getByLabel('Código recebido por e-mail').fill('123456');
+  await page.getByLabel('Código recebido por e-mail').fill('12345678');
   await page.getByRole('button',{name:'Verificar acesso'}).click();
   await page.getByRole('status').getByText('Teste aprovado:',{exact:false}).waitFor();
+  assert.equal(chamadas[1].body.token,'12345678');
   assert.deepEqual(chamadas.map(c=>c.path),['/auth/v1/otp','/auth/v1/verify','/auth/v1/user','/auth/v1/logout']);
   assert.equal(await page.getByLabel('Código recebido por e-mail').inputValue(),'');
   assert.equal(await page.evaluate(()=>localStorage.length+sessionStorage.length),0);

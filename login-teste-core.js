@@ -30,7 +30,7 @@ export function criarTesteLogin(config, enviar = fetch) {
     },
     async verificar(email, codigo) {
       emailValido(email);
-      if (!/^\d{6}$/.test(codigo)) throw new Error('Digite os seis números do código.');
+      if (!/^(?:\d{6}|\d{8})$/.test(codigo)) throw new Error('Digite o código completo de 6 ou 8 números.');
       const resposta = await chamar('verify', { email, token: codigo, type: 'email' });
       let sessao = await resposta.json();
       const token = sessao?.access_token;
