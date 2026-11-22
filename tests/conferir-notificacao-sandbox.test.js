@@ -148,3 +148,29 @@ test('notificação ORDE com cobranças ambíguas ou divergentes é recusada',as
   }
   assert.equal(chamadas,0);
 });
+
+test('ORDE assinado no modo SHA256-token consulta apenas a cobrança correspondente',async()=>{
+  const {createHash}=await import('node:crypto');
+  const tokenAutenticidade='token-ficticio';
+  const corpo=Buffer.from(JSON.stringify({id:'ORDE_TESTE-123',charges:[{id:tentativa.cobrancaId}]}));
+  const cabecalhoAutenticidade=createHash('sha256').update(tokenAutenticidade).update('-').update(corpo).digest('hex');
+  let chamadas=0;
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'sha256-token',
+    tokenAutenticidade,consultar:async()=>{chamadas++;return consulta;}});
+  const resultado=await servico.conferir({...entrada,corpoBruto:corpo,
+    cabecalhoAssinatura:undefined,cabecalhoAutenticidade});
+  assert.equal(resultado.situacao,'pagamento_observado');
+  assert.equal(resultado.liberarRepasse,false);
+  assert.equal(chamadas,1);
+});
+test('ORDE com cobrança malformada ou id de tipo incorreto não consulta',async()=>{
+  let chamadas=0;
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  for(const charges of [[null],[1],['CHAR_TESTE-123'],[{}],[{id:null}],[{id:123}],[{id:['CHAR_TESTE-123']}],{}]) {
+    const corpo=Buffer.from(JSON.stringify({id:'ORDE_TESTE-123',charges}));
+    assert.deepEqual(await servico.conferir({...entrada,corpoBruto:corpo,
+      cabecalhoAssinatura:sign('sha256',corpo,privateKey).toString('base64')}),revisar);
+  }
+  assert.equal(chamadas,0);
+});
