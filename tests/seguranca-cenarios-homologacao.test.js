@@ -11,6 +11,8 @@ const casos = [
   'testar-insercao-financeira-anonima.sql',
   'testar-immutabilidade-financeira-servico.sql',
   'testar-bloqueio-pagamento-real.sql',
+  'testar-idempotencia-webhook-sandbox.sql',
+  'testar-formato-webhook-sandbox.sql',
 ];
 
 for (const nome of casos) {
