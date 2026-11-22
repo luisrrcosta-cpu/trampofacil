@@ -51,3 +51,14 @@ Documentação oficial consultada em 22/11/2026:
 Usar somente ambiente sandbox e dados fictícios. O próximo bloqueio externo é a autenticação da conta do desenvolvedor e o provisionamento seguro da credencial no servidor. Nenhuma credencial foi solicitada por chat ou presumida disponível.
 
 A prévia privada versão 6 publicou a validação dos modelos. O CI de preparação antigo ainda exigia autenticacaoPronta=false, apesar de OTP já validado; atualizado para exigir a configuração atual de homologação e usar o empacotamento por lista permitida.
+
+## Conexão PagBank sandbox validada
+
+Em 22/11/2026, após o usuário salvar PAGBANK_SANDBOX_TOKEN nos Secrets da homologação, a função confirmou somente a presença da variável, sem retornar seu valor. Uma consulta autenticada GET https://sandbox.api.pagseguro.com/public-keys/card retornou HTTP 200 e chave pública disponível.
+
+A sondagem foi temporária e removida. A função preparar-pagamento-teste voltou à composição anterior (versão remota 12). Não foram criados nem alterados chaves públicas, pedidos, cobranças, cartões ou repasses. A resposta do provedor não foi persistida; os logs contêm somente status e booleano.
+
+O módulo server/chave-pagbank-sandbox.js prepara a mesma consulta somente de leitura para futura composição interna. Os três testes cobrem destino fixo, GET, recusa de produção, token malformado, respostas 401/403/404/500, transporte e respostas inválidas, sem propagação de token ou resposta bruta. Ainda não há nova rota HTTP pública.
+
+Documentação: https://developer.pagbank.com.br/reference/consultar-chave-publica
+A autenticação aprovada neste endpoint não comprova habilitação para split, cobrança, captura ou repasse. Checkout, persistência de tentativa, assinatura de notificações, conciliação e políticas comerciais continuam pendentes.
