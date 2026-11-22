@@ -30,3 +30,12 @@ test('rejeita destinos internos, IPs e variantes equivalentes da mesma URL',()=>
     payment_notification_urls:['https://exemplo.com:443/webhook/pagamento'],
     notification_urls:[pagamento]}));
 });
+
+test('rejeita endereços IP com representações alternativas',()=>{
+  for(const destino of ['https://2130706433/webhook','https://0x7f000001/webhook',
+    'https://0177.0.0.1/webhook','https://[::ffff:127.0.0.1]/webhook',
+    'https://8.8.8.8/webhook','https://[2001:db8::1]/webhook']) {
+    assert.throws(()=>validarNotificacoesCheckoutSandbox({ambiente:'sandbox',
+      payment_notification_urls:[destino]}),destino);
+  }
+});
