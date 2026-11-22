@@ -28,3 +28,10 @@ Estado em 2026-11-22: **não implantar rota pública, não habilitar pagamento r
 - O pipeline atual de cobrança espera `id: CHAR_...` e rejeita `CHEC_...` sem consultar o provedor; o processamento de eventos de checkout exige fluxo separado e revisão posterior.
 - O guia de Checkout aponta para a validação SHA-256 do cabeçalho `x-authenticity-token`; há documentação geral mais nova de ECDSA com `x-payload-signature`. O método precisa ser confirmado no produto/ambiente real, **sem fallback automático**.
 - Fontes: https://developer.pagbank.com.br/reference/webhooks-checkout ; https://developer.pagbank.com.br/reference/webhooks ; https://developer.pagbank.com.br/reference/confirmar-autenticidade-da-notificacao ; https://developer.pagbank.com.br/reference/validacao-de-autenticidade
+
+## URLs distintas no Checkout
+A referência oficial de **Criar Checkout** distingue `notification_urls` (alterações de estado do checkout) de `payment_notification_urls` (alterações de estado do pagamento). A configuração futura deverá usar `payment_notification_urls` para o pipeline transacional e tratar `notification_urls` separadamente, se necessário. Não usar um evento `CHEC_` para confirmar um pagamento.
+Fonte: https://developer.pagbank.com.br/reference/criar-checkout e https://developer.pagbank.com.br/reference/objeto-checkout
+
+## Execução da suíte
+O workflow `.github/workflows/testes-financeiros.yml` é acionado por push na branch de desenvolvimento, mas **a conclusão verde do GitHub Actions não foi confirmada**. Os testes adicionados no repositório não devem ser descritos como aprovados até a verificação da execução. 
