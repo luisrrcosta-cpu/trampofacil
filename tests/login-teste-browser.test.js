@@ -41,7 +41,7 @@ test('página isolada valida OTP sem criar conta, guardar token ou liberar aplic
   assert.deepEqual(chamadas.map(c=>c.path),['/auth/v1/otp','/auth/v1/verify','/auth/v1/user','/auth/v1/logout']);
   assert.equal(await page.getByLabel('Código recebido por e-mail').inputValue(),'');
   assert.equal(await page.evaluate(()=>localStorage.length+sessionStorage.length),0);
-  assert.equal(await page.evaluate(()=>window.TRAMPOFACIL_SUPABASE.autenticacaoPronta),false);
+  assert.equal(await page.evaluate(()=>window.TRAMPOFACIL_SUPABASE.autenticacaoPronta),true);
   assert.ok(!((await page.locator('body').innerText()).includes('sessao-ficticia')));
   assert.deepEqual(erros,[]);
 });

@@ -145,7 +145,11 @@ confirmacao.addEventListener('submit', async (evento) => {
 
   const erro = confirmacao.querySelector('[role="alert"]');
   const secao = confirmacao.closest('section');
-  const codigo = campoCodigo.value;
+  const codigo = campoCodigo.value.trim();
+  if (!pendente.sessao && !/^(?:[0-9]{6}|[0-9]{8})$/.test(codigo)) {
+    erro.textContent = 'Digite o código completo de 6 ou 8 números.';
+    return;
+  }
   erro.textContent = '';
   bloquear(secao, true);
   try {

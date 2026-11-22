@@ -301,11 +301,15 @@ async function enviarLogin(evento, verificando) {
   evento.preventDefault();
   if (ocupado || !integrado || (verificando && !emailLogin)) return;
   const email = verificando ? emailLogin : formularioLogin.elements.email.value.trim().toLowerCase();
-  const token = formularioCodigo.elements.token.value;
+  const token = formularioCodigo.elements.token.value.trim();
   const secao = elemento('entrar');
   const status = elemento('status-login');
   if (!autenticacaoPronta) {
     status.textContent = avisoAutenticacao;
+    return;
+  }
+  if (verificando && !/^(?:[0-9]{6}|[0-9]{8})$/.test(token)) {
+    status.textContent = 'Digite o código completo de 6 ou 8 números.';
     return;
   }
   let autenticado = false;

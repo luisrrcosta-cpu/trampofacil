@@ -187,7 +187,7 @@ assert.match(servicos, /if \(sessaoServicos === sessaoOriginal\) await carregarP
 assert.match(conversa, /sessaoServicos !== sessaoOriginal \|\| pedidoEmConversa !== pedidoOriginal/);
 assert.match(ambiente, /config\.ambiente !== 'homologacao'/);
 const config = fs.readFileSync('config.js', 'utf8');
-assert.match(config, /autenticacaoPronta:\s*false/, 'Login não deve ser liberado sem validação do Supabase.');
+assert.match(config, /autenticacaoPronta:\s*true/, 'OTP validado está liberado apenas na homologação.');
 assert.match(config, /ambiente:\s*'homologacao'/);
 assert.match(html, /Pagamentos online ainda não estão disponíveis/);
 assert.match(html, /Nenhuma cobrança está habilitada/);

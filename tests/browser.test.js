@@ -83,7 +83,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
     }
     if (url.pathname.endsWith('/verify')) {
       const { email, token } = req.postDataJSON();
-      if (token !== '123456') return route.fulfill({ status: 400 });
+      if (!['123456','12345678'].includes(token)) return route.fulfill({ status: 400 });
       const id = email.startsWith('cliente') ? 'cliente' : 'profissional';
       return route.fulfill({ json: { access_token: id, user: { id: id === 'cliente' ? '11111111-1111-4111-8111-111111111111' : '22222222-2222-4222-8222-222222222222' } } });
     }
@@ -201,7 +201,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
       await page.getByRole('button', { name: 'Entrar', exact: true }).click();
       await page.getByText('Código inválido ou expirado.', { exact: false }).waitFor();
     }
-    await page.getByLabel('Código de acesso').fill('123456');
+    await page.getByLabel('Código de acesso').fill(email.startsWith('cliente') ? '12345678' : '123456');
     await page.getByRole('button', { name: 'Entrar', exact: true }).click();
   }
 
@@ -412,3 +412,50 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   assert.deepEqual(erros, []);
 });
 
+
+test('cadastro com oito dígitos retoma gravação incerta sem consumir outro código', async t => {
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const server=createServer(async(req,res)=>{
+    const arquivo=req.url==='/'?'index.html':req.url.slice(1);
+    if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',arquivo.endsWith('.js')?'application/javascript':'text/html; charset=utf-8');
+    res.end(await readFile(new URL('../'+arquivo,import.meta.url)));
+  }).listen(0,'127.0.0.1');
+  await once(server,'listening');t.after(()=>server.close());
+  const browser=await chromium.launch({executablePath:process.env.TRAMPOFACIL_CHROMIUM||'/usr/bin/chromium'});
+  t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
+  let verificacoes=0,gravacoes=0;
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
+    const req=route.request(), path=new URL(req.url()).pathname;
+    if(path.endsWith('/otp')){
+      assert.deepEqual(req.postDataJSON(),{email:'cliente@example.com',create_user:true});
+      return route.fulfill({json:{}});
+    }
+    if(path.endsWith('/verify')){
+      verificacoes++;
+      assert.deepEqual(req.postDataJSON(),{email:'cliente@example.com',token:'12345678',type:'email'});
+      return route.fulfill({json:{access_token:'sessao-ficticia',user:{id:'11111111-1111-4111-8111-111111111111'}}});
+    }
+    assert.equal(path,'/rest/v1/clientes');assert.equal(req.method(),'POST');
+    assert.equal(req.headers().authorization,'Bearer sessao-ficticia');
+    assert.equal(req.postDataJSON().usuario_id,'11111111-1111-4111-8111-111111111111');
+    gravacoes++;
+    return route.fulfill({status:gravacoes===1?503:201,body:''});
+  });
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  await page.getByRole('button',{name:'Sou Cliente',exact:true}).click();
+  const form=page.locator('[data-cadastro="cliente"]');
+  await form.getByLabel('Nome completo').fill('Pessoa fictícia');
+  await form.getByLabel('E-mail',{exact:true}).fill('cliente@example.com');
+  await form.getByLabel('WhatsApp').fill('11999999999');
+  await form.getByLabel('Cidade').fill('Cidade de teste');
+  await form.getByRole('button',{name:'Continuar',exact:true}).click();
+  await page.getByLabel('Código de confirmação').fill('12345678');
+  await page.getByRole('button',{name:'Confirmar e salvar'}).click();
+  await page.locator('#form-confirmacao').getByRole('alert').getByText('Não foi possível concluir',{exact:false}).waitFor();
+  assert.equal(await page.getByLabel('Código de confirmação').isDisabled(),true);
+  await page.getByRole('button',{name:'Confirmar e salvar'}).click();
+  await page.getByRole('heading',{name:'Cadastro concluído',exact:true}).waitFor();
+  assert.equal(verificacoes,1);assert.equal(gravacoes,2);
+  assert.equal(await page.evaluate(()=>localStorage.length+sessionStorage.length),0);
+});
