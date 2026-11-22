@@ -39,3 +39,9 @@ test('rejeita endereços IP com representações alternativas',()=>{
       payment_notification_urls:[destino]}),destino);
   }
 });
+
+test('rejeita duplicação de webhook por ponto terminal no domínio',()=>{
+  assert.throws(()=>validarNotificacoesCheckoutSandbox({ambiente:'sandbox',
+    notification_urls:['https://exemplo.com./webhook/pagamento'],
+    payment_notification_urls:['https://exemplo.com/webhook/pagamento']}));
+});
