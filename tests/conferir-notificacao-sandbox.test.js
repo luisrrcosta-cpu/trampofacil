@@ -45,7 +45,7 @@ test('JSON inválido mesmo assinado não consulta o provedor',async()=>{
 });
 test('contexto de contratação inválido impede consulta',async()=>{
   let chamadas=0;const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
-  for(const alteracao of [{ambiente:'producao'},{valorCentavos:0},{valorCentavos:1.5},{cobrancaId:'CHAR_../fora'}]) {
+  for(const alteracao of [{ambiente:'producao'},{valorCentavos:0},{valorCentavos:99},{valorCentavos:100000001},{valorCentavos:1.5},{cobrancaId:'CHAR_../fora'}]) {
     assert.deepEqual(await servico.conferir({...entrada,tentativa:{...tentativa,...alteracao}}),revisar);
   }
   assert.equal(chamadas,0);
