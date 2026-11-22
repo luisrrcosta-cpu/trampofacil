@@ -32,6 +32,7 @@ BEGIN
             )
           )
         )
+      )
     ) THEN
       RAISE EXCEPTION 'Política RLS pública permissiva: %', v_nome;
     END IF;
