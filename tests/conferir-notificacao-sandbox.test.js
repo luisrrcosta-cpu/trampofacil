@@ -195,3 +195,21 @@ test('webhook assinado com devolução parcial mantém repasse bloqueado',async(
   assert.equal(resultado.saldoObservadoCentavos,14000);
   assert.equal(resultado.liberarRepasse,false);
 });
+
+test('referência ausente ou inválida não consulta o provedor',async()=>{
+  let chamadas=0;
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  for(const referenciaEsperada of [undefined,null,'','a'.repeat(65),123,{},[]]) {
+    assert.deepEqual(await servico.conferir({...entrada,referenciaEsperada}),revisar);
+  }
+  assert.equal(chamadas,0);
+});
+test('webhook válido não libera repasse mesmo após devolução total',async()=>{
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>({...consulta,devolvidoCentavos:15000})});
+  const resultado=await servico.conferir(entrada);
+  assert.equal(resultado.situacao,'devolucao_total');
+  assert.equal(resultado.saldoObservadoCentavos,0);
+  assert.equal(resultado.liberarRepasse,false);
+});
