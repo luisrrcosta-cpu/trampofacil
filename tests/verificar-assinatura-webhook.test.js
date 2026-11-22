@@ -13,3 +13,6 @@ test('aceita uma assinatura válida entre várias',()=>assert.equal(validar({cor
 test('rejeita chave pública errada',()=>{const outro=generateKeyPairSync('ec',{namedCurve:'prime256v1'}).publicKey.export({format:'der',type:'spki'}).toString('base64');assert.equal(validar({corpoBruto:corpo,cabecalhoAssinatura:assinatura,chavePublicaBase64:outro}),false)});
 test('rejeita chave RSA',()=>{const rsa=generateKeyPairSync('rsa',{modulusLength:2048}).publicKey.export({format:'der',type:'spki'}).toString('base64');assert.equal(validar({corpoBruto:corpo,cabecalhoAssinatura:assinatura,chavePublicaBase64:rsa}),false)});
 test('rejeita corpo grande',()=>assert.equal(validar({corpoBruto:Buffer.alloc(262145),cabecalhoAssinatura:assinatura,chavePublicaBase64:chave}),false));
+
+test('rejeita corpo vazio',()=>assert.equal(validar({corpoBruto:Buffer.alloc(0),cabecalhoAssinatura:assinatura,chavePublicaBase64:chave}),false));
+test('rejeita assinatura com caracteres inválidos',()=>assert.equal(validar({corpoBruto:corpo,cabecalhoAssinatura:'@@@',chavePublicaBase64:chave}),false));
