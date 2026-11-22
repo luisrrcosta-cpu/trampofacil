@@ -81,3 +81,21 @@ test('configuração não aceita dois mecanismos de autenticação simultaneamen
   assert.throws(()=>criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'qualquer',
     chavePublicaBase64,consultar:async()=>consulta}));
 });
+
+test('ECDSA rejeita notificação com os dois cabeçalhos',async()=>{
+  let chamadas=0;
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  assert.deepEqual(await servico.conferir({...entrada,cabecalhoAutenticidade:'a'.repeat(64)}),revisar);
+  assert.equal(chamadas,0);
+});
+test('SHA256-token rejeita notificação com os dois cabeçalhos',async()=>{
+  const {createHash}=await import('node:crypto');
+  let chamadas=0;
+  const tokenAutenticidade='token-ficticio';
+  const cabecalhoAutenticidade=createHash('sha256').update(tokenAutenticidade).update('-').update(corpoBruto).digest('hex');
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'sha256-token',
+    tokenAutenticidade,consultar:async()=>{chamadas++;return consulta;}});
+  assert.deepEqual(await servico.conferir({...entrada,cabecalhoAutenticidade}),revisar);
+  assert.equal(chamadas,0);
+});
