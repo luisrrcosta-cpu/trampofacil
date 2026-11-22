@@ -24,3 +24,22 @@ for(const [nome,alteracoes,codigo] of [
  let chamadas=0;const servico=montar({alteracoes,registrarPreparacao:async()=>{chamadas++;return {id:preparacao};}});
  await assert.rejects(servico.preparar(entrada),erro=>erro.codigo===codigo);assert.equal(chamadas,0);
 });
+
+test('sem autenticação: não consulta solicitação nem registra',async()=>{
+ let consultas=0,registros=0;
+ const servico=criarPreparadorPagamento({ambiente:'teste',autenticar:async()=>{throw Error('não deveria autenticar');},consultarSolicitacao:async()=>{consultas++;return pedido;},registrarPreparacao:async()=>{registros++;return {id:preparacao};}});
+ await assert.rejects(servico.preparar({...entrada,authorization:undefined}),erro=>erro.codigo==='NAO_AUTENTICADO');
+ assert.equal(consultas,0);assert.equal(registros,0);
+});
+test('orçamento com versão inválida: não registra',async()=>{
+ let registros=0;const servico=montar({alteracoes:{atualizado_em:'data-invalida'},registrarPreparacao:async()=>{registros++;return {id:preparacao};}});
+ await assert.rejects(servico.preparar(entrada),erro=>erro.codigo==='ORCAMENTO_INVALIDO');assert.equal(registros,0);
+});
+test('condições divergentes retornadas pelo banco: erro 409 sem pagamento',async()=>{
+ const servico=montar({registrarPreparacao:async()=>{const erro=Error('divergente');erro.code='22023';throw erro;}});
+ await assert.rejects(servico.preparar(entrada),erro=>erro.codigo==='PREPARACAO_DIVERGENTE'&&erro.status===409);
+});
+test('registro com resultado incerto: erro 503 sem nova tentativa',async()=>{
+ let chamadas=0;const servico=montar({registrarPreparacao:async()=>{chamadas++;throw Error('timeout');}});
+ await assert.rejects(servico.preparar(entrada),erro=>erro.codigo==='REGISTRO_INDISPONIVEL'&&erro.status===503);assert.equal(chamadas,1);
+});
