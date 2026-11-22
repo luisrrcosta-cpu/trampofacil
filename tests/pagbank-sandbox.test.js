@@ -26,7 +26,7 @@ test('produção, credencial inválida e identificador com caminho externo são 
   for(const token of ['', 'Bearer x','x\nsegredo']) assert.throws(()=>criarConsultaPagBankSandbox({ambiente:'sandbox',token}));
   let chamadas=0; const cliente=configurar(async()=>{chamadas++;});
   for(const alteracao of [{cobrancaId:'https://externo.invalid'},{cobrancaId:'CHAR_../segredo'},
-    {referenciaEsperada:''},{valorEsperadoCentavos:1.5},{valorEsperadoCentavos:0}]) {
+    {referenciaEsperada:''},{valorEsperadoCentavos:1.5},{valorEsperadoCentavos:0},{valorEsperadoCentavos:99},{valorEsperadoCentavos:100000001}]) {
     await assert.rejects(cliente.consultar({...esperado,...alteracao}));
   }
   assert.equal(chamadas,0);
