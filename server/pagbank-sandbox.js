@@ -16,7 +16,7 @@ export function criarConsultaPagBankSandbox({ambiente,token,fetchImpl=globalThis
     async consultar({cobrancaId,referenciaEsperada,valorEsperadoCentavos}={}) {
       if (!identificador.test(cobrancaId || '') || typeof referenciaEsperada !== 'string' ||
           !referenciaEsperada || referenciaEsperada.length > 64 ||
-          !centavos(valorEsperadoCentavos) || valorEsperadoCentavos < 1) throw indisponivel();
+          !centavos(valorEsperadoCentavos) || valorEsperadoCentavos < 100 || valorEsperadoCentavos > 100000000) throw indisponivel();
       try {
         const resposta = await fetchImpl(`${origem}/charges/${cobrancaId}`, {
           method:'GET', headers:{Authorization:`Bearer ${token}`,Accept:'application/json'},
