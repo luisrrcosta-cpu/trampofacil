@@ -200,7 +200,7 @@ test('referência ausente ou inválida não consulta o provedor',async()=>{
   let chamadas=0;
   const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
     chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
-  for(const referenciaEsperada of [undefined,null,'','a'.repeat(65),123,{},[],' ',' ref-teste','ref-teste ','ref\\nteste','ref\\tteste','ref\\u0000teste']) {
+  for(const referenciaEsperada of [undefined,null,'','a'.repeat(65),123,{},[],' ',' ref-teste','ref-teste ','ref\nteste','ref\tteste','ref\u0000teste']) {
     assert.deepEqual(await servico.conferir({...entrada,referenciaEsperada}),revisar);
   }
   assert.equal(chamadas,0);
@@ -212,4 +212,14 @@ test('webhook válido não libera repasse mesmo após devolução total',async()
   assert.equal(resultado.situacao,'devolucao_total');
   assert.equal(resultado.saldoObservadoCentavos,0);
   assert.equal(resultado.liberarRepasse,false);
+});
+
+test('referência simples continua aceita após validar caracteres de controle',async()=>{
+  let chamadas=0;
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>{chamadas++;return consulta;}});
+  const resultado=await servico.conferir(entrada);
+  assert.equal(resultado.situacao,'pagamento_observado');
+  assert.equal(resultado.liberarRepasse,false);
+  assert.equal(chamadas,1);
 });
