@@ -174,3 +174,24 @@ test('ORDE com cobrança malformada ou id de tipo incorreto não consulta',async
   }
   assert.equal(chamadas,0);
 });
+
+test('webhook assinado não substitui valor da consulta ao provedor',async()=>{
+  let chamadas=0;
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>{chamadas++;return {...consulta,valorCentavos:14999};}});
+  assert.deepEqual(await servico.conferir(entrada),revisar);
+  assert.equal(chamadas,1);
+});
+test('webhook assinado não transforma pagamento parcial em pagamento confirmado',async()=>{
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>({...consulta,pagoCentavos:14999})});
+  assert.deepEqual(await servico.conferir(entrada),revisar);
+});
+test('webhook assinado com devolução parcial mantém repasse bloqueado',async()=>{
+  const servico=criarConferenciaNotificacaoSandbox({ambiente:'sandbox',modeloAssinatura:'ecdsa',
+    chavePublicaBase64,consultar:async()=>({...consulta,devolvidoCentavos:1000})});
+  const resultado=await servico.conferir(entrada);
+  assert.equal(resultado.situacao,'devolucao_parcial');
+  assert.equal(resultado.saldoObservadoCentavos,14000);
+  assert.equal(resultado.liberarRepasse,false);
+});
