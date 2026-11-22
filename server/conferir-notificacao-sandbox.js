@@ -25,7 +25,14 @@ export function criarConferenciaNotificacaoSandbox({ambiente, modeloAssinatura, 
       try {mensagem=JSON.parse(corpoBruto.toString('utf8'));}
       catch {return revisar();}
       // A mensagem autenticada é apenas um aviso; nunca fornece valor ou estado financeiro.
-      if (!mensagem || Array.isArray(mensagem) || mensagem.id!==tentativa.cobrancaId) return revisar();
+      if (!mensagem || typeof mensagem!=='object' || Array.isArray(mensagem)) return revisar();
+      // Checkout PagBank pode notificar um pedido ORDE com cobranças em charges[].
+      // Um checkout CHEC não é pagamento. Não escolher cobrança por status ou valor.
+      const idDireto=mensagem.id===tentativa.cobrancaId && !Object.hasOwn(mensagem,'charges');
+      const cobrancas=Array.isArray(mensagem.charges) ? mensagem.charges : [];
+      const idEmPedido=typeof mensagem.id==='string' && /^ORDE_[A-Za-z0-9-]{1,100}$/.test(mensagem.id) &&
+        cobrancas.length===1 && cobrancas[0]?.id===tentativa.cobrancaId;
+      if (!idDireto && !idEmPedido) return revisar();
       try {
         const consulta=await consultar({cobrancaId:tentativa.cobrancaId,referenciaEsperada,
           valorEsperadoCentavos:tentativa.valorCentavos});
