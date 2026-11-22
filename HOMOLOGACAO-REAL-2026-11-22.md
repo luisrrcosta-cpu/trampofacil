@@ -94,3 +94,15 @@ A função de registro é security invoker, restrita a service_role, sem UPDATE 
 Cinco testes novos em PostgreSQL isolado e assinaturas reais fictícias verificam repetição após falha pós-commit, privacidade, recusa de assinaturas, limites de corpo/tempo, falhas de chave e acesso negado por papel. O receptor retorna 202 apenas após armazenamento durável, indicando financeiroProcessado=false. Não altera serviço, pagamento, saldo ou repasse.
 
 Próximo: criar e associar tentativa sandbox à cobrança antes da conferência financeira. A fila ainda não tem consumidor; recebimento não equivale a pagamento confirmado. Nenhum pedido PagBank ou cobrança foi criado para disparar notificações reais.
+
+### Publicação e verificação
+
+Endpoint publicado somente na homologação: https://asdszqtpydiowgerxwee.supabase.co/functions/v1/webhook-pagbank-sandbox (versão 1).
+Verificação HTTP real: GET 405; POST sem assinatura 401; POST com assinatura falsa 401, confirmando acesso à chave sem aceitar mensagem falsa. Não chegou webhook legítimo do PagBank.
+
+Banco remoto: RLS ativa, anon sem SELECT, authenticated sem INSERT e service_role sem UPDATE. Registro repetido testado dentro de transação com rollback; fila permaneceu com zero registros. Nenhuma tabela financeira ou solicitação foi alterada.
+
+Verificações CI do código 3b1562374be4939be1cc7f12e1f356d3cece0c5a: testes isolados, testes financeiros e concorrência PostgreSQL concluídos com sucesso.
+
+Advisories: a nova tabela privada recebeu INFO de RLS sem política; a ausência de grants para clientes e o bloqueio por padrão são intencionais. Referência: https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy
+O aviso preexistente de proteção contra senhas vazadas permanece; o fluxo atual usa OTP. Referência: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
