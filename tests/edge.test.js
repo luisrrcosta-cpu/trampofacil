@@ -121,12 +121,12 @@ test('rotas, métodos e origens externos são recusados antes de autenticar ou a
 test('configuração recusa banco de produção, hosts externos, parâmetros e TLS desativado',()=>{
   for(const valor of [undefined,'postgresql://postgres:ficticia@db.flropneedvaimzcmvcza.supabase.co/postgres',
     bancoUrl.replace('db.asdszqtpydiowgerxwee.supabase.co','externo.example.invalid'),
-    bancoUrl+'?sslmode=disable',bancoUrl+'?sslmode=prefer',bancoUrl+'?sslmode=require&sslmode=disable',bancoUrl+'?options=unsafe',bancoUrl.replace('/postgres','/outro'),bancoUrl.replace(':5432',':8000')]) {
+    bancoUrl+'?sslmode=disable',bancoUrl+'?sslmode=allow',bancoUrl+'?sslmode=require&sslmode=disable',bancoUrl+'?options=unsafe',bancoUrl.replace('/postgres','/outro'),bancoUrl.replace(':5432',':8000')]) {
     assert.throws(()=>validarConexaoBancoHomologacao(valor));
   }
   assert.throws(()=>criarServidorEdgeHomologacao({supabaseUrl:'https://flropneedvaimzcmvcza.supabase.co',abrirBanco:()=>{}}));
   const pool=validarConexaoBancoHomologacao('postgresql://postgres.asdszqtpydiowgerxwee:ficticia@aws-1-sa-east-1.pooler.supabase.com:6543/postgres');
-  for (const modo of ['require','verify-full']) {
+  for (const modo of ['prefer','require','verify-full']) {
     assert.deepEqual(validarConexaoBancoHomologacao(bancoUrl+'?sslmode='+modo).ssl, {rejectUnauthorized:true});
   }
   assert.equal(pool.ssl.rejectUnauthorized,true);

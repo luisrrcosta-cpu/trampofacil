@@ -17,10 +17,10 @@ export function validarConexaoBancoHomologacao(valor) {
   const usuario = decodeURIComponent(url.username);
   const direto = url.hostname === `db.${projetoHomologacao}.supabase.co` && usuario === 'postgres';
   const pool = /^[a-z0-9-]+\.pooler\.supabase\.com$/.test(url.hostname) && usuario === `postgres.${projetoHomologacao}`;
-  // O ambiente hospedado pode acrescentar sslmode. Aceitar somente exigências
-  // de TLS; as opções efetivas abaixo sempre verificam o certificado.
+  // O ambiente hospedado acrescenta sslmode=prefer. O parâmetro é validado e
+  // descartado: as opções efetivas abaixo sempre exigem TLS com certificado.
   const parametrosSeguros = [...url.searchParams].every(([chave, valor]) =>
-    chave === 'sslmode' && ['require', 'verify-full'].includes(valor)) &&
+    chave === 'sslmode' && ['prefer', 'require', 'verify-full'].includes(valor)) &&
     url.searchParams.getAll('sslmode').length <= 1;
   if (!['postgres:', 'postgresql:'].includes(url.protocol) || !(direto || pool) ||
       !['', '5432', '6543'].includes(url.port) || url.pathname !== '/postgres' ||
