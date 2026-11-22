@@ -63,3 +63,9 @@ test('não confia em status pago quando o resumo ainda não indica pagamento int
   const incompleto={...dados,amount:{...dados.amount,summary:{total:15000,paid:10000,refunded:0}}};
   await assert.rejects(configurar(async()=>Response.json(incompleto)).consultar(esperado));
 });
+
+test('rejeita resposta parcial HTTP 206 mesmo com JSON aparentemente válido',async()=>{
+  const parcial=Response.json(dados,{status:206});
+  await assert.rejects(configurar(async()=>parcial.clone()).consultar(esperado),
+    erro=>erro.message==='Não foi possível conferir a cobrança de teste.');
+});
