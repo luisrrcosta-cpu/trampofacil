@@ -82,3 +82,15 @@ O endereço com query string publicado no guia de autenticidade retornou HTTP 40
 
 Referência correta para a chamada testada: https://developer.pagbank.com.br/reference/consultar-chave-publica
 As sondagens temporárias foram removidas; função de preparação restaurada na versão remota 15. Não foi recebido um webhook real assinado, e o receptor ainda não foi ativado.
+
+## Caixa de entrada de webhooks sandbox
+
+Implementado receptor POST em webhook-pagbank-sandbox, exclusivo de asdszqtpydiowgerxwee. Antes de registrar, verifica assinatura ECDSA com chave confiável, preserva bytes originais, limita corpo a 64 KiB e tempo de leitura a cinco segundos. Método, rota, consulta na URL, mídia, assinatura ausente e esquema não suportado são rejeitados. Não usa links do payload.
+
+Nova tabela privada recebimentos_webhook_sandbox guarda somente hash SHA-256 e IDs de até dez cobranças distintas, com estado aguardando_conferencia e financeiro_processado=false obrigatório. Não guarda corpo, nomes, contatos, cartão ou token. Hash como chave primária reconhece replay byte a byte. Uma notificação logicamente equivalente com bytes diferentes pode gerar outro registro; isso não gera lançamento financeiro.
+
+A função de registro é security invoker, restrita a service_role, sem UPDATE ou DELETE concedidos. RLS está ativa e anon/authenticated não acessam tabela ou função. As tabelas financeiras inertes e suas restrições continuam inalteradas.
+
+Cinco testes novos em PostgreSQL isolado e assinaturas reais fictícias verificam repetição após falha pós-commit, privacidade, recusa de assinaturas, limites de corpo/tempo, falhas de chave e acesso negado por papel. O receptor retorna 202 apenas após armazenamento durável, indicando financeiroProcessado=false. Não altera serviço, pagamento, saldo ou repasse.
+
+Próximo: criar e associar tentativa sandbox à cobrança antes da conferência financeira. A fila ainda não tem consumidor; recebimento não equivale a pagamento confirmado. Nenhum pedido PagBank ou cobrança foi criado para disparar notificações reais.
