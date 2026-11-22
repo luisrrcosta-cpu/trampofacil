@@ -20,7 +20,7 @@ export function validarNotificacoesCheckoutSandbox({ambiente,notification_urls,p
   };
   if (!validar(payment_notification_urls) ||
       (notification_urls!==undefined && !validar(notification_urls)) ||
-      (notification_urls!==undefined && new URL(notification_urls[0]).href===new URL(payment_notification_urls[0]).href)) {
+      (notification_urls!==undefined && (() => { const a=new URL(notification_urls[0]); const b=new URL(payment_notification_urls[0]); return a.protocol===b.protocol && a.hostname.replace(/\.$/,'')===b.hostname.replace(/\.$/,'') && a.port===b.port && a.pathname===b.pathname && a.search===b.search; })())) {
     throw new Error('URLs de notificação inválidas ou não separadas.');
   }
   return Object.freeze({
