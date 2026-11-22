@@ -35,3 +35,9 @@ Fonte: https://developer.pagbank.com.br/reference/criar-checkout e https://devel
 
 ## Execução da suíte
 O workflow `.github/workflows/testes-financeiros.yml` é acionado por push na branch de desenvolvimento, mas **a conclusão verde do GitHub Actions não foi confirmada**. Os testes adicionados no repositório não devem ser descritos como aprovados até a verificação da execução. 
+
+## Limites da validação de URLs (revisão de segurança)
+A função `validarNotificacoesCheckoutSandbox` valida apenas a **forma da URL** (HTTPS, endereço não local e separação dos tipos de notificação). **Ela não faz resolução DNS, não garante que o domínio pertença ao projeto e não protege, sozinha, contra DNS rebinding ou redirecionamentos HTTP.** Antes de efetuar qualquer requisição de saída, exigir destinos previamente aprovados, resolver e verificar IPs no momento da conexão e desabilitar redirecionamentos automáticos. Esta validação **não é uma autorização para chamar URLs fornecidas pelo cliente**.
+
+### Evidência local
+Em 22/11/2026, a execução local com Node.js 22 de `tests/configuracao-checkout-sandbox.test.js` e `tests/conferencia-pagbank.test.js` terminou com **8 testes aprovados e 0 falhas**. Não equivale à execução da suíte integral ou do GitHub Actions. A consulta de status do commit `48e1feb0ab58486ae057b4b7bf9fcc6c2d978526` não retornou verificações; isso **não comprova** que o workflow foi executado.
