@@ -22,7 +22,7 @@ export function criarConsultaPagBankSandbox({ambiente,token,fetchImpl=globalThis
           method:'GET', headers:{Authorization:`Bearer ${token}`,Accept:'application/json'},
           redirect:'error', credentials:'omit', cache:'no-store', signal:AbortSignal.timeout(timeoutMs),
         });
-        if (!resposta.ok) throw indisponivel();
+        if (resposta.status !== 200) throw indisponivel();
         const dados = await resposta.json();
         const resumo = dados?.amount?.summary;
         if (dados?.id !== cobrancaId || dados.reference_id !== referenciaEsperada ||
