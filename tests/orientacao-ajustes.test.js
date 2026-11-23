@@ -27,6 +27,7 @@ test('orientações de cadastro são privadas, idempotentes e não publicam perf
   await db.exec(await readFile(new URL('../supabase/homologacao/painel_revisao_perfis.sql',import.meta.url),'utf8'));
   await db.exec('revoke usage on schema private from authenticated');
   await db.exec(await readFile(new URL('../supabase/homologacao/orientacao_ajustes_perfil.sql',import.meta.url),'utf8'));
+  await db.exec(await readFile(new URL('../supabase/homologacao/ultima_orientacao_ajuste.sql',import.meta.url),'utf8'));
   const entrar=async(n,extra={})=>{
     await db.exec('reset role');
     await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:id(n),is_anonymous:false,...extra})]);
@@ -46,6 +47,11 @@ test('orientações de cadastro são privadas, idempotentes e não publicam perf
   await assert.rejects(pedir(id(1),{...esperado,nome:'Versão antiga'}),/Perfil mudou/);
   const primeiro=(await pedir()).rows[0].id;
   assert.equal((await pedir()).rows[0].id,primeiro);
+  const segundo=(await pedir(id(1),esperado,'cidade_atendimento')).rows[0].id;
+  assert.notEqual(segundo,primeiro);
+  const terceiro=(await pedir()).rows[0].id;
+  assert.notEqual(terceiro,primeiro,'voltar a um motivo anterior deve registrar a nova orientação mais recente');
+  assert.equal((await pedir()).rows[0].id,terceiro,'repetir a última orientação é idempotente');
   await assert.rejects(db.exec('select * from private.ajustes_perfil'),/permission denied/);
   await entrar(1);
   const orientacao=(await ler()).rows[0].orientacao;
@@ -63,7 +69,7 @@ test('orientações de cadastro são privadas, idempotentes e não publicam perf
   await entrar(1);
   assert.equal((await ler()).rows[0].orientacao[0].perfil_alterado,true);
   await db.exec('reset role');
-  assert.equal((await db.query('select count(*)::int as n from private.ajustes_perfil')).rows[0].n,1);
+  assert.equal((await db.query('select count(*)::int as n from private.ajustes_perfil')).rows[0].n,3);
   assert.equal((await db.query('select publicado from profissionais where usuario_id=$1',[id(1)])).rows[0].publicado,false);
   await db.query('update private.revisores_perfil set ativo=false where usuario_id=$1',[id(4)]);
   await entrar(4);
