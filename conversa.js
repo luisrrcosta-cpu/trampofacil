@@ -278,7 +278,8 @@ async function carregarConversa() {
     const pedido = pedidos[0];
     if (!pedido) {
       limparConversa();
-      pedidoEmConversa = undefined;
+      // Conserve só o identificador para permitir nova consulta e liberar
+      // os controles no finally da mesma sessão e solicitação.
       statusConversa.textContent = 'Solicitação indisponível.';
       return;
     }

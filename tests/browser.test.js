@@ -839,3 +839,53 @@ test('conversa atualiza orçamento e situação sem apagar rascunho nem mostrar 
   await page.evaluate(()=>iniciarSessao(undefined));
   assert.equal(await page.locator('#situacao-atual-conversa').textContent(),'');
 });
+
+test('conversa indisponível libera controles, permite tentar novamente e voltar sem expor dados anteriores',async t=>{
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const server=createServer(async(req,res)=>{
+    const arquivo=req.url==='/'?'index.html':req.url.slice(1);
+    if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',arquivo.endsWith('.js')?'application/javascript':'text/html; charset=utf-8');
+    res.end(await readFile(new URL('../'+arquivo,import.meta.url)));
+  }).listen(0,'127.0.0.1');
+  await once(server,'listening');t.after(()=>server.close());
+  const browser=await chromium.launch({executablePath:process.env.TRAMPOFACIL_CHROMIUM||'/usr/bin/chromium'});
+  t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
+
+  const cliente='11111111-1111-4111-8111-111111111111';
+  const pedido={id:'77777777-7777-4777-8777-777777777777',cliente_usuario_id:cliente,profissional_usuario_id:'22222222-2222-4222-8222-222222222222',titulo:'Costura de teste',status:'proposta',valor_centavos:10000};
+  let indisponivel=true;
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
+    const req=route.request(),url=new URL(req.url());
+    assert.equal(req.method(),'GET');
+    if(url.pathname==='/rest/v1/solicitacoes'){
+      return route.fulfill({json:url.searchParams.has('id')&&!indisponivel?[pedido]:[]});
+    }
+    assert.ok(['/rest/v1/historico_solicitacoes','/rest/v1/mensagens_solicitacoes'].includes(url.pathname));
+    return route.fulfill({json:[]});
+  });
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  await page.evaluate(({cliente,pedido})=>{
+    iniciarSessao({usuario:cliente,token:'sessao-teste'});abrirConversa(pedido.id);
+  },{cliente,pedido});
+  await page.getByText('Solicitação indisponível.',{exact:true}).waitFor();
+  assert.equal(await page.getByRole('button',{name:'Atualizar histórico e mensagens',exact:true}).isEnabled(),true);
+  assert.equal(await page.getByRole('button',{name:'Voltar às solicitações',exact:true}).isEnabled(),true);
+  assert.equal(await page.locator('#form-mensagem').isVisible(),false);
+  indisponivel=false;
+  await page.getByRole('button',{name:'Atualizar histórico e mensagens',exact:true}).click();
+  await page.locator('#resumo-contratacao').waitFor();
+  assert.match(await page.locator('#orcamento-atual-conversa').textContent(),/100,00/);
+  await page.locator('#form-mensagem [name="texto"]').fill('Texto de teste ainda não enviado');
+  indisponivel=true;
+  await page.getByRole('button',{name:'Atualizar histórico e mensagens',exact:true}).click();
+  await page.getByText('Solicitação indisponível.',{exact:true}).waitFor();
+  assert.equal(await page.locator('#titulo-conversa').textContent(),'');
+  assert.equal(await page.locator('#orcamento-atual-conversa').textContent(),'');
+  assert.equal(await page.locator('#form-mensagem [name="texto"]').inputValue(),'');
+  assert.equal(await page.locator('#form-mensagem').isVisible(),false);
+  await page.getByRole('button',{name:'Voltar às solicitações',exact:true}).click();
+  await page.locator('#solicitacoes').waitFor();
+  await page.getByText('Nenhuma solicitação encontrada.',{exact:true}).waitFor();
+  assert.equal(await page.getByRole('button',{name:'Atualizar',exact:true}).isEnabled(),true);
+});
