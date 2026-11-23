@@ -637,3 +637,70 @@ test('nota fiscal mantém consulta cancelada, acesso profissional e exige novo l
   await page.getByText('Sua sessão expirou. Entre novamente para continuar.',{exact:true}).waitFor();
   assert.equal(await page.locator('#lista-solicitacoes').textContent(),'');
 });
+
+test('profissional completa cadastro, pede análise sem publicar e recupera envio incerto',async t=>{
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const server=createServer(async(req,res)=>{
+    const arquivo=req.url==='/'?'index.html':req.url.slice(1);
+    if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',arquivo.endsWith('.js')?'application/javascript':'text/html; charset=utf-8');
+    res.end(await readFile(new URL('../'+arquivo,import.meta.url)));
+  }).listen(0,'127.0.0.1');
+  await once(server,'listening');t.after(()=>server.close());
+  const browser=await chromium.launch({executablePath:process.env.TRAMPOFACIL_CHROMIUM||'/usr/bin/chromium'});
+  t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
+
+  const usuario='11111111-1111-4111-8111-111111111111';
+  const perfil={usuario_id:usuario,nome:'Pessoa fictícia',cidade:'Cidade de teste',telefone:'11999999999',servico:'Costura',descricao:null,publicado:false,tipo_prestador:null,tipo_atividade:null};
+  let pedido,gravacoes=0,adiar=false,liberar,avisar;
+  const emEspera=new Promise(resolve=>{avisar=resolve;});
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
+    const req=route.request(),url=new URL(req.url());
+    assert.equal(req.headers().authorization,'Bearer sessao-teste');
+    if(url.pathname==='/rest/v1/profissionais'){
+      if(req.method()==='PATCH'){
+        assert.equal(req.postDataJSON().publicado,undefined);
+        Object.assign(perfil,req.postDataJSON());
+        return route.fulfill({json:[{usuario_id:usuario}]});
+      }
+      return route.fulfill({json:[perfil]});
+    }
+    assert.equal(url.pathname,'/rest/v1/solicitacoes_analise_profissional');
+    if(req.method()==='POST'){
+      assert.deepEqual(req.postDataJSON(),{usuario_id:usuario});
+      pedido={usuario_id:usuario,estado:'aguardando_analise',criado_em:'2026-11-23T13:00:00Z'};
+      gravacoes++;return route.abort('failed');
+    }
+    if(adiar)await new Promise(resolve=>{liberar=resolve;avisar();});
+    return route.fulfill({json:pedido?[pedido]:[]});
+  });
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  await page.evaluate(usuario=>{
+    iniciarSessao({usuario,token:'sessao-teste'});
+    mostrar('perfil');tipoPerfil.value='profissional';carregarPerfil();
+  },usuario);
+  await page.locator('#form-perfil').waitFor();
+  await page.getByRole('button',{name:'Consultar pedido de análise',exact:true}).click();
+  await page.getByText('Atualize e salve seu cadastro profissional completo antes de pedir análise.',{exact:false}).waitFor();
+  assert.equal(await page.getByRole('button',{name:'Solicitar análise do perfil',exact:true}).isVisible(),false);
+  await page.locator('#form-perfil [name="tipo_prestador"]').selectOption('pessoa_fisica');
+  await page.locator('#form-perfil [name="tipo_atividade"]').selectOption('ocasional');
+  await page.getByRole('button',{name:'Salvar meu cadastro',exact:true}).click();
+  await page.getByText('Seu cadastro foi atualizado.',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'Consultar pedido de análise',exact:true}).click();
+  await page.getByText('Nenhum pedido de análise registrado.',{exact:false}).waitFor();
+  page.on('dialog',dialog=>dialog.accept());
+  await page.getByRole('button',{name:'Solicitar análise do perfil',exact:true}).click();
+  await page.getByText('Não foi possível confirmar o pedido.',{exact:false}).waitFor();
+  await page.getByRole('button',{name:'Consultar pedido de análise',exact:true}).click();
+  await page.getByText('Pedido registrado. Seu perfil aguarda análise e ainda não foi publicado.',{exact:false}).waitFor();
+  assert.equal(gravacoes,1);assert.equal(perfil.publicado,false);
+  assert.equal(await page.getByRole('button',{name:'Solicitar análise do perfil',exact:true}).isVisible(),false);
+  adiar=true;
+  await page.getByRole('button',{name:'Consultar pedido de análise',exact:true}).click();
+  await emEspera;
+  await page.evaluate(()=>iniciarSessao(undefined));liberar();
+  await page.waitForTimeout(50);
+  assert.equal(await page.locator('#analise-profissional').isVisible(),false);
+  assert.equal(await page.locator('#status-analise-profissional').textContent(),'');
+});
