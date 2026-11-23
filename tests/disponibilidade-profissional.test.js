@@ -1,0 +1,67 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {PGlite} from '@electric-sql/pglite';
+
+test('pausa oculta busca e impede novos pedidos, preserva contratos e não permite autoaprovação',async t=>{
+  const db=new PGlite();t.after(()=>db.close());
+  const profissional='11111111-1111-4111-8111-111111111111';
+  const cliente='22222222-2222-4222-8222-222222222222';
+  const existente='33333333-3333-4333-8333-333333333333';
+  const novo='44444444-4444-4444-8444-444444444444';
+  await db.exec(`
+    create role anon;create role authenticated;create role service_role;
+    create schema private;create schema auth;grant usage on schema auth to public;
+    create function auth.uid() returns uuid language sql stable as
+      $$ select current_setting('app.usuario',true)::uuid $$;
+    create table clientes(usuario_id uuid primary key);
+    create table profissionais(id uuid primary key,usuario_id uuid unique,nome text,cidade text,servico text,descricao text,telefone text,publicado boolean,tipo_prestador text,tipo_atividade text);
+    create table catalogo_profissionais(id uuid primary key,nome text,cidade text,servico text,descricao text,ativo boolean);
+    create table solicitacoes(id uuid primary key,cliente_usuario_id uuid,profissional_id uuid,profissional_usuario_id uuid,titulo text,descricao text,status text,valor_centavos int,criado_em timestamptz,atualizado_em timestamptz);
+    alter table profissionais enable row level security;
+    alter table catalogo_profissionais enable row level security;
+    alter table solicitacoes enable row level security;
+    grant select on profissionais,solicitacoes to authenticated;
+    grant insert(id,cliente_usuario_id,profissional_id,titulo,descricao),update(status,valor_centavos) on solicitacoes to authenticated;
+    grant select on catalogo_profissionais to anon;
+    create policy dono on profissionais to authenticated using(usuario_id=(select auth.uid())) with check(usuario_id=(select auth.uid()));
+    create policy ativos on catalogo_profissionais for select to anon using(ativo);
+    create policy partes on solicitacoes to authenticated using((select auth.uid()) in(cliente_usuario_id,profissional_usuario_id)) with check((select auth.uid()) in(cliente_usuario_id,profissional_usuario_id));
+    insert into clientes values('${cliente}');
+    insert into profissionais values('${profissional}','${profissional}','Pessoa fictícia','Cidade','Costura',null,'11999999999',true,'pessoa_fisica','ocasional');
+    insert into catalogo_profissionais values('${profissional}','Pessoa fictícia','Cidade','Costura',null,true);
+    insert into solicitacoes values('${existente}','${cliente}','${profissional}','${profissional}','Reparo','Reparo de teste','aceita',10000,now(),now());
+  `);
+  await db.exec(await readFile(new URL('../supabase/homologacao/reavaliar_publicacao_profissional.sql',import.meta.url),'utf8'));
+  await db.exec(await readFile(new URL('../supabase/homologacao/disponibilidade_profissional.sql',import.meta.url),'utf8'));
+  await db.exec(`
+    create trigger sincronizar_catalogo after insert or update on profissionais for each row execute function private.sincronizar_catalogo();
+    create trigger validar_solicitacao before insert or update on solicitacoes for each row execute function private.validar_solicitacao();
+  `);
+  const entrar=async usuario=>{await db.exec('reset role');await db.query("select set_config('app.usuario',$1,false)",[usuario]);await db.exec('set role authenticated');};
+  await entrar(profissional);
+  await db.exec('update profissionais set pausado=true');
+  assert.equal((await db.query('select publicado from profissionais')).rows[0].publicado,true);
+  await assert.rejects(db.exec('update profissionais set publicado=true'),/permission denied/);
+  await db.exec('reset role;set role anon');
+  assert.equal((await db.query('select * from catalogo_profissionais')).rows.length,0);
+  await entrar(cliente);
+  assert.equal((await db.query('update profissionais set pausado=false returning id')).rows.length,0);
+  const criar=()=>db.query('insert into solicitacoes(id,cliente_usuario_id,profissional_id,titulo,descricao) values($1,$2,$3,$4,$5)',[novo,cliente,profissional,'Reparo novo','Novo reparo fictício']);
+  await assert.rejects(criar(),/Profissional indisponível/);
+  await entrar(profissional);
+  await db.exec("update solicitacoes set status='em_andamento'");
+  assert.equal((await db.query('select status from solicitacoes')).rows[0].status,'em_andamento');
+  await db.exec('update profissionais set pausado=false');
+  await db.exec('reset role;set role anon');
+  assert.equal((await db.query('select * from catalogo_profissionais')).rows.length,1);
+  await entrar(cliente);await criar();
+  await db.exec('reset role;update profissionais set publicado=false');
+  await entrar(profissional);
+  await db.exec('update profissionais set pausado=true;update profissionais set pausado=false');
+  assert.equal((await db.query('select publicado from profissionais')).rows[0].publicado,false);
+  await db.exec('reset role;set role anon');
+  assert.equal((await db.query('select * from catalogo_profissionais')).rows.length,0);
+  await db.exec('reset role');
+  assert.equal((await db.query('select count(*)::int as n from solicitacoes')).rows[0].n,2);
+});

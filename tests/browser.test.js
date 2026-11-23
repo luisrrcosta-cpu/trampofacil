@@ -56,7 +56,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   let aguardarPreparacao = false;
   let liberarPreparacao;
   let avisarPreparacaoIniciada;
-  const perfis = {clientes:{usuario_id:'11111111-1111-4111-8111-111111111111',nome:'Pessoa fictícia',email:'cliente@example.com',telefone:'11999999999',cidade:'São Paulo'},profissionais:{usuario_id:'22222222-2222-4222-8222-222222222222',nome:'Pessoa profissional',telefone:'11999999999',cidade:'São Paulo',servico:'Pintura',descricao:'Serviço de teste',publicado:false}};
+  const perfis = {clientes:{usuario_id:'11111111-1111-4111-8111-111111111111',nome:'Pessoa fictícia',email:'cliente@example.com',telefone:'11999999999',cidade:'São Paulo'},profissionais:{usuario_id:'22222222-2222-4222-8222-222222222222',nome:'Pessoa profissional',telefone:'11999999999',cidade:'São Paulo',servico:'Pintura',descricao:'Serviço de teste',publicado:false,pausado:false}};
   await page.route('https://asdszqtpydiowgerxwee.supabase.co/**', async (route) => {
     chamadasApi++;
     const req = route.request();
@@ -104,7 +104,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
         assert.ok(!('usuario_id' in dados)); assert.ok(!('publicado' in dados));
         assert.equal(perfil.usuario_id, usuario === 'cliente' ? '11111111-1111-4111-8111-111111111111' : '22222222-2222-4222-8222-222222222222');
         Object.assign(perfil,dados);
-        return route.fulfill({json:[{usuario_id:perfil.usuario_id,...(tipo==='profissionais'?{publicado:perfil.publicado}:{})}]});
+        return route.fulfill({json:[{usuario_id:perfil.usuario_id,...(tipo==='profissionais'?{publicado:perfil.publicado,pausado:perfil.pausado}:{})}]});
       }
       return route.fulfill({json:perfil.usuario_id===(usuario === 'cliente' ? '11111111-1111-4111-8111-111111111111' : '22222222-2222-4222-8222-222222222222')?[perfil]:[]});
     }
@@ -651,7 +651,7 @@ test('profissional completa cadastro, pede análise sem publicar e recupera envi
   t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
 
   const usuario='11111111-1111-4111-8111-111111111111';
-  const perfil={usuario_id:usuario,nome:'Pessoa fictícia',cidade:'Cidade de teste',telefone:'11999999999',servico:'Costura',descricao:null,publicado:false,tipo_prestador:null,tipo_atividade:null};
+  const perfil={usuario_id:usuario,nome:'Pessoa fictícia',cidade:'Cidade de teste',telefone:'11999999999',servico:'Costura',descricao:null,publicado:false,pausado:false,tipo_prestador:null,tipo_atividade:null};
   let pedido,gravacoes=0,adiar=false,liberar,avisar;
   const emEspera=new Promise(resolve=>{avisar=resolve;});
   await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
@@ -661,7 +661,7 @@ test('profissional completa cadastro, pede análise sem publicar e recupera envi
       if(req.method()==='PATCH'){
         assert.equal(req.postDataJSON().publicado,undefined);
         Object.assign(perfil,req.postDataJSON());
-        return route.fulfill({json:[{usuario_id:usuario,publicado:perfil.publicado}]});
+        return route.fulfill({json:[{usuario_id:usuario,publicado:perfil.publicado,pausado:perfil.pausado}]});
       }
       return route.fulfill({json:[perfil]});
     }
@@ -718,15 +718,15 @@ test('edição material de perfil publicado informa nova análise com estado con
   t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
 
   const usuario='11111111-1111-4111-8111-111111111111';
-  const perfil={usuario_id:usuario,nome:'Pessoa fictícia',cidade:'Cidade de teste',telefone:'11999999999',servico:'Costura',descricao:null,publicado:true,tipo_prestador:'pessoa_fisica',tipo_atividade:'regular'};
+  const perfil={usuario_id:usuario,nome:'Pessoa fictícia',cidade:'Cidade de teste',telefone:'11999999999',servico:'Costura',descricao:null,publicado:true,pausado:false,tipo_prestador:'pessoa_fisica',tipo_atividade:'regular'};
   await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
     const req=route.request(),url=new URL(req.url());
     assert.equal(url.pathname,'/rest/v1/profissionais');
     if(req.method()==='PATCH'){
-      assert.equal(url.searchParams.get('select'),'usuario_id,publicado');
+      assert.equal(url.searchParams.get('select'),'usuario_id,publicado,pausado');
       assert.equal(req.postDataJSON().publicado,undefined);
-      Object.assign(perfil,req.postDataJSON(),{publicado:false});
-      return route.fulfill({json:[{usuario_id:usuario,publicado:false}]});
+      Object.assign(perfil,req.postDataJSON(),{publicado:false,pausado:false});
+      return route.fulfill({json:[{usuario_id:usuario,publicado:false,pausado:false}]});
     }
     return route.fulfill({json:[perfil]});
   });
@@ -888,4 +888,55 @@ test('conversa indisponível libera controles, permite tentar novamente e voltar
   await page.locator('#solicitacoes').waitFor();
   await page.getByText('Nenhuma solicitação encontrada.',{exact:true}).waitFor();
   assert.equal(await page.getByRole('button',{name:'Atualizar',exact:true}).isEnabled(),true);
+});
+
+test('profissional pausa e retoma sem publicar perfil pendente nem alterar outros campos',async t=>{
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const server=createServer(async(req,res)=>{
+    const arquivo=req.url==='/'?'index.html':req.url.slice(1);
+    if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',arquivo.endsWith('.js')?'application/javascript':'text/html; charset=utf-8');
+    res.end(await readFile(new URL('../'+arquivo,import.meta.url)));
+  }).listen(0,'127.0.0.1');
+  await once(server,'listening');t.after(()=>server.close());
+  const browser=await chromium.launch({executablePath:process.env.TRAMPOFACIL_CHROMIUM||'/usr/bin/chromium'});
+  t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
+
+  const usuario='11111111-1111-4111-8111-111111111111';
+  const perfil={usuario_id:usuario,nome:'Pessoa fictícia',cidade:'Cidade',telefone:'11999999999',servico:'Costura',descricao:null,tipo_prestador:'pessoa_fisica',tipo_atividade:'ocasional',publicado:true,pausado:false};
+  const alteracoes=[];
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
+    const req=route.request(),url=new URL(req.url());
+    assert.equal(url.pathname,'/rest/v1/profissionais');
+    if(req.method()==='PATCH'){
+      const dados=req.postDataJSON();assert.deepEqual(Object.keys(dados),['pausado']);
+      alteracoes.push(dados.pausado);perfil.pausado=dados.pausado;
+      return route.fulfill({json:[{usuario_id:usuario,publicado:perfil.publicado,pausado:perfil.pausado}]});
+    }
+    return route.fulfill({json:[perfil]});
+  });
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  await page.evaluate(usuario=>{
+    iniciarSessao({usuario,token:'sessao-teste'});mostrar('perfil');tipoPerfil.value='profissional';carregarPerfil();
+  },usuario);
+  await page.locator('#form-perfil').waitFor();
+  page.on('dialog',dialog=>dialog.accept());
+  await page.locator('#form-perfil [name="descricao"]').fill('Rascunho ainda não salvo');
+  await page.getByRole('button',{name:'Pausar novos pedidos',exact:true}).click();
+  await page.getByText('Perfil aprovado, mas pausado e fora da busca.',{exact:true}).waitFor();
+  assert.equal(perfil.publicado,true);assert.equal(perfil.descricao,null);
+  assert.equal(await page.locator('#form-perfil [name="descricao"]').inputValue(),'Rascunho ainda não salvo');
+  await page.getByRole('button',{name:'Retomar novos pedidos',exact:true}).click();
+  await page.getByText('Seu perfil está visível na busca.',{exact:true}).waitFor();
+  perfil.publicado=false;perfil.pausado=true;
+  await page.getByRole('button',{name:'Atualizar cadastro',exact:true}).click();
+  await page.getByRole('button',{name:'Retomar novos pedidos',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Retomar novos pedidos',exact:true}).click();
+  await page.getByText('Disponibilidade atualizada.',{exact:false}).waitFor();
+  assert.equal(perfil.publicado,false);assert.equal(perfil.pausado,false);
+  assert.deepEqual(alteracoes,[true,false,false]);
+  assert.equal(await page.locator('#visibilidade-perfil').textContent(),'Seu perfil ainda não está publicado na busca. A publicação depende de análise.');
+  assert.equal(await page.locator('#analise-profissional').isVisible(),true);
+  await page.evaluate(()=>iniciarSessao(undefined));
+  assert.equal(await page.locator('#disponibilidade-profissional').isVisible(),false);
 });

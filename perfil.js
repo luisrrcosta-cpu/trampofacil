@@ -7,6 +7,21 @@ const statusPerfil = elemento('status-perfil');
 let versaoPerfil = 0;
 let perfilEmTela;
 let carregandoPerfil = false;
+const areaDisponibilidade = elemento('disponibilidade-profissional');
+const alternarDisponibilidade = elemento('alternar-disponibilidade-profissional');
+function limparDisponibilidade() {
+  areaDisponibilidade.hidden = true;
+  elemento('status-disponibilidade-profissional').textContent = '';
+}
+function atualizarDisponibilidade(registro) {
+  if (typeof registro.pausado !== 'boolean') throw new Error();
+  areaDisponibilidade.hidden = false;
+  alternarDisponibilidade.textContent = registro.pausado ? 'Retomar novos pedidos' : 'Pausar novos pedidos';
+  elemento('status-disponibilidade-profissional').textContent = registro.pausado
+    ? 'Novos pedidos pausados. Seu perfil fica fora da busca; os contratos existentes continuam disponíveis.'
+    : 'Novos pedidos disponíveis quando o perfil estiver aprovado. Retomar não aprova um perfil pendente.';
+  if (registro.publicado && registro.pausado) elemento('visibilidade-perfil').textContent = 'Perfil aprovado, mas pausado e fora da busca.';
+}
 const areaAnaliseProfissional = elemento('analise-profissional');
 const statusAnaliseProfissional = elemento('status-analise-profissional');
 const solicitarAnaliseProfissional = elemento('solicitar-analise-profissional');
@@ -18,6 +33,7 @@ function limparAnaliseProfissional() {
 }
 
 function limparPerfil() {
+  limparDisponibilidade();
   limparAnaliseProfissional();
   versaoPerfil++;
   if (carregandoPerfil) bloquear(secaoPerfil, false);
@@ -31,8 +47,8 @@ function limparPerfil() {
 
 function apiPerfil(tipo, usuario, dados) {
   const colunas = tipo === 'cliente' ? 'usuario_id,nome,email,telefone,cidade'
-    : 'usuario_id,nome,telefone,cidade,servico,descricao,publicado,tipo_prestador,tipo_atividade';
-  const filtros = new URLSearchParams({usuario_id:'eq.' + usuario, select:dados ? (tipo === 'profissional' ? 'usuario_id,publicado' : 'usuario_id') : colunas});
+    : 'usuario_id,nome,telefone,cidade,servico,descricao,publicado,tipo_prestador,tipo_atividade,pausado';
+  const filtros = new URLSearchParams({usuario_id:'eq.' + usuario, select:dados ? (tipo === 'profissional' ? 'usuario_id,publicado,pausado' : 'usuario_id') : colunas});
   return controleSessao.requisitar(token => enviar(`/rest/v1/${tabelas[tipo]}?${filtros}`, dados,
     token, dados ? 'return=representation' : undefined, dados ? 'PATCH' : 'GET'));
 }
@@ -44,6 +60,7 @@ async function carregarPerfil() {
   const tipo = tipoPerfil.value;
   if (!['cliente','profissional'].includes(tipo)) return;
   limparAnaliseProfissional();
+  limparDisponibilidade();
   perfilEmTela = undefined; formPerfil.reset(); formPerfil.hidden = true;
   elemento('visibilidade-perfil').textContent = '';
   carregandoPerfil = true; bloquear(secaoPerfil, true);
@@ -74,7 +91,8 @@ async function carregarPerfil() {
     }
     elemento('visibilidade-perfil').textContent = tipo === 'profissional'
       ? registro.publicado ? 'Seu perfil está visível na busca. Alterações em nome, cidade, serviço, descrição ou modalidade exigirão nova análise antes de voltar à busca.' : 'Seu perfil ainda não está publicado na busca. A publicação depende de análise.' : '';
-    perfilEmTela = {usuario, tipo, publicado:registro.publicado === true}; formPerfil.hidden = false;
+    if (tipo === 'profissional') atualizarDisponibilidade(registro);
+    perfilEmTela = {usuario, tipo, publicado:registro.publicado === true, pausado:registro.pausado}; formPerfil.hidden = false;
     areaAnaliseProfissional.hidden = tipo !== 'profissional' || registro.publicado === true;
     statusPerfil.textContent = 'Edite seus dados e salve. O e-mail de acesso não é alterado nesta tela.';
   } catch {
@@ -104,12 +122,14 @@ formPerfil.addEventListener('submit', async evento => {
     if (!Array.isArray(registros) || registros.length !== 1 || registros[0].usuario_id !== atual.usuario) throw new Error();
     if (atual.tipo === 'profissional') {
       if (typeof registros[0].publicado !== 'boolean') throw new Error();
-      perfilEmTela = {...atual,publicado:registros[0].publicado};
+      if (typeof registros[0].pausado !== 'boolean') throw new Error();
+      perfilEmTela = {...atual,publicado:registros[0].publicado,pausado:registros[0].pausado};
       limparAnaliseProfissional();
       areaAnaliseProfissional.hidden = registros[0].publicado;
       elemento('visibilidade-perfil').textContent = registros[0].publicado
         ? 'Seu perfil está visível na busca. Alterações em nome, cidade, serviço, descrição ou modalidade exigirão nova análise antes de voltar à busca.'
         : 'Seu perfil ainda não está publicado na busca. A publicação depende de análise.';
+      atualizarDisponibilidade(registros[0]);
     }
     statusPerfil.textContent = atual.tipo === 'profissional' && atual.publicado && !registros[0].publicado
       ? 'Cadastro salvo. Seu perfil saiu da busca e precisa de nova análise antes de ser publicado novamente.'
@@ -187,3 +207,36 @@ async function acompanharAnaliseProfissional(criar = false) {
 }
 elemento('consultar-analise-profissional').addEventListener('click', () => acompanharAnaliseProfissional());
 solicitarAnaliseProfissional.addEventListener('click', () => acompanharAnaliseProfissional(true));
+
+alternarDisponibilidade.addEventListener('click',async()=>{
+  const perfil=perfilEmTela;
+  if(ocupado||carregandoPerfil||!perfil||perfil.tipo!=='profissional'||perfil.usuario!==sessaoServicos?.usuario||typeof perfil.pausado!=='boolean')return;
+  const pausado=!perfil.pausado;
+  if(!window.confirm(pausado?'Pausar novos pedidos? Os contratos existentes continuarão disponíveis.':'Retomar novos pedidos? O perfil só voltará à busca se continuar aprovado.'))return;
+  const versao=versaoPerfil, sessao=sessaoServicos;
+  const atual=()=>versao===versaoPerfil&&sessao===sessaoServicos;
+  carregandoPerfil=true;bloquear(secaoPerfil,true);
+  statusPerfil.textContent='Atualizando disponibilidade…';
+  try{
+    const resposta=await apiPerfil('profissional',perfil.usuario,{pausado});
+    if(!atual())return;
+    if(resposta.status===401){exigirNovoLogin('perfil');return;}
+    if(!resposta.ok)throw new Error();
+    const registros=await resposta.json();
+    if(!atual())return;
+    if(!Array.isArray(registros)||registros.length!==1||registros[0].usuario_id!==perfil.usuario||
+       registros[0].pausado!==pausado||typeof registros[0].publicado!=='boolean')throw new Error();
+    const registro=registros[0];
+    perfilEmTela={...perfil,publicado:registro.publicado,pausado:registro.pausado};
+    limparAnaliseProfissional();areaAnaliseProfissional.hidden=registro.publicado;
+    elemento('visibilidade-perfil').textContent=registro.publicado
+      ? 'Seu perfil está visível na busca.'
+      : 'Seu perfil ainda não está publicado na busca. A publicação depende de análise.';
+    atualizarDisponibilidade(registro);
+    statusPerfil.textContent='Disponibilidade atualizada. Alterações nos outros campos só serão gravadas ao salvar o cadastro.';
+  }catch{
+    if(atual())statusPerfil.textContent='Não foi possível confirmar a disponibilidade. Atualize o cadastro antes de repetir.';
+  }finally{
+    if(atual()){carregandoPerfil=false;bloquear(secaoPerfil,false);}
+  }
+});
