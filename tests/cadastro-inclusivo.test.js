@@ -71,6 +71,11 @@ test('UPSERT por usuario_id atualiza apenas o próprio cadastro e não altera pu
   const atualizado=await upsert('dono','Nome atualizado');
   assert.deepEqual(atualizado.rows,[{usuario_id:'dono',nome:'Nome atualizado',publicado:false}]);
   await assert.rejects(upsert('outro','Invasão'),/row-level security/);
+  // Mesmo com sessão válida, não se pode transferir a titularidade de um perfil.
+  await assert.rejects(
+    db.exec("update profissionais set usuario_id='outro' where usuario_id='dono'"),
+    /row-level security/
+  );
   await assert.rejects(db.exec("update profissionais set publicado=true where usuario_id='dono'"),/permission denied/);
   // A mesma rota de UPSERT também deve permitir o primeiro cadastro do titular.
   await db.exec("set app.usuario='novo'");
