@@ -58,6 +58,14 @@ function lerPerfil(formulario, tipo) {
   if (tipo === 'cliente') {
     perfil.email = email;
   } else {
+    perfil.tipo_prestador = ler('tipo_prestador');
+    perfil.tipo_atividade = ler('tipo_atividade');
+    if (!['pessoa_fisica', 'mei', 'empresa'].includes(perfil.tipo_prestador)) {
+      throw new Error('Escolha como você oferece seus serviços: pessoa física, MEI ou empresa.');
+    }
+    if (!['regular', 'ocasional'].includes(perfil.tipo_atividade)) {
+      throw new Error('Escolha se sua atividade é regular ou ocasional.');
+    }
     perfil.servico = ler('servico');
     perfil.descricao = ler('descricao') || null;
     if (perfil.descricao && perfil.descricao.length > 1000) {

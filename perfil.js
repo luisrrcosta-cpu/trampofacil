@@ -21,7 +21,7 @@ function limparPerfil() {
 
 function apiPerfil(tipo, usuario, dados) {
   const colunas = tipo === 'cliente' ? 'usuario_id,nome,email,telefone,cidade'
-    : 'usuario_id,nome,telefone,cidade,servico,descricao,publicado';
+    : 'usuario_id,nome,telefone,cidade,servico,descricao,publicado,tipo_prestador,tipo_atividade';
   const filtros = new URLSearchParams({usuario_id:'eq.' + usuario, select:dados ? 'usuario_id' : colunas});
   return controleSessao.requisitar(token => enviar(`/rest/v1/${tabelas[tipo]}?${filtros}`, dados,
     token, dados ? 'return=representation' : undefined, dados ? 'PATCH' : 'GET'));
@@ -51,12 +51,16 @@ async function carregarPerfil() {
       return;
     }
     if (registro.usuario_id !== usuario || !['nome','cidade'].every(c => typeof registro[c] === 'string')) throw new Error();
-    for (const campo of ['nome','email','telefone','cidade','servico','descricao']) {
+    for (const campo of ['nome','email','telefone','cidade','servico','descricao','tipo_prestador','tipo_atividade']) {
       formPerfil.elements[campo].value = typeof registro[campo] === 'string' ? registro[campo] : '';
     }
     elemento('email-perfil').hidden = tipo !== 'cliente';
     elemento('campos-profissional').hidden = tipo !== 'profissional';
     formPerfil.elements.servico.required = tipo === 'profissional';
+    for (const campo of ['tipo_prestador', 'tipo_atividade']) {
+      formPerfil.elements[campo].required = tipo === 'profissional';
+      formPerfil.elements[campo].disabled = tipo !== 'profissional';
+    }
     elemento('visibilidade-perfil').textContent = tipo === 'profissional'
       ? registro.publicado ? 'Seu perfil está visível na busca.' : 'Seu perfil ainda não está publicado na busca. A publicação depende de análise.' : '';
     perfilEmTela = {usuario, tipo}; formPerfil.hidden = false;
