@@ -37,3 +37,44 @@ test('cadastro inclusivo mantém legado e RLS, valida tipos e impede acesso alhe
   await db.exec('reset role; set role anon');
   await assert.rejects(db.exec('select tipo_prestador from profissionais'),/permission denied/);
 });
+
+
+test('UPSERT por usuario_id atualiza apenas o próprio cadastro e não altera publicação', async t => {
+  const db = new PGlite(); t.after(() => db.close());
+  await db.exec(`
+    create role authenticated;
+    create table profissionais (
+      id integer generated always as identity primary key,
+      usuario_id text not null unique,
+      nome text not null,
+      publicado boolean not null default false
+    );
+    insert into profissionais(usuario_id,nome,publicado)
+      values ('dono','Nome antigo',false),('outro','Perfil alheio',true);
+    alter table profissionais enable row level security;
+    grant select on profissionais to authenticated;
+    grant insert(usuario_id,nome), update(usuario_id,nome) on profissionais to authenticated;
+    create policy perfil_dono on profissionais to authenticated
+      using (usuario_id = current_setting('app.usuario',true))
+      with check (usuario_id = current_setting('app.usuario',true));
+    create policy usuario_nao_anonimo on profissionais as restrictive to authenticated
+      using (current_setting('app.anonimo',true) = 'false')
+      with check (current_setting('app.anonimo',true) = 'false');
+    set role authenticated;
+    set app.usuario='dono';
+    set app.anonimo='false';
+  `);
+  const upsert = (usuario,nome) => db.query(
+    `insert into profissionais(usuario_id,nome) values($1,$2)
+       on conflict(usuario_id) do update set nome=excluded.nome
+       returning usuario_id,nome,publicado`, [usuario,nome]);
+  const atualizado=await upsert('dono','Nome atualizado');
+  assert.deepEqual(atualizado.rows,[{usuario_id:'dono',nome:'Nome atualizado',publicado:false}]);
+  await assert.rejects(upsert('outro','Invasão'),/row-level security/);
+  await assert.rejects(db.exec("update profissionais set publicado=true where usuario_id='dono'"),/permission denied/);
+  await db.exec('reset role');
+  assert.deepEqual((await db.query('select usuario_id,nome,publicado from profissionais order by usuario_id')).rows,[
+    {usuario_id:'dono',nome:'Nome atualizado',publicado:false},
+    {usuario_id:'outro',nome:'Perfil alheio',publicado:true}
+  ]);
+});
