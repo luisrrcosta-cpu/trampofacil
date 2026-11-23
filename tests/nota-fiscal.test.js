@@ -27,6 +27,7 @@ test('pedido de nota: somente cliente registra; partes leem; sem emissão ou alt
   const estados=['aceita','em_andamento','entregue','concluida','aceita','solicitada','cancelada','proposta'];
   for(let n=1;n<=estados.length;n++) await db.query('insert into solicitacoes values($1,$2,$3,$4,10000)',[id(n),cliente,profissional,estados[n-1]]);
   await db.exec(await readFile(new URL('../supabase/homologacao/pedidos_nota_fiscal.sql',import.meta.url),'utf8'));
+  await db.exec(await readFile(new URL('../supabase/homologacao/atendimento_pedido_nota.sql',import.meta.url),'utf8'));
   const entrar=async(usuario,anonimo=false)=>{
     await db.exec('reset role');
     await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:usuario,is_anonymous:anonimo})]);
@@ -35,6 +36,7 @@ test('pedido de nota: somente cliente registra; partes leem; sem emissão ou alt
   await entrar(cliente);
   for(let n=1;n<=4;n++)await db.query('insert into pedidos_nota_fiscal(solicitacao_id) values($1)',[id(n)]);
   assert.equal((await db.query('select * from pedidos_nota_fiscal')).rows.length,4);
+  await assert.rejects(db.query('insert into atendimentos_pedido_nota(solicitacao_id) values($1)',[id(1)]),/row-level security/);
   await assert.rejects(db.query('insert into pedidos_nota_fiscal(solicitacao_id) values($1)',[id(1)]),/unique constraint/);
   for(let n=6;n<=8;n++)await assert.rejects(db.query('insert into pedidos_nota_fiscal(solicitacao_id) values($1)',[id(n)]),/row-level security/);
   await assert.rejects(db.query('insert into pedidos_nota_fiscal(solicitacao_id,solicitante_usuario_id) values($1,$2)',[id(5),terceiro]),/permission denied/);
@@ -46,15 +48,27 @@ test('pedido de nota: somente cliente registra; partes leem; sem emissão ou alt
   await entrar(cliente);
   assert.equal((await db.query('select * from pedidos_nota_fiscal where solicitacao_id=$1',[id(1)])).rows.length,1,'cancelamento preserva consulta do pedido existente');
   await entrar(profissional);
+  await db.query('insert into atendimentos_pedido_nota(solicitacao_id) values($1)',[id(1)]);
+  await assert.rejects(db.query('insert into atendimentos_pedido_nota(solicitacao_id) values($1)',[id(1)]),/unique constraint/);
+  await assert.rejects(db.query('insert into atendimentos_pedido_nota(solicitacao_id) values($1)',[id(5)]),/row-level security/);
+  await assert.rejects(db.query('insert into atendimentos_pedido_nota(solicitacao_id,profissional_usuario_id) values($1,$2)',[id(2),cliente]),/permission denied/);
+  await assert.rejects(db.exec('update atendimentos_pedido_nota set criado_em=now()'),/permission denied/);
+  await assert.rejects(db.exec('delete from atendimentos_pedido_nota'),/permission denied/);
+  assert.equal((await db.query('select * from atendimentos_pedido_nota')).rows.length,1);
   assert.equal((await db.query('select * from pedidos_nota_fiscal')).rows.length,4);
   await assert.rejects(db.query('insert into pedidos_nota_fiscal(solicitacao_id) values($1)',[id(5)]),/row-level security/);
+  await entrar(cliente);
+  assert.equal((await db.query('select * from atendimentos_pedido_nota')).rows.length,1);
   await entrar(terceiro);
+  assert.equal((await db.query('select * from atendimentos_pedido_nota')).rows.length,0);
   assert.equal((await db.query('select * from pedidos_nota_fiscal')).rows.length,0);
   await assert.rejects(db.query('insert into pedidos_nota_fiscal(solicitacao_id) values($1)',[id(5)]),/row-level security/);
   await entrar(cliente,true);
+  assert.equal((await db.query('select * from atendimentos_pedido_nota')).rows.length,0);
   assert.equal((await db.query('select * from pedidos_nota_fiscal')).rows.length,0);
   await assert.rejects(db.query('insert into pedidos_nota_fiscal(solicitacao_id) values($1)',[id(5)]),/row-level security/);
   await db.exec('reset role; set role anon');
+  await assert.rejects(db.exec('select * from atendimentos_pedido_nota'),/permission denied/);
   await assert.rejects(db.exec('select * from pedidos_nota_fiscal'),/permission denied/);
   await db.exec('reset role');
   assert.equal((await db.query('select sum(valor_centavos)::int as total from solicitacoes')).rows[0].total,80000);

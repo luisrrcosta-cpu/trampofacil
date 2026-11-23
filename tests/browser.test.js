@@ -552,6 +552,7 @@ test('pedido de nota confirma leitura após envio incerto e não vaza após troc
   const emEspera=new Promise(resolve=>{avisar=resolve;});
   await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
     const req=route.request(),url=new URL(req.url());
+    if(url.pathname==='/rest/v1/atendimentos_pedido_nota')return route.fulfill({json:[]});
     assert.equal(url.pathname,'/rest/v1/pedidos_nota_fiscal');
     assert.equal(req.headers().authorization,'Bearer cliente-teste');
     if(req.method()==='POST'){
@@ -606,6 +607,7 @@ test('nota fiscal mantém consulta cancelada, acesso profissional e exige novo l
   let expirar=false;
   await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
     const req=route.request(),url=new URL(req.url());
+    if(url.pathname==='/rest/v1/atendimentos_pedido_nota')return route.fulfill({json:[]});
     assert.equal(url.pathname,'/rest/v1/pedidos_nota_fiscal');
     assert.equal(req.method(),'GET','consulta cancelada e profissional nunca criam pedido');
     return expirar ? route.fulfill({status:401,json:{}}) : route.fulfill({json:registro?[registro]:[]});
@@ -939,4 +941,55 @@ test('profissional pausa e retoma sem publicar perfil pendente nem alterar outro
   assert.equal(await page.locator('#analise-profissional').isVisible(),true);
   await page.evaluate(()=>iniciarSessao(undefined));
   assert.equal(await page.locator('#disponibilidade-profissional').isVisible(),false);
+});
+
+test('profissional confirma atendimento fiscal com recuperação segura e cliente vê confirmação sem emissão',async t=>{
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const server=createServer(async(req,res)=>{
+    const arquivo=req.url==='/'?'index.html':req.url.slice(1);
+    if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',arquivo.endsWith('.js')?'application/javascript':'text/html; charset=utf-8');
+    res.end(await readFile(new URL('../'+arquivo,import.meta.url)));
+  }).listen(0,'127.0.0.1');
+  await once(server,'listening');t.after(()=>server.close());
+  const browser=await chromium.launch({executablePath:process.env.TRAMPOFACIL_CHROMIUM||'/usr/bin/chromium'});
+  t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
+
+  const cliente='11111111-1111-4111-8111-111111111111';
+  const profissional='22222222-2222-4222-8222-222222222222';
+  const pedido={id:'77777777-7777-4777-8777-777777777777',cliente_usuario_id:cliente,profissional_usuario_id:profissional,titulo:'Costura de teste',descricao:'Reparo fictício',status:'concluida',valor_centavos:10000};
+  let atendimento,escritas=0;
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
+    const req=route.request(),url=new URL(req.url());
+    if(url.pathname==='/rest/v1/pedidos_nota_fiscal')return route.fulfill({json:[{solicitacao_id:pedido.id,solicitante_usuario_id:cliente,estado:'solicitada',criado_em:'2026-11-23T13:00:00Z'}]});
+    assert.equal(url.pathname,'/rest/v1/atendimentos_pedido_nota');
+    if(req.method()==='POST'){
+      assert.equal(req.headers().authorization,'Bearer profissional');
+      assert.deepEqual(req.postDataJSON(),{solicitacao_id:pedido.id});
+      escritas++;atendimento={solicitacao_id:pedido.id,profissional_usuario_id:profissional,criado_em:'2026-11-23T13:01:00Z'};
+      return route.abort('failed');
+    }
+    return route.fulfill({json:atendimento?[atendimento]:[]});
+  });
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  const exibir=(usuario,token)=>page.evaluate(({usuario,token,pedido})=>{
+    iniciarSessao({usuario,token});mostrar('solicitacoes');listaPedidos.append(mostrarPedido(pedido));
+  },{usuario,token,pedido});
+  await exibir(profissional,'profissional');
+  await page.getByRole('button',{name:'Consultar pedido de nota fiscal',exact:true}).click();
+  await page.getByRole('button',{name:'Confirmar atendimento do pedido de nota',exact:true}).waitFor();
+  page.on('dialog',dialog=>dialog.accept());
+  await page.getByRole('button',{name:'Confirmar atendimento do pedido de nota',exact:true}).click();
+  await page.getByText('Não foi possível confirmar o atendimento.',{exact:false}).waitFor();
+  await page.getByRole('button',{name:'Consultar pedido de nota fiscal',exact:true}).click();
+  await page.getByText('Você confirmou o atendimento do pedido de nota.',{exact:false}).waitFor();
+  assert.equal(escritas,1);
+  await exibir(cliente,'cliente');
+  await page.getByRole('button',{name:'Consultar pedido de nota fiscal',exact:true}).click();
+  await page.getByText('O profissional confirmou que está cuidando do pedido de nota fiscal. Esta confirmação não é uma nota emitida.',{exact:true}).waitFor();
+  assert.equal(await page.getByRole('button',{name:'Confirmar atendimento do pedido de nota',exact:true}).isVisible(),false);
+  atendimento={...atendimento,profissional_usuario_id:cliente};
+  await page.getByRole('button',{name:'Consultar pedido de nota fiscal',exact:true}).click();
+  await page.getByText('Não foi possível consultar o pedido de nota. Tente novamente.',{exact:true}).waitFor();
+  assert.equal(escritas,1);assert.equal(pedido.valor_centavos,10000);
 });
