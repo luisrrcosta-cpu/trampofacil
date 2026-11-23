@@ -28,6 +28,16 @@ test('interface rejeita dados incompletos, longos e caracteres de controle antes
   assert.equal(perfil.tipo_prestador,undefined);
 });
 
+test('cadastro aceita exemplos válidos de cliente e profissional',()=>{
+  const profissional=contexto.lerPerfil({...valido},'profissional');
+  assert.equal(profissional.perfil.tipo_prestador,'pessoa_fisica');
+  assert.equal(profissional.perfil.tipo_atividade,'ocasional');
+  assert.equal(profissional.perfil.telefone,'19999999999');
+  const cliente=contexto.lerPerfil({...valido,email:'cliente.teste+2@example.com'},'cliente');
+  assert.equal(cliente.perfil.email,'cliente.teste+2@example.com');
+  assert.equal(cliente.perfil.telefone,'19999999999');
+});
+
 test('edição profissional não exige o campo de e-mail oculto',()=>{
   const resultado=contexto.lerPerfil({...valido,email:''},'profissional',false);
   assert.equal(resultado.perfil.tipo_prestador,'pessoa_fisica');
