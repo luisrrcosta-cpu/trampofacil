@@ -35,3 +35,9 @@ Site privado: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site
 Evidências e limites: docs/RETOMADA-VALIDACAO-INTEGRADA-2026-11-23.md.
 Teste repetível sem persistência: supabase/homologacao/validar_fluxo_integrado_rollback.sql.
 Não reaplicar migrações já concluídas. Consultar o banco e os commits antes de retomar.
+
+## Revisão administrativa interna autorizada
+- Estrutura privada aplicada somente na homologação; conta do proprietário registrada como revisora, com auditoria da concessão.
+- Zero aprovações executadas; contas comuns continuam sem permissão de publicação.
+- Painel/backend administrativo ainda pendentes; o cadastro como revisor não libera aprovação no aplicativo.
+- Evidência e limites: docs/REVISAO-INTERNA-APLICADA-2026-11-23.md.
