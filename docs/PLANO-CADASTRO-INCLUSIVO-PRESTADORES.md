@@ -1,6 +1,6 @@
 # TrampoFácil — Cadastro inclusivo de prestadores (planejamento de implementação)
 
-Data: 2026-11-23. Status: **cadastro inclusivo e validações aplicados em homologação; pedido de nota testado e banco aplicado, interface aguardando publicação**.
+Data: 2026-11-23. Status: **cadastro inclusivo e validações aplicados em homologação; pedido de nota testado, banco aplicado e interface publicada no site privado**.
 
 ## Decisões de produto confirmadas
 - Cadastro de prestadores como **pessoa física (CPF)**, **MEI** ou **empresa (CNPJ)**.
