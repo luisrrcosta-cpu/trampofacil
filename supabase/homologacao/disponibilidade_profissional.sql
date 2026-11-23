@@ -15,7 +15,7 @@ BEGIN
  VALUES(NEW.id,NEW.nome,NEW.cidade,NEW.servico,NEW.descricao,(NEW.publicado AND NOT NEW.pausado))
  ON CONFLICT(id) DO UPDATE SET nome=EXCLUDED.nome,cidade=EXCLUDED.cidade,servico=EXCLUDED.servico,descricao=EXCLUDED.descricao,ativo=EXCLUDED.ativo;
  RETURN NEW;
-END $function$
+END $function$;
 
 CREATE OR REPLACE FUNCTION private.validar_solicitacao()
  RETURNS trigger
@@ -56,6 +56,6 @@ BEGIN
  END IF;
  NEW.atualizado_em:=now();
  RETURN NEW;
-END $function$
+END $function$;
 
 -- Nenhum UPDATE de registros existentes, nova política ou privilégio de publicação.
