@@ -1,6 +1,6 @@
 # TrampoFácil — Cadastro inclusivo de prestadores (planejamento de implementação)
 
-Data: 2026-11-23. Status: **proposta técnica, sem migração aplicada**.
+Data: 2026-11-23. Status: **cadastro inclusivo e validações aplicados em homologação; pedido de nota testado e banco aplicado, interface aguardando publicação**.
 
 ## Decisões de produto confirmadas
 - Cadastro de prestadores como **pessoa física (CPF)**, **MEI** ou **empresa (CNPJ)**.
@@ -14,7 +14,7 @@ Data: 2026-11-23. Status: **proposta técnica, sem migração aplicada**.
 ## Estado observado no Supabase de homologação
 `public.profissionais` possui: `id`, `usuario_id`, `nome`, `cidade`,
 `servico`, `descricao`, `telefone`, `criado_em`, `publicado`.
-Ainda não há colunas próprias para `tipo_prestador` ou `tipo_atividade`.
+As colunas `tipo_prestador` e `tipo_atividade` foram adicionadas em homologação, com CHECKs e compatibilidade para perfis legados. Nome, cidade, telefone, serviço, descrição e e-mail possuem validações de conteúdo conforme o tipo de cadastro.
 Também existem `public.clientes` e `public.solicitacoes`.
 
 ## Modelo proposto (compatível com registros antigos)
@@ -47,3 +47,8 @@ Também existem `public.clientes` e `public.solicitacoes`.
 - Emitir NFS-e sem integração e credenciamento.
 - Cobrar automaticamente tributos de prestadores.
 - Modificar a produção.
+
+## Andamento recuperável
+- Cadastros inclusivos e validação: docs/CADASTRO-INCLUSIVO-HOMOLOGACAO-2026-11-23.md e docs/VALIDACAO-CADASTROS-HOMOLOGACAO-2026-11-23.md.
+- Pedido de nota, sem emissão: docs/PEDIDO-NOTA-FISCAL-HOMOLOGACAO-2026-11-23.md. Verificar ali o resultado dos testes e se a interface já foi publicada antes de orientar uso.
+- Verificação de documentos, licenças e emissão fiscal continuam pendentes; não coletar documentos em campos públicos.
