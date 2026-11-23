@@ -573,6 +573,7 @@ function mostrarPedido(pedido) {
       }
     }));
   }
+  adicionarPedidoNotaFiscal(card, pedido, cliente);
   card.append(botaoAcao('Ver histórico e mensagens', () => abrirConversa(pedido.id)));
   return card;
 }
@@ -754,3 +755,73 @@ elemento('recarregar-solicitacoes').addEventListener('click', () => carregarPedi
 
 maisPedidos.addEventListener('click', () => carregarPedidos('', true));
 
+
+// O pedido fiscal é separado do pagamento e da conclusão do serviço.
+function adicionarPedidoNotaFiscal(card, pedido, cliente) {
+  if (!['aceita', 'em_andamento', 'entregue', 'concluida'].includes(pedido.status)) return;
+  const area = document.createElement('div');
+  const estado = texto('p', '');
+  estado.setAttribute('role', 'status');
+  const confirmar = botaoAcao('Pedir nota ao profissional', () => {
+    if (ocupado || !window.confirm('Registrar um pedido de nota fiscal ao profissional? A emissão não é automática e depende da situação do prestador. Nenhum documento ou cobrança será gerado por esta ação.')) return;
+    executar(true);
+  });
+  confirmar.hidden = true;
+  const consultar = botaoAcao('Consultar pedido de nota fiscal', () => executar(false));
+  area.append(texto('h4', 'Nota fiscal'), consultar, confirmar, estado);
+  card.append(area);
+
+  async function executar(criar) {
+    if (ocupado || !sessaoServicos) return;
+    const sessaoOriginal = sessaoServicos;
+    const versaoOriginal = versaoPedidos;
+    if (criar && (!cliente || sessaoOriginal.usuario !== pedido.cliente_usuario_id)) return;
+    bloquear(elemento('solicitacoes'), true);
+    estado.textContent = criar ? 'Registrando pedido de nota…' : 'Consultando pedido de nota…';
+    confirmar.hidden = true;
+    const atual = () => sessaoServicos === sessaoOriginal && versaoPedidos === versaoOriginal;
+    const ler = () => controleSessao.requisitar(token => enviar(
+      '/rest/v1/pedidos_nota_fiscal?' + new URLSearchParams({
+        solicitacao_id: 'eq.' + pedido.id,
+        select: 'solicitacao_id,solicitante_usuario_id,estado,criado_em',
+        limit: '1',
+      }), undefined, token, undefined, 'GET'));
+    try {
+      if (criar) {
+        const gravacao = await controleSessao.requisitar(token => enviar(
+          '/rest/v1/pedidos_nota_fiscal',
+          {solicitacao_id: pedido.id}, token, 'return=minimal'));
+        if (!atual()) return;
+        if (gravacao.status === 401) { exigirNovoLogin('solicitacoes'); return; }
+        // A chave única permite repetir uma tentativa incerta sem criar outro pedido.
+        if (!gravacao.ok && gravacao.status !== 409) throw new Error();
+      }
+      const resposta = await ler();
+      if (!atual()) return;
+      if (resposta.status === 401) { exigirNovoLogin('solicitacoes'); return; }
+      if (!resposta.ok) throw new Error();
+      const registros = await resposta.json();
+      if (!atual()) return;
+      if (!Array.isArray(registros) || registros.length > 1) throw new Error();
+      const registro = registros[0];
+      if (registro) {
+        if (registro.solicitacao_id !== pedido.id ||
+            registro.solicitante_usuario_id !== pedido.cliente_usuario_id ||
+            registro.estado !== 'solicitada' ||
+            typeof registro.criado_em !== 'string' ||
+            !Number.isFinite(Date.parse(registro.criado_em))) throw new Error();
+        estado.textContent = 'Nota fiscal solicitada ao profissional. O registro não é uma nota emitida. A emissão e a entrega ainda precisam ser combinadas com o prestador.';
+      } else {
+        if (criar) throw new Error();
+        estado.textContent = 'Nenhum pedido de nota fiscal registrado para esta contratação.';
+        confirmar.hidden = !cliente;
+      }
+    } catch {
+      if (atual()) estado.textContent = criar
+        ? 'Não foi possível confirmar o pedido. Consulte novamente antes de repetir.'
+        : 'Não foi possível consultar o pedido de nota. Tente novamente.';
+    } finally {
+      if (atual()) bloquear(elemento('solicitacoes'), false);
+    }
+  }
+}
