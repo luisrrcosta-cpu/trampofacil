@@ -72,9 +72,18 @@ test('UPSERT por usuario_id atualiza apenas o próprio cadastro e não altera pu
   assert.deepEqual(atualizado.rows,[{usuario_id:'dono',nome:'Nome atualizado',publicado:false}]);
   await assert.rejects(upsert('outro','Invasão'),/row-level security/);
   await assert.rejects(db.exec("update profissionais set publicado=true where usuario_id='dono'"),/permission denied/);
+  // A mesma rota de UPSERT também deve permitir o primeiro cadastro do titular.
+  await db.exec("set app.usuario='novo'");
+  const novo=await upsert('novo','Primeiro cadastro');
+  assert.deepEqual(novo.rows,[{usuario_id:'novo',nome:'Primeiro cadastro',publicado:false}]);
+  // Sessão anônima não deve criar nem modificar perfis.
+  await db.exec("set app.anonimo='true'");
+  await assert.rejects(upsert('novo','Alteração anônima'),/row-level security/);
+  await assert.rejects(upsert('anonimo','Cadastro anônimo'),/row-level security/);
   await db.exec('reset role');
   assert.deepEqual((await db.query('select usuario_id,nome,publicado from profissionais order by usuario_id')).rows,[
     {usuario_id:'dono',nome:'Nome atualizado',publicado:false},
+    {usuario_id:'novo',nome:'Primeiro cadastro',publicado:false},
     {usuario_id:'outro',nome:'Perfil alheio',publicado:true}
   ]);
 });
