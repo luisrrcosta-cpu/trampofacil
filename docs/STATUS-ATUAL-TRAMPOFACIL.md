@@ -41,3 +41,10 @@ Não reaplicar migrações já concluídas. Consultar o banco e os commits antes
 - Zero aprovações executadas; contas comuns continuam sem permissão de publicação.
 - Painel/backend administrativo ainda pendentes; o cadastro como revisor não libera aprovação no aplicativo.
 - Evidência e limites: docs/REVISAO-INTERNA-APLICADA-2026-11-23.md.
+
+## Painel administrativo integrado e publicado
+- Operações de fila e aprovação disponíveis somente ao revisor ativo; funções privilegiadas isoladas de public e wrappers invoker.
+- Interface publicada no site privado; testes completos e PostgreSQL remoto com claims simuladas passaram.
+- Zero aprovações reais; fila vazia. Login HTTP do revisor no painel ainda não observado.
+- Recusas e pedidos de ajuste continuam pendentes; não repetir a validação já concluída de contratação e nota fiscal.
+- Evidência: docs/PAINEL-REVISAO-HOMOLOGACAO-2026-11-23.md.
