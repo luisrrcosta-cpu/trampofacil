@@ -42,15 +42,19 @@ function resultado(titulo, mensagem) {
   mostrar('resultado');
 }
 
-function lerPerfil(formulario, tipo) {
+function lerPerfil(formulario, tipo, validarEmail = true) {
   const dados = new FormData(formulario);
-  const ler = (campo) => dados.get(campo).trim();
+  const ler = (campo) => typeof dados.get(campo) === 'string' ? dados.get(campo).trim() : '';
   const email = ler('email').toLowerCase();
   const telefone = ler('telefone').replace(/[\s().-]/g, '');
   const perfil = { nome: ler('nome'), cidade: ler('cidade'), telefone };
 
-  if (perfil.nome.length < 2 || perfil.cidade.length < 2) {
-    throw new Error('Informe um nome e uma cidade válidos.');
+  if (![perfil.nome, perfil.cidade].every(valor =>
+    valor.length >= 2 && valor.length <= 120 && !/[\u0000-\u001f\u007f]/.test(valor))) {
+    throw new Error('Informe nome e cidade com 2 a 120 caracteres, sem quebras de linha.');
+  }
+  if (validarEmail && (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+    throw new Error('Informe um e-mail válido.');
   }
   if (!/^\+?[0-9]{10,15}$/.test(telefone)) {
     throw new Error('Informe um WhatsApp válido com DDD.');
@@ -71,7 +75,7 @@ function lerPerfil(formulario, tipo) {
     if (perfil.descricao && perfil.descricao.length > 1000) {
       throw new Error('A descrição deve ter no máximo 1.000 caracteres.');
     }
-    if (perfil.servico.length < 2 || perfil.servico.length > 120) {
+    if (perfil.servico.length < 2 || perfil.servico.length > 120 || /[\u0000-\u001f\u007f]/.test(perfil.servico)) {
       throw new Error('Informe o serviço que você oferece.');
     }
   }

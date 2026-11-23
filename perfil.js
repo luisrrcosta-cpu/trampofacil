@@ -77,7 +77,7 @@ formPerfil.addEventListener('submit', async evento => {
   const atual = perfilEmTela;
   if (ocupado || carregandoPerfil || !atual || atual.usuario !== sessaoServicos?.usuario) return;
   let dados;
-  try {dados = lerPerfil(formPerfil, atual.tipo).perfil;}
+  try {dados = lerPerfil(formPerfil, atual.tipo, atual.tipo === 'cliente').perfil;}
   catch (erro) {statusPerfil.textContent = erro.message; return;}
   const versao = versaoPerfil;
   carregandoPerfil = true; bloquear(secaoPerfil, true);
