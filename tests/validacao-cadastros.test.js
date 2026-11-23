@@ -55,6 +55,15 @@ test('banco impede gravações diretas inválidas sem modificar registros existe
     await assert.rejects(db.query('update clientes set email=$1 where id=1',[email]),/check constraint/);
   await assert.rejects(db.query('update profissionais set descricao=$1',['a'.repeat(1001)]),/check constraint/);
   await assert.rejects(db.exec("update profissionais set servico=''"),/check constraint/);
+  // Regressão: as expressões SQL devem aceitar formatos reais já aceitos pelo formulário.
+  // Impede que um escape extra transforme \+ e \. em validações incorretas.
+  for (const telefone of ['19999999999', '+5519999999999']) {
+    await db.query('update clientes set telefone=$1 where id=1',[telefone]);
+    await db.query('update profissionais set telefone=$1 where id=1',[telefone]);
+  }
+  for (const email of ['pessoa@example.invalid', 'cliente.teste+2@example.com']) {
+    await db.query('update clientes set email=$1 where id=1',[email]);
+  }
   await db.exec("update profissionais set descricao='Primeira linha'||chr(10)||'Segunda linha'");
   assert.equal((await db.query("select count(*)::int as n from pg_constraint where conname like '%_conteudo_check' and convalidated")).rows[0].n,9);
 });
