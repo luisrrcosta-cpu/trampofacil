@@ -4,6 +4,11 @@ Atualização: 23/11/2026. Ambiente exclusivamente de homologação asdszqtpydio
 Branch: codex/v16-seguranca-integracoes. Base de interface: 2dbdd6ce5b6e7ef27cedf7c8c47d2091b13423d4.
 Site privado: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site
 
+## Atualização posterior: atendimento do pedido de nota
+- Profissional confirma atendimento; cliente acompanha, sem emissão fiscal ou pagamento.
+- Migração aplicada e interface privada publicada. 231 testes aprovados e teste PostgreSQL transacional revertido.
+- Evidência: docs/ATENDIMENTO-NOTA-HOMOLOGACAO-2026-11-23.md.
+
 ## Confirmado nesta retomada
 - 230 testes automatizados aprovados em nova execução: https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/45233371767 .
 - Cadastro/upsert CPF, MEI, empresa, regular e ocasional validado no banco real com identidades fictícias e roles PostgreSQL.

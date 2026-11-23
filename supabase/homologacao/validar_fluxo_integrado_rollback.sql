@@ -113,12 +113,25 @@ begin
   execute 'set local role authenticated';
   if not exists(select 1 from public.pedidos_nota_fiscal where solicitacao_id=sid and solicitante_usuario_id=cli)
     then raise exception 'FAIL: profissional não lê pedido'; end if;
+  insert into public.atendimentos_pedido_nota(solicitacao_id) values(sid);
+  begin
+    insert into public.atendimentos_pedido_nota(solicitacao_id) values(sid);
+    raise exception 'FAIL: atendimento duplicado';
+  exception when unique_violation then null; end;
+  if not exists(select 1 from public.atendimentos_pedido_nota where solicitacao_id=sid and profissional_usuario_id=pro)
+    then raise exception 'FAIL: atendimento do profissional'; end if;
   update public.solicitacoes set status='em_andamento' where id=sid;
   update public.solicitacoes set status='entregue' where id=sid;
   execute 'reset role';
   perform set_config('request.jwt.claims',jsonb_build_object('sub',cli,'email','qa-'||cli||'@example.invalid','role','authenticated','is_anonymous',false)::text,true);
   perform set_config('request.jwt.claim.sub',cli::text,true);
   execute 'set local role authenticated';
+  if not exists(select 1 from public.atendimentos_pedido_nota where solicitacao_id=sid and profissional_usuario_id=pro)
+    then raise exception 'FAIL: cliente não lê atendimento'; end if;
+  begin
+    insert into public.atendimentos_pedido_nota(solicitacao_id) values(sid);
+    raise exception 'FAIL: cliente confirma pelo profissional';
+  exception when insufficient_privilege then null; end;
   update public.solicitacoes set status='concluida' where id=sid;
   if not exists(select 1 from public.solicitacoes where id=sid and status='concluida' and valor_centavos=10000)
     then raise exception 'FAIL: conclusão ou valor'; end if;
@@ -130,6 +143,12 @@ begin
   execute 'set local role authenticated';
   if exists(select 1 from public.clientes where usuario_id=cli) or exists(select 1 from public.pedidos_nota_fiscal where solicitacao_id=sid)
     then raise exception 'FAIL: sessão anônima acessa dados privados'; end if;
+  execute 'reset role';
+  perform set_config('request.jwt.claims',jsonb_build_object('sub',terceiro,'role','authenticated','is_anonymous',false)::text,true);
+  perform set_config('request.jwt.claim.sub',terceiro::text,true);
+  execute 'set local role authenticated';
+  if exists(select 1 from public.atendimentos_pedido_nota where solicitacao_id=sid)
+    then raise exception 'FAIL: terceiro lê atendimento'; end if;
   execute 'reset role';
   perform set_config('request.jwt.claims','{}',true);
   perform set_config('request.jwt.claim.sub','',true);
