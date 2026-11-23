@@ -48,3 +48,9 @@ Não reaplicar migrações já concluídas. Consultar o banco e os commits antes
 - Zero aprovações reais; fila vazia. Login HTTP do revisor no painel ainda não observado.
 - Recusas e pedidos de ajuste continuam pendentes; não repetir a validação já concluída de contratação e nota fiscal.
 - Evidência: docs/PAINEL-REVISAO-HOMOLOGACAO-2026-11-23.md.
+
+## Concorrência administrativa validada
+- PostgreSQL 17.12 descartável, com espera por lock comprovada entre conexões.
+- Dupla aprovação idempotente, edição antes/depois da aprovação e revogação concorrente passaram.
+- Integração contínua ampliada; não altera banco homologado nem produção.
+- Evidência: docs/CONCORRENCIA-REVISAO-2026-11-23.md.
