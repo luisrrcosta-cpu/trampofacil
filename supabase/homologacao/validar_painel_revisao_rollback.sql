@@ -33,6 +33,9 @@ begin
     then raise exception 'FAIL: perfil não aparece na fila';end if;
   begin perform public.aprovar_perfil_administrativo(revisor,'{}'::jsonb);raise exception 'FAIL: autoaprovação';exception when insufficient_privilege then null;end;
   begin perform 1 from private.revisores_perfil;raise exception 'FAIL: acesso direto privado';exception when insufficient_privilege then null;end;
+  evento:=public.pedir_ajuste_perfil(pro,esperado,'detalhar_servico');
+  repetido:=public.pedir_ajuste_perfil(pro,esperado,'detalhar_servico');
+  if evento is null or evento<>repetido then raise exception 'FAIL: orientação duplicada';end if;
   evento:=public.aprovar_perfil_administrativo(pro,esperado);
   repetido:=public.aprovar_perfil_administrativo(pro,esperado);
   if evento is null or repetido<>evento then raise exception 'FAIL: repetição duplicou aprovação';end if;
@@ -54,6 +57,9 @@ begin
   perform set_config('request.jwt.claim.sub',pro::text,true);
   execute 'set local role authenticated';
   update public.profissionais set descricao='Descrição alterada após análise' where usuario_id=pro;
+  fila:=public.consultar_orientacao_perfil();
+  if jsonb_array_length(fila)<>1 or fila->0->>'motivo'<>'detalhar_servico' or
+    (fila->0->>'perfil_alterado')::boolean is distinct from true then raise exception 'FAIL: orientação não acompanha versão alterada';end if;
   execute 'reset role';
   if exists(select 1 from public.profissionais where usuario_id=pro and publicado) or
      exists(select 1 from public.catalogo_profissionais where id=pid and ativo)
