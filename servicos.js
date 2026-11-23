@@ -765,17 +765,17 @@ function adicionarPedidoNotaFiscal(card, pedido, cliente) {
   const estado = texto('p', '');
   estado.setAttribute('role', 'status');
   const confirmar = botaoAcao('Pedir nota ao profissional', () => {
-    if (ocupado || !window.confirm('Registrar um pedido de nota fiscal ao profissional? A emissão não é automática e depende da situação do prestador. Nenhum documento ou cobrança será gerado por esta ação.')) return;
+    if (ocupado || !window.confirm(`Registrar um pedido de nota fiscal para “${pedido.titulo}”? A emissão não é automática e depende da situação do prestador. Nenhum documento ou cobrança será gerado por esta ação.`)) return;
     executar(true);
   });
   confirmar.hidden = true;
   const atender = botaoAcao('Confirmar atendimento do pedido de nota', () => {
-    if (ocupado || !window.confirm('Confirmar que você está cuidando deste pedido? Esta confirmação não representa emissão de nota fiscal.')) return;
+    if (ocupado || !window.confirm(`Confirmar que você está cuidando do pedido de nota de “${pedido.titulo}”? Esta confirmação não representa emissão de nota fiscal.`)) return;
     executar(false, true);
   });
   atender.hidden = true;
   const consultar = botaoAcao('Consultar pedido de nota fiscal', () => executar(false));
-  area.append(texto('h4', 'Nota fiscal'), consultar, confirmar, atender, estado);
+  area.append(texto('h4', `Nota fiscal — ${pedido.titulo}`), consultar, confirmar, atender, estado);
   card.append(area);
 
   async function executar(criar, confirmarAtendimento = false) {
