@@ -5,3 +5,9 @@ A proposta agora oferece Negociar proposta ao cliente. O atalho abre a conversa 
 Um rascunho existente do mesmo usuário e pedido tem prioridade e não é substituído pela sugestão. O envio continua exigindo ação explícita em Enviar mensagem, participação validada e contratação aberta. Sessão diferente não pode usar o atalho do cliente nem visualizar seu rascunho.
 
 Sem migração, novos privilégios, pagamentos ou mensagens reais disparadas por testes. O teste de navegador usa API simulada e verifica ausência de escritas, preservação do texto, isolamento entre contas e nenhuma persistência em armazenamento do navegador.
+
+## Resultado confirmado
+- 222 testes aprovados, zero falhas: https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/45202839238 . Demais verificações financeiras, concorrência e prévia isolada também passaram.
+- Publicação privada concluída: versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_c145e565aa748191bd71ba7abbabf758; deployment appgdep_6b045888d4b481918f1fe174bfcbfdbb.
+- Fonte da interface 0b9b0da9e511d39b09c3b6e947e81420fe7b8179; hospedagem 235e5348642e26696bc541b0735edb9ac4010f8b.
+- URL: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso exclusivo do proprietário preservado.
