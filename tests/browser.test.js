@@ -744,3 +744,51 @@ test('edição material de perfil publicado informa nova análise com estado con
   assert.equal(await page.locator('#analise-profissional').isVisible(),true);
   assert.equal(await page.locator('#visibilidade-perfil').textContent(),'Seu perfil ainda não está publicado na busca. A publicação depende de análise.');
 });
+
+test('negociar proposta abre rascunho sem enviar, preserva edição e isola outra conta',async t=>{
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const server=createServer(async(req,res)=>{
+    const arquivo=req.url==='/'?'index.html':req.url.slice(1);
+    if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',arquivo.endsWith('.js')?'application/javascript':'text/html; charset=utf-8');
+    res.end(await readFile(new URL('../'+arquivo,import.meta.url)));
+  }).listen(0,'127.0.0.1');
+  await once(server,'listening');t.after(()=>server.close());
+  const browser=await chromium.launch({executablePath:process.env.TRAMPOFACIL_CHROMIUM||'/usr/bin/chromium'});
+  t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
+
+  const cliente='11111111-1111-4111-8111-111111111111';
+  const profissional='22222222-2222-4222-8222-222222222222';
+  const pedido={id:'77777777-7777-4777-8777-777777777777',cliente_usuario_id:cliente,profissional_usuario_id:profissional,titulo:'Costura de teste',descricao:'Reparo de roupa fictício',status:'proposta',valor_centavos:10000,atualizado_em:'2026-11-23T12:00:00Z'};
+  let escritas=0;
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
+    const req=route.request(),url=new URL(req.url());
+    if(req.method()!=='GET')escritas++;
+    assert.equal(req.method(),'GET','atalho não envia mensagens nem altera orçamento');
+    if(url.pathname==='/rest/v1/solicitacoes')return route.fulfill({json:[pedido]});
+    assert.ok(['/rest/v1/historico_solicitacoes','/rest/v1/mensagens_solicitacoes'].includes(url.pathname));
+    return route.fulfill({json:[]});
+  });
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  await page.evaluate(({cliente,pedido})=>{
+    iniciarSessao({usuario:cliente,token:'sessao-teste'});mostrar('solicitacoes');
+    listaPedidos.append(mostrarPedido(pedido));
+  },{cliente,pedido});
+  await page.getByRole('button',{name:'Negociar proposta',exact:true}).click();
+  await page.locator('#form-mensagem').waitFor();
+  assert.match(await page.locator('#form-mensagem [name="texto"]').inputValue(),/Gostaria de negociar este orçamento/);
+  await page.locator('#form-mensagem [name="texto"]').fill('Podemos ajustar o prazo e o valor?');
+  await page.getByRole('button',{name:'Voltar às solicitações',exact:true}).click();
+  await page.getByRole('button',{name:'Negociar proposta',exact:true}).click();
+  await page.locator('#form-mensagem').waitFor();
+  assert.equal(await page.locator('#form-mensagem [name="texto"]').inputValue(),'Podemos ajustar o prazo e o valor?');
+  await page.evaluate(({profissional,pedido})=>{
+    iniciarSessao({usuario:profissional,token:'outra-sessao'});mostrar('solicitacoes');
+    listaPedidos.append(mostrarPedido(pedido));abrirNegociacao(pedido);
+  },{profissional,pedido});
+  assert.equal(await page.getByRole('button',{name:'Negociar proposta',exact:true}).count(),0);
+  assert.equal(await page.locator('#form-mensagem [name="texto"]').inputValue(),'');
+  await page.getByText('A negociação desta proposta não está disponível para esta conta. Atualize a lista.',{exact:true}).waitFor();
+  assert.equal(escritas,0);assert.equal(pedido.valor_centavos,10000);assert.equal(pedido.status,'proposta');
+  assert.equal(await page.evaluate(()=>localStorage.length+sessionStorage.length),0);
+});

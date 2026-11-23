@@ -86,7 +86,7 @@ function limparConversa() {
   }
 }
 
-function abrirConversa(id) {
+function abrirConversa(id, sugestao = '') {
   if (ocupado) return;
   if (typeof id !== 'string' ||
       !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
@@ -100,6 +100,11 @@ function abrirConversa(id) {
     formularioMensagem.elements.texto.value = rascunho.corpo;
     atualizarContadorMensagem();
     envioIncerto = rascunho.incerto;
+  } else if (sessaoServicos && typeof sugestao === 'string' && sugestao.trim() && sugestao.length <= 2000) {
+    // Sugestão só em memória, sem substituir rascunho e sem envio automático.
+    formularioMensagem.elements.texto.value = sugestao.trim();
+    atualizarContadorMensagem();
+    statusMensagem.textContent = 'Revise a mensagem e toque em Enviar mensagem se quiser enviá-la.';
   }
   proteger('conversa');
 }

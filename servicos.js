@@ -528,6 +528,7 @@ function mostrarPedido(pedido) {
     card.append(form);
   }
   if (cliente && pedido.status === 'proposta') {
+    card.append(botaoAcao('Negociar proposta', () => abrirNegociacao(pedido)));
     card.append(botaoAcao('Aceitar proposta', () => {
       if (!Number.isSafeInteger(pedido.valor_centavos) || pedido.valor_centavos < 100) {
         elemento('status-solicitacoes').textContent = 'Proposta sem valor válido. Atualize a lista antes de aceitar.';
@@ -827,4 +828,13 @@ function adicionarPedidoNotaFiscal(card, pedido, cliente) {
       if (atual()) bloquear(elemento('solicitacoes'), false);
     }
   }
+}
+
+function abrirNegociacao(pedido) {
+  if (ocupado || !sessaoServicos) return;
+  if (pedido?.status !== 'proposta' || papelNaContratacao(pedido,sessaoServicos.usuario) !== 'cliente') {
+    elemento('status-solicitacoes').textContent = 'A negociação desta proposta não está disponível para esta conta. Atualize a lista.';
+    return;
+  }
+  abrirConversa(pedido.id,'Olá! Gostaria de negociar este orçamento. Podemos conversar sobre o valor e os detalhes do serviço?');
 }
