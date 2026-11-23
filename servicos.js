@@ -758,7 +758,8 @@ maisPedidos.addEventListener('click', () => carregarPedidos('', true));
 
 // O pedido fiscal é separado do pagamento e da conclusão do serviço.
 function adicionarPedidoNotaFiscal(card, pedido, cliente) {
-  if (!['aceita', 'em_andamento', 'entregue', 'concluida'].includes(pedido.status)) return;
+  const podePedirNota = ['aceita', 'em_andamento', 'entregue', 'concluida'].includes(pedido.status);
+  if (!podePedirNota && pedido.status !== 'cancelada') return;
   const area = document.createElement('div');
   const estado = texto('p', '');
   estado.setAttribute('role', 'status');
@@ -775,7 +776,7 @@ function adicionarPedidoNotaFiscal(card, pedido, cliente) {
     if (ocupado || !sessaoServicos) return;
     const sessaoOriginal = sessaoServicos;
     const versaoOriginal = versaoPedidos;
-    if (criar && (!cliente || sessaoOriginal.usuario !== pedido.cliente_usuario_id)) return;
+    if (criar && (!podePedirNota || !cliente || sessaoOriginal.usuario !== pedido.cliente_usuario_id)) return;
     bloquear(elemento('solicitacoes'), true);
     estado.textContent = criar ? 'Registrando pedido de nota…' : 'Consultando pedido de nota…';
     confirmar.hidden = true;
@@ -810,11 +811,13 @@ function adicionarPedidoNotaFiscal(card, pedido, cliente) {
             registro.estado !== 'solicitada' ||
             typeof registro.criado_em !== 'string' ||
             !Number.isFinite(Date.parse(registro.criado_em))) throw new Error();
-        estado.textContent = 'Nota fiscal solicitada ao profissional. O registro não é uma nota emitida. A emissão e a entrega ainda precisam ser combinadas com o prestador.';
+        estado.textContent = cliente
+          ? 'Nota fiscal solicitada ao profissional. O registro não é uma nota emitida. A emissão e a entrega ainda precisam ser combinadas com o prestador.'
+          : 'O cliente solicitou nota fiscal para esta contratação. Este registro não confirma emissão. Combine a disponibilidade e a entrega com o cliente.';
       } else {
         if (criar) throw new Error();
         estado.textContent = 'Nenhum pedido de nota fiscal registrado para esta contratação.';
-        confirmar.hidden = !cliente;
+        confirmar.hidden = !cliente || !podePedirNota;
       }
     } catch {
       if (atual()) estado.textContent = criar

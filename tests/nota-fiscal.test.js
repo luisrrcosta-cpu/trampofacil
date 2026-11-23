@@ -41,6 +41,10 @@ test('pedido de nota: somente cliente registra; partes leem; sem emissão ou alt
   await assert.rejects(db.query("insert into pedidos_nota_fiscal(solicitacao_id,estado) values($1,'emitida')",[id(5)]),/permission denied/);
   await assert.rejects(db.exec("update pedidos_nota_fiscal set estado='emitida'"),/permission denied/);
   await assert.rejects(db.exec('delete from pedidos_nota_fiscal'),/permission denied/);
+  await db.exec('reset role');
+  await db.query("update solicitacoes set status='cancelada' where id=$1",[id(1)]);
+  await entrar(cliente);
+  assert.equal((await db.query('select * from pedidos_nota_fiscal where solicitacao_id=$1',[id(1)])).rows.length,1,'cancelamento preserva consulta do pedido existente');
   await entrar(profissional);
   assert.equal((await db.query('select * from pedidos_nota_fiscal')).rows.length,4);
   await assert.rejects(db.query('insert into pedidos_nota_fiscal(solicitacao_id) values($1)',[id(5)]),/row-level security/);
