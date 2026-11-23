@@ -16,4 +16,7 @@ O botão altera somente pausado. Não grava rascunhos dos outros campos, nem env
 
 ## Verificação
 Testes isolados cobrem busca durante pausa, bloqueio de novo pedido direto, contratos existentes em andamento, retomada, perfil não aprovado, outro usuário e falta de permissão de publicação. Interface testa rascunho não salvo e atualização por retorno confirmado da API.
-Migração disponibilidade_profissional exclusiva de asdszqtpydiowgerxwee a aplicar após os testes. Não há exclusão ou edição de registros de contratação.
+Migração disponibilidade_profissional aplicada somente em asdszqtpydiowgerxwee após os testes. Não há exclusão ou edição de registros de contratação.
+
+## Validação e publicação concluídas
+Ver docs/RETOMADA-VALIDACAO-INTEGRADA-2026-11-23.md: 230 testes aprovados, fluxo integrado testado no PostgreSQL de homologação com rollback e interface privada publicada. Não reaplicar a migração.

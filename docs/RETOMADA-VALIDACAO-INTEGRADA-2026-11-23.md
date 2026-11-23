@@ -26,3 +26,9 @@ Sem novos apontamentos no advisor. Permanecem os quatro INFO de RLS sem polític
 Referências: https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy e https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
 
 Produção não alterada. Pagamentos reais e repasses continuam desabilitados.
+
+## Nova execução e publicação
+- Nova execução integral no commit ee6c53d48ef91d106a1854f05419db316eacfba6: 230 testes aprovados, zero falhas, https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/45233371767 . Financeiros e concorrência aprovados.
+- Publicação privada concluída: versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_23695cde39ec81919a8710a93c3f107b; deployment appgdep_6b047f07ed64819185041940d9b5cb82.
+- Código de interface 2dbdd6ce5b6e7ef27cedf7c8c47d2091b13423d4; hospedagem b2e398e1878fc2249df0901081007b67ff27c0b0. Acesso exclusivo do proprietário preservado.
+- URL: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Banco e tela de disponibilidade alinhados.
