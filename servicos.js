@@ -77,6 +77,7 @@ filtroPedidos.addEventListener('change', aplicarFiltroPedidos);
 elemento('menu-servicos').hidden = !integrado;
 
 function iniciarSessao(sessao) {
+  limparRevisao();
   limparPreparacao();
   limparPerfil();
   // Rascunhos ficam apenas em memória e só reaparecem para a conta de origem.
@@ -273,6 +274,7 @@ function proteger(destino) {
   if (destino === 'solicitacoes') carregarPedidos();
   if (destino === 'conversa') carregarConversa();
   if (destino === 'perfil') carregarPerfil();
+  if (destino === 'revisao') carregarRevisao();
 }
 
 elemento('abrir-solicitacoes').addEventListener('click', () => proteger('solicitacoes'));

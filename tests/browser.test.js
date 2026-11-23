@@ -993,3 +993,61 @@ test('profissional confirma atendimento fiscal com recuperação segura e client
   await page.getByText('Não foi possível consultar o pedido de nota. Tente novamente.',{exact:true}).waitFor();
   assert.equal(escritas,1);assert.equal(pedido.valor_centavos,10000);
 });
+
+test('painel de revisão nega acesso comum, não repete aprovação incerta e limpa dados ao trocar conta',async t=>{
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const server=createServer(async(req,res)=>{
+    const arquivo=req.url==='/'?'index.html':req.url.slice(1);
+    if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',arquivo.endsWith('.js')?'application/javascript':'text/html; charset=utf-8');
+    res.end(await readFile(new URL('../'+arquivo,import.meta.url)));
+  }).listen(0,'127.0.0.1');
+  await once(server,'listening');t.after(()=>server.close());
+  const browser=await chromium.launch({executablePath:process.env.TRAMPOFACIL_CHROMIUM||'/usr/bin/chromium'});
+  t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
+
+
+  const revisor='44444444-4444-4444-8444-444444444444';
+  const alvo='22222222-2222-4222-8222-222222222222';
+  const perfil={nome:'<img src=x onerror=alert(1)>',cidade:'Cidade',servico:'Costura',descricao:'Perfil de teste',tipo_prestador:'pessoa_fisica',tipo_atividade:'ocasional'};
+  let negado=true,aprovado=false,escritas=0,perderResposta=true;
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
+    const req=route.request(),url=new URL(req.url());
+    assert.equal(req.headers().authorization,'Bearer revisor');
+    if(negado)return route.fulfill({status:403,json:{message:'Área restrita'}});
+    if(url.pathname==='/rest/v1/rpc/listar_perfis_revisao'){
+      assert.deepEqual(req.postDataJSON(),{pagina:0});
+      return route.fulfill({json:aprovado?[]:[{usuario_id:alvo,solicitado_em:'2026-11-23T18:00:00Z',perfil}]});
+    }
+    assert.equal(url.pathname,'/rest/v1/rpc/aprovar_perfil_administrativo');
+    assert.deepEqual(req.postDataJSON(),{alvo,esperado:perfil});
+    escritas++;aprovado=true;
+    if(perderResposta)return route.abort('failed');
+    return route.fulfill({json:1});
+  });
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  await page.evaluate(({revisor})=>{iniciarSessao({usuario:revisor,token:'revisor'});},{revisor});
+  await page.getByRole('button',{name:'Área de revisão de profissionais',exact:true}).click();
+  await page.getByText('Área reservada à conta revisora autorizada.',{exact:true}).waitFor();
+  assert.equal(await page.locator('#lista-revisao article').count(),0);
+  negado=false;
+  await page.getByRole('button',{name:'Atualizar fila de análise',exact:true}).click();
+  await page.getByRole('heading',{name:perfil.nome,exact:true}).waitFor();
+  assert.equal(await page.locator('#lista-revisao img').count(),0);
+  page.on('dialog',dialog=>dialog.accept());
+  await page.getByRole('button',{name:'Aprovar publicação de '+perfil.nome,exact:true}).click();
+  await page.getByText('Não foi possível confirmar a aprovação.',{exact:false}).waitFor();
+  assert.equal(escritas,1);
+  assert.equal(await page.locator('#lista-revisao article').count(),0);
+  await page.getByRole('button',{name:'Atualizar fila de análise',exact:true}).click();
+  await page.getByText('Nenhum perfil pendente nesta página.',{exact:true}).waitFor();
+  assert.equal(escritas,1);
+  aprovado=false;perderResposta=false;
+  await page.getByRole('button',{name:'Atualizar fila de análise',exact:true}).click();
+  await page.getByRole('button',{name:'Aprovar publicação de '+perfil.nome,exact:true}).click();
+  await page.getByText('Publicação aprovada.',{exact:false}).waitFor();
+  assert.equal(escritas,2);
+  await page.evaluate(()=>iniciarSessao(undefined));
+  assert.equal(await page.locator('#lista-revisao article').count(),0);
+  assert.equal(await page.locator('#status-revisao').textContent(),'');
+});

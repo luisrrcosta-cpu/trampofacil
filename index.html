@@ -84,6 +84,7 @@ label input,label select,label textarea{font-weight:400}
 <button type="button" data-pagina="catalogo">Buscar profissionais</button>
 <button type="button" id="abrir-perfil">Meu cadastro</button>
 <button type="button" id="abrir-solicitacoes">Minhas solicitações</button>
+<button type="button" id="abrir-revisao">Área de revisão de profissionais</button>
 <button type="button" id="sair" hidden>Sair da conta</button>
 </div>
 <button type="button" data-pagina="cliente">Sou Cliente</button>
@@ -289,6 +290,16 @@ label input,label select,label textarea{font-weight:400}
 </form>
 <p id="status-mensagem" role="status"></p>
 <button class="voltar" type="button" id="voltar-solicitacoes">Voltar às solicitações</button>
+</section>
+<section id="revisao" class="card" hidden>
+<h2>Revisão de profissionais</h2>
+<p>Área reservada à conta revisora autorizada. Analise os dados antes de aprovar a publicação. A aprovação não comprova identidade, documentos ou habilitação profissional.</p>
+<p id="status-revisao" role="status"></p>
+<button type="button" id="atualizar-revisao">Atualizar fila de análise</button>
+<div id="lista-revisao"></div>
+<button type="button" id="anterior-revisao" hidden>Página anterior</button>
+<button type="button" id="proxima-revisao" hidden>Próxima página</button>
+<button class="voltar" type="button" data-pagina="inicio">Página inicial</button>
 </section>
 <section id="perfil" class="card" hidden>
 <h2>Meu cadastro</h2>

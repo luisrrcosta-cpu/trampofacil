@@ -240,3 +240,125 @@ alternarDisponibilidade.addEventListener('click',async()=>{
     if(atual()){carregandoPerfil=false;bloquear(secaoPerfil,false);}
   }
 });
+
+
+// Revisão administrativa: autorização sempre conferida no servidor.
+let versaoRevisao = 0;
+let paginaRevisao = 0;
+const secaoRevisao = elemento('revisao');
+const listaRevisao = elemento('lista-revisao');
+const statusRevisao = elemento('status-revisao');
+const anteriorRevisao = elemento('anterior-revisao');
+const proximaRevisao = elemento('proxima-revisao');
+function limparRevisao() {
+  versaoRevisao++;
+  paginaRevisao = 0;
+  listaRevisao.replaceChildren();
+  statusRevisao.textContent = '';
+  anteriorRevisao.hidden = true;
+  proximaRevisao.hidden = true;
+  bloquear(secaoRevisao, false);
+}
+function apiRevisao(nome, dados) {
+  return controleSessao.requisitar(token => enviar('/rest/v1/rpc/' + nome, dados, token));
+}
+function perfilRevisaoValido(item) {
+  const p = item?.perfil;
+  return item && typeof item.usuario_id === 'string' &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(item.usuario_id) &&
+    typeof item.solicitado_em === 'string' && Number.isFinite(Date.parse(item.solicitado_em)) &&
+    p && typeof p === 'object' && !Array.isArray(p) &&
+    Object.keys(p).sort().join(',') === 'cidade,descricao,nome,servico,tipo_atividade,tipo_prestador' &&
+    ['nome','cidade','servico'].every(c => typeof p[c] === 'string' && p[c].length >= 2 && p[c].length <= 120) &&
+    (p.descricao === null || typeof p.descricao === 'string' && p.descricao.length <= 1000) &&
+    (p.tipo_prestador === null || ['pessoa_fisica','mei','empresa'].includes(p.tipo_prestador)) &&
+    (p.tipo_atividade === null || ['regular','ocasional'].includes(p.tipo_atividade));
+}
+async function carregarRevisao(pagina = 0, aviso = '') {
+  if (ocupado || !sessaoServicos || !Number.isInteger(pagina) || pagina < 0 || pagina > 10000) return;
+  const sessaoOriginal = sessaoServicos;
+  const versao = ++versaoRevisao;
+  const atual = () => sessaoServicos === sessaoOriginal && versaoRevisao === versao;
+  listaRevisao.replaceChildren();
+  anteriorRevisao.hidden = true;
+  proximaRevisao.hidden = true;
+  bloquear(secaoRevisao, true);
+  statusRevisao.textContent = 'Consultando fila de análise…';
+  try {
+    const resposta = await apiRevisao('listar_perfis_revisao', {pagina});
+    if (!atual()) return;
+    if (resposta.status === 401) {exigirNovoLogin('revisao');return;}
+    if (resposta.status === 403) {
+      statusRevisao.textContent = 'Área reservada à conta revisora autorizada.';
+      return;
+    }
+    if (!resposta.ok) throw new Error();
+    const fila = await resposta.json();
+    if (!atual()) return;
+    if (!Array.isArray(fila) || fila.length > 51 || !fila.every(perfilRevisaoValido) ||
+        new Set(fila.map(p => p.usuario_id)).size !== fila.length) throw new Error();
+    for (const item of fila.slice(0,50)) {
+      const p = item.perfil;
+      const card = document.createElement('article');
+      card.append(texto('h3',p.nome),texto('p',p.servico + ' · ' + p.cidade));
+      card.append(texto('p','Solicitado em: ' + new Date(item.solicitado_em).toLocaleString('pt-BR')));
+      if (p.descricao) card.append(texto('p',p.descricao));
+      const modalidades = {pessoa_fisica:'Pessoa física (CPF)',mei:'MEI',empresa:'Empresa (CNPJ)'};
+      card.append(texto('p',(modalidades[p.tipo_prestador] || 'Modalidade não informada') + ' · ' +
+        ({regular:'Atividade regular',ocasional:'Serviços ocasionais'}[p.tipo_atividade] || 'Frequência não informada')));
+      if (p.tipo_prestador && p.tipo_atividade) {
+        card.append(botaoAcao('Aprovar publicação de ' + p.nome, () => aprovarPerfilRevisao(item)));
+      } else card.append(texto('p','Cadastro incompleto. Aguarde o profissional preencher as modalidades.'));
+      listaRevisao.append(card);
+    }
+    paginaRevisao = pagina;
+    anteriorRevisao.hidden = pagina === 0;
+    proximaRevisao.hidden = fila.length <= 50 || pagina === 10000;
+    statusRevisao.textContent = aviso || (fila.length
+      ? 'Página ' + (pagina + 1) + ': ' + Math.min(fila.length,50) + ' perfis para análise.'
+      : 'Nenhum perfil pendente nesta página.');
+  } catch {
+    if (atual()) {
+      listaRevisao.replaceChildren();
+      statusRevisao.textContent = 'Não foi possível consultar a fila. Atualize para tentar novamente.';
+    }
+  } finally {
+    if (atual()) bloquear(secaoRevisao,false);
+  }
+}
+async function aprovarPerfilRevisao(item) {
+  if (ocupado || !sessaoServicos || !perfilRevisaoValido(item)) return;
+  if (!window.confirm('Aprovar a publicação de “' + item.perfil.nome +
+    '”? Esta aprovação não comprova identidade, documentos ou habilitação profissional.')) return;
+  const sessaoOriginal = sessaoServicos;
+  const versao = versaoRevisao;
+  const atual = () => sessaoServicos === sessaoOriginal && versaoRevisao === versao;
+  bloquear(secaoRevisao,true);
+  statusRevisao.textContent = 'Registrando aprovação…';
+  let aprovado = false;
+  try {
+    const resposta = await apiRevisao('aprovar_perfil_administrativo',
+      {alvo:item.usuario_id,esperado:item.perfil});
+    if (!atual()) return;
+    if (resposta.status === 401) {exigirNovoLogin('revisao');return;}
+    if (!resposta.ok) throw new Error();
+    const evento = await resposta.json();
+    if (!atual()) return;
+    if (!Number.isSafeInteger(evento) || evento < 1) throw new Error();
+    aprovado = true;
+  } catch {
+    if (atual()) {
+      listaRevisao.replaceChildren();
+      anteriorRevisao.hidden = true;
+      proximaRevisao.hidden = true;
+      statusRevisao.textContent = 'Não foi possível confirmar a aprovação. Atualize a fila e revise o perfil antes de tentar novamente.';
+    }
+  } finally {
+    if (atual()) bloquear(secaoRevisao,false);
+  }
+  if (aprovado && atual()) await carregarRevisao(0,'Publicação aprovada. A disponibilidade continua sob controle do profissional.');
+}
+elemento('abrir-revisao').addEventListener('click', () => proteger('revisao'));
+elemento('atualizar-revisao').addEventListener('click', () => carregarRevisao(paginaRevisao));
+anteriorRevisao.addEventListener('click', () => carregarRevisao(paginaRevisao - 1));
+proximaRevisao.addEventListener('click', () => carregarRevisao(paginaRevisao + 1));
