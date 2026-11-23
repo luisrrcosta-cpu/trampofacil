@@ -36,6 +36,11 @@ begin
   evento:=public.pedir_ajuste_perfil(pro,esperado,'detalhar_servico');
   repetido:=public.pedir_ajuste_perfil(pro,esperado,'detalhar_servico');
   if evento is null or evento<>repetido then raise exception 'FAIL: orientação duplicada';end if;
+  evento:=public.pedir_ajuste_perfil(pro,esperado,'cidade_atendimento');
+  repetido:=public.pedir_ajuste_perfil(pro,esperado,'detalhar_servico');
+  if repetido<=evento then raise exception 'FAIL: orientação anterior reutilizada fora de ordem';end if;
+  evento:=public.pedir_ajuste_perfil(pro,esperado,'detalhar_servico');
+  if evento<>repetido then raise exception 'FAIL: última orientação repetida sem idempotência';end if;
   evento:=public.aprovar_perfil_administrativo(pro,esperado);
   repetido:=public.aprovar_perfil_administrativo(pro,esperado);
   if evento is null or repetido<>evento then raise exception 'FAIL: repetição duplicou aprovação';end if;

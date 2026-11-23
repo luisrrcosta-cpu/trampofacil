@@ -66,3 +66,8 @@ Nenhuma senha, código OTP ou token foi solicitado ou inspecionado. O proprietá
 - Migração aplicada na homologação e interface publicada no site privado. Testes completos e integração transacional revertida passaram.
 - Nenhuma orientação ou aprovação real foi registrada para testar.
 - Evidência e limites: docs/ORIENTACOES-AJUSTE-PERFIL-2026-11-23.md.
+
+## Última orientação de ajuste corrigida
+- Alternar motivos agora registra o último pedido corretamente; só repetir a orientação mais recente reutiliza o registro.
+- Correção aplicada na homologação, testes completos e integração com rollback passaram. Zero registros fictícios persistidos.
+- Evidência: docs/ULTIMA-ORIENTACAO-AJUSTE-2026-11-23.md.
