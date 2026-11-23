@@ -8,7 +8,7 @@ Implementação do plano PLANO-CADASTRO-INCLUSIVO-PRESTADORES.md.
 - RLS e políticas de propriedade/autenticação mantidas; apenas privilégios das novas colunas para authenticated. Publicação do perfil continua reservada à análise.
 - Teste isolado PGlite: seis combinações, legado, CHECKs, acesso alheio, usuário anônimo e tentativa de autopublicação.
 - Teste de navegador: seis cadastros completos com API simulada e edição do perfil legado; regressão de cadastro cliente e contratação permanece.
-- Chromium local não iniciou por restrição do ambiente (socket). Validação de navegador será executada no GitHub Actions antes da atualização da interface privada.
+- Chromium local não iniciou por restrição do ambiente (socket). Validação concluída no GitHub Actions: 211 testes aprovados, zero falhas, incluindo navegador, cadastro inclusivo e proteção RLS. Execução: https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/45177663843 (commit a929d07).
 
 Próximas etapas separadas: verificação privada de identidade/documentos; requisitos de categorias regulamentadas; solicitação de nota fiscal sem emissão automática. Não coletar documentos completos em campos de texto livres.
 Produção e pagamentos reais permanecem sem alteração.
