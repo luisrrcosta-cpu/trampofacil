@@ -54,3 +54,8 @@ Não reaplicar migrações já concluídas. Consultar o banco e os commits antes
 - Dupla aprovação idempotente, edição antes/depois da aprovação e revogação concorrente passaram.
 - Integração contínua ampliada; não altera banco homologado nem produção.
 - Evidência: docs/CONCORRENCIA-REVISAO-2026-11-23.md.
+
+## Acesso real ao painel confirmado pelo proprietário
+Em 23/11/2026, às 19h02 (São Paulo), a captura enviada pelo proprietário mostra “Revisão de profissionais” com “Nenhum perfil pendente nesta página”. A consulta foi exibida sem erro de autorização.
+Esta evidência conclui a verificação manual da abertura e consulta da fila com a conta revisora. Não comprova aprovação HTTP de um perfil; nenhum perfil precisava ser aprovado, pois a fila estava vazia. Não solicitar repetição deste teste sem alteração relevante.
+Nenhuma senha, código OTP ou token foi solicitado ou inspecionado. O proprietário autorizou o assistente a executar as próximas verificações disponíveis, preservando a autenticação normal e o escopo de homologação.

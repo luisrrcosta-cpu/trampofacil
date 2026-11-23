@@ -33,3 +33,8 @@ Referências: https://supabase.com/docs/guides/database/database-linter?lint=000
 Publicação privada concluída: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_7c18be610aa88191b48b43c674145fd0.
 Fonte hospedada: 3931b127c2fff4801800709eea144708ac4aea2f. Fonte do aplicativo: 3bf7cb6622ab05b4fdc95ad2382739dbe03a44d6.
 O login HTTP real da conta revisora no painel ainda não foi observado; testes de interface utilizaram API simulada. Nenhum perfil foi aprovado para produzir evidência de teste.
+
+## Acesso real ao painel confirmado pelo proprietário
+Em 23/11/2026, às 19h02 (São Paulo), a captura enviada pelo proprietário mostra “Revisão de profissionais” com “Nenhum perfil pendente nesta página”. A consulta foi exibida sem erro de autorização.
+Esta evidência conclui a verificação manual da abertura e consulta da fila com a conta revisora. Não comprova aprovação HTTP de um perfil; nenhum perfil precisava ser aprovado, pois a fila estava vazia. Não solicitar repetição deste teste sem alteração relevante.
+Nenhuma senha, código OTP ou token foi solicitado ou inspecionado. O proprietário autorizou o assistente a executar as próximas verificações disponíveis, preservando a autenticação normal e o escopo de homologação.
