@@ -19,6 +19,12 @@ let participantesConversa;
 let podeEnviarMensagem = false;
 let envioIncerto = false;
 let rascunhoConversa;
+const resumoContratacao = elemento('resumo-contratacao');
+function limparResumoContratacao() {
+  resumoContratacao.hidden = true;
+  elemento('situacao-atual-conversa').textContent = '';
+  elemento('orcamento-atual-conversa').textContent = '';
+}
 
 const historico = {
   tabela: 'historico_solicitacoes',
@@ -69,6 +75,7 @@ function trocarSessaoConversa(sessao, usuarioAnterior) {
 }
 
 function limparConversa() {
+  limparResumoContratacao();
   rascunhoConversa = undefined;
   envioIncerto = false;
   participantesConversa = undefined;
@@ -244,11 +251,12 @@ async function carregarConversa() {
   const pedidoOriginal = pedidoEmConversa;
   bloquear(secaoConversa, true);
   statusConversa.textContent = 'Carregando…';
+  limparResumoContratacao();
   formularioMensagem.hidden = true;
   podeEnviarMensagem = false;
   try {
     const resposta = await apiPedidos({
-      select: 'id,cliente_usuario_id,profissional_usuario_id,titulo,status', id: `eq.${pedidoOriginal}`, limit: '1',
+      select: 'id,cliente_usuario_id,profissional_usuario_id,titulo,status,valor_centavos', id: `eq.${pedidoOriginal}`, limit: '1',
     });
     if (sessaoServicos !== sessaoOriginal || pedidoEmConversa !== pedidoOriginal) return;
     const pedidos = await lerConversa(resposta);
@@ -263,7 +271,8 @@ async function carregarConversa() {
           papelNaContratacao(item, sessaoOriginal.usuario) &&
           typeof item.titulo === 'string' &&
           item.titulo.trim().length >= 3 && item.titulo.length <= 120 &&
-          Object.prototype.hasOwnProperty.call(nomesStatus, item.status))) {
+          Object.prototype.hasOwnProperty.call(nomesStatus, item.status) &&
+          (item.valor_centavos == null || (Number.isSafeInteger(item.valor_centavos) && item.valor_centavos >= 100 && item.valor_centavos <= 100000000)))) {
       throw new Error('Resposta de solicitação inválida');
     }
     const pedido = pedidos[0];
@@ -282,6 +291,11 @@ async function carregarConversa() {
       envioIncerto = false;
       statusMensagem.textContent = 'Confira se a mensagem já aparece na conversa antes de reenviar.';
     }
+    elemento('situacao-atual-conversa').textContent = 'Situação atual: ' + nomesStatus[pedido.status];
+    elemento('orcamento-atual-conversa').textContent = pedido.valor_centavos == null
+      ? 'Orçamento ainda não informado.'
+      : 'Orçamento atual: ' + moeda.format(pedido.valor_centavos / 100);
+    resumoContratacao.hidden = false;
     podeEnviarMensagem = !conversaEncerrada(pedido.status);
     formularioMensagem.hidden = !podeEnviarMensagem;
     statusConversa.textContent = podeEnviarMensagem ? '' : 'Solicitação encerrada. As mensagens continuam disponíveis para leitura.';
