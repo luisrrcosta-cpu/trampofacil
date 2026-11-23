@@ -17,8 +17,15 @@ Site privado: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site
 - Contratação completa e pedido de nota validados em transação revertida, com seis eventos de histórico e sem pagamento.
 - Zero identidades QA ou notas fictícias persistidas. Registros existentes preservados.
 
+## Validação manual com duas contas — concluída em 23/11/2026
+- Solicitação “Teste” criada por cliente distinto da profissional; orçamento aceito e serviço em andamento.
+- Pedido de nota registrado pelo cliente, atendimento confirmado pela profissional e confirmação exibida na conta cliente.
+- Evidência: consulta somente leitura na homologação e captura enviada pelo proprietário às 18h00 (horário de São Paulo).
+- Não houve emissão fiscal nem validação de pagamentos. Não repetir estas etapas sem alteração relevante.
+- Revisão de navegação: cartões longos com ações iguais dificultam localizar o pedido; não foi comprovado redirecionamento automático pela consulta fiscal.
+
 ## Próximas etapas para lançamento
-1. Validar a experiência HTTP com duas contas de teste autenticadas por OTP, distinguindo-a dos testes com API/claims simuladas.
+1. Ampliar a cobertura de experiência entre contas apenas para funcionalidades novas; o fluxo manual de contratação e acompanhamento do pedido de nota foi concluído. A origem das sessões foi informada pelo proprietário, sem inspeção ou compartilhamento de tokens.
 2. Completar o processo administrativo de revisão de perfis e suas autorizações, mantendo a decisão de publicação separada do titular.
 3. Completar o atendimento/entrega do pedido fiscal; o registro atual não é emissão de NFS-e.
 4. Validar checkout/notificações reais de sandbox e cenários de falha antes de qualquer proposta de ativação financeira. Não presumir compatibilidade a partir de assinaturas ou respostas simuladas.
