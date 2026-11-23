@@ -217,7 +217,8 @@ label input,label select,label textarea{font-weight:400}
 </div>
 <form id="form-busca">
 <label>Profissão ou serviço<input name="servico" list="sugestoes-profissoes" maxlength="120" placeholder="Busque qualquer tipo de mão de obra"></label>
-<label>Cidade<input name="cidade" maxlength="120"></label>
+<label>Cidade<input name="cidade" maxlength="120" aria-describedby="ajuda-cidade-busca" placeholder="Ex.: São João da Boa Vista"></label>
+<p id="ajuda-cidade-busca">Informe apenas o nome da cidade, sem a sigla do estado. Você pode buscar com ou sem acento.</p>
 <button type="submit">Buscar</button>
 <button class="voltar" type="reset" id="limpar-busca">Limpar filtros</button>
 </form>
