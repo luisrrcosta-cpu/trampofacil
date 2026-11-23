@@ -32,7 +32,7 @@ function limparPerfil() {
 function apiPerfil(tipo, usuario, dados) {
   const colunas = tipo === 'cliente' ? 'usuario_id,nome,email,telefone,cidade'
     : 'usuario_id,nome,telefone,cidade,servico,descricao,publicado,tipo_prestador,tipo_atividade';
-  const filtros = new URLSearchParams({usuario_id:'eq.' + usuario, select:dados ? 'usuario_id' : colunas});
+  const filtros = new URLSearchParams({usuario_id:'eq.' + usuario, select:dados ? (tipo === 'profissional' ? 'usuario_id,publicado' : 'usuario_id') : colunas});
   return controleSessao.requisitar(token => enviar(`/rest/v1/${tabelas[tipo]}?${filtros}`, dados,
     token, dados ? 'return=representation' : undefined, dados ? 'PATCH' : 'GET'));
 }
@@ -73,7 +73,7 @@ async function carregarPerfil() {
       formPerfil.elements[campo].disabled = tipo !== 'profissional';
     }
     elemento('visibilidade-perfil').textContent = tipo === 'profissional'
-      ? registro.publicado ? 'Seu perfil está visível na busca.' : 'Seu perfil ainda não está publicado na busca. A publicação depende de análise.' : '';
+      ? registro.publicado ? 'Seu perfil está visível na busca. Alterações em nome, cidade, serviço, descrição ou modalidade exigirão nova análise antes de voltar à busca.' : 'Seu perfil ainda não está publicado na busca. A publicação depende de análise.' : '';
     perfilEmTela = {usuario, tipo, publicado:registro.publicado === true}; formPerfil.hidden = false;
     areaAnaliseProfissional.hidden = tipo !== 'profissional' || registro.publicado === true;
     statusPerfil.textContent = 'Edite seus dados e salve. O e-mail de acesso não é alterado nesta tela.';
@@ -102,7 +102,18 @@ formPerfil.addEventListener('submit', async evento => {
     const registros = await resposta.json();
     if (versao !== versaoPerfil) return;
     if (!Array.isArray(registros) || registros.length !== 1 || registros[0].usuario_id !== atual.usuario) throw new Error();
-    statusPerfil.textContent = 'Seu cadastro foi atualizado.';
+    if (atual.tipo === 'profissional') {
+      if (typeof registros[0].publicado !== 'boolean') throw new Error();
+      perfilEmTela = {...atual,publicado:registros[0].publicado};
+      limparAnaliseProfissional();
+      areaAnaliseProfissional.hidden = registros[0].publicado;
+      elemento('visibilidade-perfil').textContent = registros[0].publicado
+        ? 'Seu perfil está visível na busca. Alterações em nome, cidade, serviço, descrição ou modalidade exigirão nova análise antes de voltar à busca.'
+        : 'Seu perfil ainda não está publicado na busca. A publicação depende de análise.';
+    }
+    statusPerfil.textContent = atual.tipo === 'profissional' && atual.publicado && !registros[0].publicado
+      ? 'Cadastro salvo. Seu perfil saiu da busca e precisa de nova análise antes de ser publicado novamente.'
+      : 'Seu cadastro foi atualizado.';
   } catch {
     if (versao === versaoPerfil) statusPerfil.textContent = 'Não foi possível confirmar a gravação. Atualize o cadastro para conferir os dados salvos.';
   } finally {

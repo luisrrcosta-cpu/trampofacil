@@ -104,7 +104,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
         assert.ok(!('usuario_id' in dados)); assert.ok(!('publicado' in dados));
         assert.equal(perfil.usuario_id, usuario === 'cliente' ? '11111111-1111-4111-8111-111111111111' : '22222222-2222-4222-8222-222222222222');
         Object.assign(perfil,dados);
-        return route.fulfill({json:[{usuario_id:perfil.usuario_id}]});
+        return route.fulfill({json:[{usuario_id:perfil.usuario_id,...(tipo==='profissionais'?{publicado:perfil.publicado}:{})}]});
       }
       return route.fulfill({json:perfil.usuario_id===(usuario === 'cliente' ? '11111111-1111-4111-8111-111111111111' : '22222222-2222-4222-8222-222222222222')?[perfil]:[]});
     }
@@ -661,7 +661,7 @@ test('profissional completa cadastro, pede análise sem publicar e recupera envi
       if(req.method()==='PATCH'){
         assert.equal(req.postDataJSON().publicado,undefined);
         Object.assign(perfil,req.postDataJSON());
-        return route.fulfill({json:[{usuario_id:usuario}]});
+        return route.fulfill({json:[{usuario_id:usuario,publicado:perfil.publicado}]});
       }
       return route.fulfill({json:[perfil]});
     }
@@ -703,4 +703,44 @@ test('profissional completa cadastro, pede análise sem publicar e recupera envi
   await page.waitForTimeout(50);
   assert.equal(await page.locator('#analise-profissional').isVisible(),false);
   assert.equal(await page.locator('#status-analise-profissional').textContent(),'');
+});
+
+test('edição material de perfil publicado informa nova análise com estado confirmado pelo banco',async t=>{
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const server=createServer(async(req,res)=>{
+    const arquivo=req.url==='/'?'index.html':req.url.slice(1);
+    if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',arquivo.endsWith('.js')?'application/javascript':'text/html; charset=utf-8');
+    res.end(await readFile(new URL('../'+arquivo,import.meta.url)));
+  }).listen(0,'127.0.0.1');
+  await once(server,'listening');t.after(()=>server.close());
+  const browser=await chromium.launch({executablePath:process.env.TRAMPOFACIL_CHROMIUM||'/usr/bin/chromium'});
+  t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
+
+  const usuario='11111111-1111-4111-8111-111111111111';
+  const perfil={usuario_id:usuario,nome:'Pessoa fictícia',cidade:'Cidade de teste',telefone:'11999999999',servico:'Costura',descricao:null,publicado:true,tipo_prestador:'pessoa_fisica',tipo_atividade:'regular'};
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
+    const req=route.request(),url=new URL(req.url());
+    assert.equal(url.pathname,'/rest/v1/profissionais');
+    if(req.method()==='PATCH'){
+      assert.equal(url.searchParams.get('select'),'usuario_id,publicado');
+      assert.equal(req.postDataJSON().publicado,undefined);
+      Object.assign(perfil,req.postDataJSON(),{publicado:false});
+      return route.fulfill({json:[{usuario_id:usuario,publicado:false}]});
+    }
+    return route.fulfill({json:[perfil]});
+  });
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  await page.evaluate(usuario=>{
+    iniciarSessao({usuario,token:'sessao-teste'});mostrar('perfil');
+    tipoPerfil.value='profissional';carregarPerfil();
+  },usuario);
+  await page.locator('#form-perfil').waitFor();
+  await page.getByText('Seu perfil está visível na busca.',{exact:false}).waitFor();
+  assert.equal(await page.locator('#analise-profissional').isVisible(),false);
+  await page.locator('#form-perfil [name="servico"]').fill('Costura e ajustes');
+  await page.getByRole('button',{name:'Salvar meu cadastro',exact:true}).click();
+  await page.getByText('Cadastro salvo. Seu perfil saiu da busca e precisa de nova análise antes de ser publicado novamente.',{exact:true}).waitFor();
+  assert.equal(await page.locator('#analise-profissional').isVisible(),true);
+  assert.equal(await page.locator('#visibilidade-perfil').textContent(),'Seu perfil ainda não está publicado na busca. A publicação depende de análise.');
 });
