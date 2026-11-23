@@ -27,6 +27,7 @@ const statusAnaliseProfissional = elemento('status-analise-profissional');
 const solicitarAnaliseProfissional = elemento('solicitar-analise-profissional');
 
 function limparAnaliseProfissional() {
+  elemento('status-orientacao-profissional').textContent = '';
   areaAnaliseProfissional.hidden = true;
   solicitarAnaliseProfissional.hidden = true;
   statusAnaliseProfissional.textContent = '';
@@ -309,6 +310,16 @@ async function carregarRevisao(pagina = 0, aviso = '') {
       if (p.tipo_prestador && p.tipo_atividade) {
         card.append(botaoAcao('Aprovar publicação de ' + p.nome, () => aprovarPerfilRevisao(item)));
       } else card.append(texto('p','Cadastro incompleto. Aguarde o profissional preencher as modalidades.'));
+      const rotulo = document.createElement('label');
+      rotulo.append(texto('span','Orientação para o profissional'));
+      const motivo = document.createElement('select');
+      motivo.append(texto('option','Escolha o ajuste'));
+      motivo.firstChild.value = '';
+      for (const [valor, mensagem] of Object.entries(motivosAjustePerfil)) {
+        const opcao = texto('option',mensagem); opcao.value = valor; motivo.append(opcao);
+      }
+      rotulo.append(motivo);
+      card.append(rotulo,botaoAcao('Pedir ajuste de ' + p.nome, () => pedirAjusteRevisao(item,motivo.value)));
       listaRevisao.append(card);
     }
     paginaRevisao = pagina;
@@ -362,3 +373,72 @@ elemento('abrir-revisao').addEventListener('click', () => proteger('revisao'));
 elemento('atualizar-revisao').addEventListener('click', () => carregarRevisao(paginaRevisao));
 anteriorRevisao.addEventListener('click', () => carregarRevisao(paginaRevisao - 1));
 proximaRevisao.addEventListener('click', () => carregarRevisao(paginaRevisao + 1));
+
+
+const motivosAjustePerfil = Object.freeze({
+  nome_apresentacao:'Revisar o nome de apresentação',
+  cidade_atendimento:'Revisar a cidade de atendimento',
+  detalhar_servico:'Detalhar o serviço oferecido e sua descrição',
+});
+async function pedirAjusteRevisao(item,motivo) {
+  if (ocupado || !sessaoServicos || !perfilRevisaoValido(item)) return;
+  if (!Object.prototype.hasOwnProperty.call(motivosAjustePerfil,motivo)) {
+    statusRevisao.textContent = 'Escolha a orientação antes de pedir o ajuste.'; return;
+  }
+  if (!window.confirm('Pedir ajuste no cadastro de “' + item.perfil.nome + '”: ' + motivosAjustePerfil[motivo] + '?')) return;
+  const sessao = sessaoServicos, versao = versaoRevisao;
+  const atual = () => sessaoServicos === sessao && versaoRevisao === versao;
+  bloquear(secaoRevisao,true);
+  statusRevisao.textContent = 'Registrando orientação…';
+  let salvo = false;
+  try {
+    const resposta = await apiRevisao('pedir_ajuste_perfil',{alvo:item.usuario_id,esperado:item.perfil,motivo_ajuste:motivo});
+    if (!atual()) return;
+    if (resposta.status === 401) {exigirNovoLogin('revisao');return;}
+    if (!resposta.ok) throw new Error();
+    const evento = await resposta.json();
+    if (!atual()) return;
+    if (!Number.isSafeInteger(evento) || evento < 1) throw new Error();
+    salvo = true;
+  } catch {
+    if (atual()) {
+      listaRevisao.replaceChildren(); anteriorRevisao.hidden = true; proximaRevisao.hidden = true;
+      statusRevisao.textContent = 'Não foi possível confirmar a orientação. Atualize a fila e revise o cadastro antes de tentar novamente.';
+    }
+  } finally {
+    if (atual()) bloquear(secaoRevisao,false);
+  }
+  if (salvo && atual()) await carregarRevisao(0,'Orientação registrada. O profissional poderá consultá-la no próprio cadastro; o perfil continua aguardando análise.');
+}
+async function consultarOrientacaoProfissional() {
+  const perfil = perfilEmTela;
+  if (ocupado || carregandoPerfil || !perfil || perfil.tipo !== 'profissional' ||
+      perfil.publicado || perfil.usuario !== sessaoServicos?.usuario) return;
+  const sessao = sessaoServicos, versao = versaoPerfil;
+  const atual = () => sessaoServicos === sessao && versaoPerfil === versao && perfilEmTela === perfil;
+  const status = elemento('status-orientacao-profissional');
+  carregandoPerfil = true; bloquear(secaoPerfil,true); status.textContent = 'Consultando orientação…';
+  try {
+    const resposta = await apiRevisao('consultar_orientacao_perfil',{});
+    if (!atual()) return;
+    if (resposta.status === 401) {exigirNovoLogin('perfil');return;}
+    if (!resposta.ok) throw new Error();
+    const registros = await resposta.json();
+    if (!atual()) return;
+    if (!Array.isArray(registros) || registros.length > 1) throw new Error();
+    if (!registros.length) {status.textContent = 'Nenhuma orientação de ajuste pendente para seu cadastro.';return;}
+    const orientacao = registros[0];
+    if (!orientacao || !Object.prototype.hasOwnProperty.call(motivosAjustePerfil,orientacao.motivo) ||
+        typeof orientacao.perfil_alterado !== 'boolean' || typeof orientacao.criado_em !== 'string' ||
+        !Number.isFinite(Date.parse(orientacao.criado_em))) throw new Error();
+    status.textContent = 'Orientação da revisão: ' + motivosAjustePerfil[orientacao.motivo] + '. ' +
+      (orientacao.perfil_alterado
+        ? 'Seu cadastro foi alterado desde esta orientação. A administração ainda precisa analisar os dados salvos.'
+        : 'Revise os campos indicados e salve seu cadastro. A alteração não publica o perfil automaticamente.');
+  } catch {
+    if (atual()) status.textContent = 'Não foi possível consultar a orientação. Tente novamente.';
+  } finally {
+    if (atual()) {carregandoPerfil=false;bloquear(secaoPerfil,false);}
+  }
+}
+elemento('consultar-orientacao-profissional').addEventListener('click',consultarOrientacaoProfissional);

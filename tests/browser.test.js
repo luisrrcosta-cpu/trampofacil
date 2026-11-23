@@ -1051,3 +1051,69 @@ test('painel de revisão nega acesso comum, não repete aprovação incerta e li
   assert.equal(await page.locator('#lista-revisao article').count(),0);
   assert.equal(await page.locator('#status-revisao').textContent(),'');
 });
+
+test('revisor pede ajuste com recuperação e somente profissional titular consulta orientação',async t=>{
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const server=createServer(async(req,res)=>{
+    const arquivo=req.url==='/'?'index.html':req.url.slice(1);
+    if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',arquivo.endsWith('.js')?'application/javascript':'text/html; charset=utf-8');
+    res.end(await readFile(new URL('../'+arquivo,import.meta.url)));
+  }).listen(0,'127.0.0.1');
+  await once(server,'listening');t.after(()=>server.close());
+  const browser=await chromium.launch({executablePath:process.env.TRAMPOFACIL_CHROMIUM||'/usr/bin/chromium'});
+  t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
+
+
+
+  const revisor='44444444-4444-4444-8444-444444444444',alvo='22222222-2222-4222-8222-222222222222';
+  const perfil={nome:'Perfil fictício',cidade:'Cidade',servico:'Costura',descricao:'Descrição',tipo_prestador:'pessoa_fisica',tipo_atividade:'ocasional'};
+  let motivo,escritas=0,perderResposta=true,invalida=false;
+  page.on('dialog',dialog=>dialog.accept());
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
+    const req=route.request(),url=new URL(req.url());
+    if(url.pathname==='/rest/v1/rpc/listar_perfis_revisao'){
+      assert.equal(req.headers().authorization,'Bearer revisor');
+      return route.fulfill({json:[{usuario_id:alvo,solicitado_em:'2026-11-23T18:00:00Z',perfil}]});
+    }
+    if(url.pathname==='/rest/v1/rpc/pedir_ajuste_perfil'){
+      assert.equal(req.headers().authorization,'Bearer revisor');
+      assert.deepEqual(req.postDataJSON(),{alvo,esperado:perfil,motivo_ajuste:'detalhar_servico'});
+      escritas++;motivo='detalhar_servico';
+      if(perderResposta){perderResposta=false;return route.abort('failed');}
+      return route.fulfill({json:1});
+    }
+    assert.equal(url.pathname,'/rest/v1/rpc/consultar_orientacao_perfil');
+    assert.deepEqual(req.postDataJSON(),{});
+    const titular=req.headers().authorization==='Bearer profissional';
+    return route.fulfill({json:titular?[{motivo:invalida?'texto_nao_permitido':motivo,criado_em:'2026-11-23T18:00:00Z',perfil_alterado:false}]:[]});
+  });
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  await page.evaluate(({revisor})=>iniciarSessao({usuario:revisor,token:'revisor'}),{revisor});
+  await page.getByRole('button',{name:'Área de revisão de profissionais',exact:true}).click();
+  await page.getByRole('heading',{name:perfil.nome,exact:true}).waitFor();
+  await page.getByLabel('Orientação para o profissional',{exact:true}).selectOption('detalhar_servico');
+  await page.getByRole('button',{name:'Pedir ajuste de '+perfil.nome,exact:true}).click();
+  await page.getByText('Não foi possível confirmar a orientação.',{exact:false}).waitFor();
+  assert.equal(escritas,1);
+  await page.getByRole('button',{name:'Atualizar fila de análise',exact:true}).click();
+  await page.getByLabel('Orientação para o profissional',{exact:true}).selectOption('detalhar_servico');
+  await page.getByRole('button',{name:'Pedir ajuste de '+perfil.nome,exact:true}).click();
+  await page.getByText('Orientação registrada.',{exact:false}).waitFor();
+  assert.equal(escritas,2);
+  const abrirPerfil=(usuario,token)=>page.evaluate(({usuario,token})=>{
+    iniciarSessao({usuario,token});mostrar('perfil');
+    perfilEmTela={tipo:'profissional',usuario,publicado:false};
+    areaAnaliseProfissional.hidden=false;
+  },{usuario,token});
+  await abrirPerfil(alvo,'profissional');
+  await page.getByRole('button',{name:'Consultar orientação da revisão',exact:true}).click();
+  await page.getByText('Orientação da revisão: Detalhar o serviço oferecido e sua descrição.',{exact:false}).waitFor();
+  invalida=true;
+  await page.getByRole('button',{name:'Consultar orientação da revisão',exact:true}).click();
+  await page.getByText('Não foi possível consultar a orientação. Tente novamente.',{exact:true}).waitFor();
+  await abrirPerfil('33333333-3333-4333-8333-333333333333','terceiro');
+  assert.equal(await page.locator('#status-orientacao-profissional').textContent(),'');
+  await page.getByRole('button',{name:'Consultar orientação da revisão',exact:true}).click();
+  await page.getByText('Nenhuma orientação de ajuste pendente para seu cadastro.',{exact:true}).waitFor();
+});
