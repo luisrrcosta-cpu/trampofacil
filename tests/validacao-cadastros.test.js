@@ -38,6 +38,17 @@ test('cadastro aceita exemplos válidos de cliente e profissional',()=>{
   assert.equal(cliente.perfil.telefone,'19999999999');
 });
 
+test('cadastro contempla CPF, MEI e empresa em atividade regular ou ocasional',()=>{
+  for (const tipo_prestador of ['pessoa_fisica','mei','empresa']) {
+    for (const tipo_atividade of ['regular','ocasional']) {
+      const resultado=contexto.lerPerfil({...valido,tipo_prestador,tipo_atividade},'profissional');
+      assert.equal(resultado.perfil.tipo_prestador,tipo_prestador);
+      assert.equal(resultado.perfil.tipo_atividade,tipo_atividade);
+      assert.equal(resultado.perfil.nome,'João da Silva');
+    }
+  }
+});
+
 test('edição profissional não exige o campo de e-mail oculto',()=>{
   const resultado=contexto.lerPerfil({...valido,email:''},'profissional',false);
   assert.equal(resultado.perfil.tipo_prestador,'pessoa_fisica');
