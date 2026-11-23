@@ -313,6 +313,7 @@ async function carregarRevisao(pagina = 0, aviso = '') {
       const rotulo = document.createElement('label');
       rotulo.append(texto('span','Orientação para o profissional'));
       const motivo = document.createElement('select');
+      motivo.setAttribute('aria-label','Orientação para o profissional');
       motivo.append(texto('option','Escolha o ajuste'));
       motivo.firstChild.value = '';
       for (const [valor, mensagem] of Object.entries(motivosAjustePerfil)) {
