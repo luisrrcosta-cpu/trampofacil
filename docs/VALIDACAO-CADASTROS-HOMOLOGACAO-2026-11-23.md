@@ -17,3 +17,11 @@ Validação JavaScript passa a aplicar também os limites, formato do e-mail e c
 RLS, privilégios, publicação, autenticação, produção e pagamentos permanecem sem alteração. Estas verificações são de formato; não comprovam CPF, CNPJ, telefone, habilitação profissional ou situação fiscal.
 Testes isolados cobrem gravações diretas inválidas, campos nulos, limites, preservação de dados, parágrafos e a edição profissional sem e-mail oculto.
 Referência técnica: https://www.postgresql.org/docs/17/ddl-constraints.html
+
+## Resultado
+- Migração aplicada e validada: quatro CHECKs em clientes e cinco em profissionais, com RLS ativa nas duas tabelas.
+- GitHub Actions do commit e00e75f: 214 testes aprovados, zero falhas. Também passaram testes financeiros, concorrência PostgreSQL e preparação da prévia isolada.
+- Evidência: https://github.com/luisrrcosta-cpu/trampofacil/actions/runs/45179067277
+- Interface privada atualizada com sucesso, versão 9; acesso continua exclusivo do proprietário.
+- Auditoria de saúde sem alertas; segurança sem novos achados. Permanecem os apontamentos anteriores: tabelas financeiras privadas sem políticas permissivas (bloqueio intencional) e proteção de senhas vazadas desativada, enquanto o fluxo atual usa OTP.
+- Referências dos apontamentos: https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy e https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
