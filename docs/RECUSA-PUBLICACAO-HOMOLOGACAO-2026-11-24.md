@@ -22,3 +22,15 @@ A fila mostra a última recusa e se o perfil mudou desde então.
 PGlite: comum, revisor, anônimo, terceiro, revogado, motivos inválidos, versão antiga, repetição, correção e aprovação posterior.
 Browser com API simulada: motivo obrigatório, perda de resposta, consulta sem repetir decisão e acompanhamento privado pelo titular.
 Aplicação e publicação devem ser registradas após os testes completos. Não recusar perfis existentes para testar.
+
+
+## Validação concluída — 24/11/2026
+
+Implementação: `904e138bf31735b307e3866222f81e429650fb82`, branch `codex/v16-seguranca-integracoes`.
+
+- CI aprovada: testes isolados/interface (45511567792), prévia isolada (45511567834), concorrência PostgreSQL (45511567809) e testes financeiros (45511567793).
+- Migração `recusa_publicacao_perfil` aplicada exclusivamente em `asdszqtpydiowgerxwee`.
+- Fluxo integrado executado com dados fictícios e ROLLBACK: recusa, repetição idempotente, consulta do proprietário, resumo da fila e aprovação posterior. Sem alteração de perfis existentes.
+- Verificação posterior: 0 recusas, 0 aprovações, 1 profissional e 1 revisor ativo; authenticated sem SELECT direto no histórico privado.
+- Advisor: nove INFO de RLS sem políticas nas tabelas privadas com bloqueio intencional; aviso de proteção de senhas vazadas preexistente, sem alteração nesta entrega. Referência: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
+- Telas empacotadas no commit de hospedagem `51c046012f76efc6aaa83c74559cda11fed24ef0`; publicação privada é acompanhada separadamente. Produção e pagamentos reais preservados.

@@ -41,6 +41,25 @@ begin
   if repetido<=evento then raise exception 'FAIL: orientação anterior reutilizada fora de ordem';end if;
   evento:=public.pedir_ajuste_perfil(pro,esperado,'detalhar_servico');
   if evento<>repetido then raise exception 'FAIL: última orientação repetida sem idempotência';end if;
+  evento:=public.recusar_publicacao_perfil(pro,esperado,'servico_nao_identificavel');
+  repetido:=public.recusar_publicacao_perfil(pro,esperado,'servico_nao_identificavel');
+  if evento is null or evento<>repetido then raise exception 'FAIL: recusa repetida duplicada';end if;
+  fila:=public.listar_perfis_revisao(0);
+  if not exists(select 1 from jsonb_array_elements(fila) x where x->>'usuario_id'=pro::text
+    and x->'recusa'->>'motivo'='servico_nao_identificavel') then raise exception 'FAIL: fila não mostra recusa';end if;
+  execute 'reset role';
+  perform set_config('request.jwt.claims',jsonb_build_object('sub',pro,'is_anonymous',false,'role','authenticated')::text,true);
+  perform set_config('request.jwt.claim.sub',pro::text,true);
+  execute 'set local role authenticated';
+  fila:=public.consultar_recusa_publicacao();
+  if jsonb_array_length(fila)<>1 or fila->0->>'motivo'<>'servico_nao_identificavel'
+    then raise exception 'FAIL: titular não consulta recusa';end if;
+  execute 'reset role';
+  if not exists(select 1 from public.profissionais where usuario_id=pro and not publicado and pausado)
+    then raise exception 'FAIL: recusa alterou perfil';end if;
+  perform set_config('request.jwt.claims',jsonb_build_object('sub',revisor,'is_anonymous',false,'role','authenticated')::text,true);
+  perform set_config('request.jwt.claim.sub',revisor::text,true);
+  execute 'set local role authenticated';
   evento:=public.aprovar_perfil_administrativo(pro,esperado);
   repetido:=public.aprovar_perfil_administrativo(pro,esperado);
   if evento is null or repetido<>evento then raise exception 'FAIL: repetição duplicou aprovação';end if;
