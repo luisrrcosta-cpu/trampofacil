@@ -83,3 +83,10 @@ Implementação: `904e138bf31735b307e3866222f81e429650fb82`, branch `codex/v16-s
 - Verificação posterior: 0 recusas, 0 aprovações, 1 profissional e 1 revisor ativo; authenticated sem SELECT direto no histórico privado.
 - Advisor: nove INFO de RLS sem políticas nas tabelas privadas com bloqueio intencional; aviso de proteção de senhas vazadas preexistente, sem alteração nesta entrega. Referência: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
 - Telas empacotadas no commit de hospedagem `51c046012f76efc6aaa83c74559cda11fed24ef0`; publicação privada é acompanhada separadamente. Produção e pagamentos reais preservados.
+
+
+## Recusa publicada e concorrência ampliada — 24/11/2026
+- Publicação privada anterior confirmada como succeeded/ready.
+- Oito cenários administrativos com lock real passaram, incluindo recusa duplicada, edição concorrente e aprovação/recusa nos dois sentidos.
+- Suíte geral/interface e regressões financeiras aprovadas. Nenhuma mudança adicional no banco ou nas telas nesta etapa.
+- Evidência: docs/CONCORRENCIA-RECUSA-2026-11-24.md.
