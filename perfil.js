@@ -28,6 +28,7 @@ const solicitarAnaliseProfissional = elemento('solicitar-analise-profissional');
 
 function limparAnaliseProfissional() {
   elemento('status-orientacao-profissional').textContent = '';
+  elemento('status-recusa-profissional').textContent = '';
   areaAnaliseProfissional.hidden = true;
   solicitarAnaliseProfissional.hidden = true;
   statusAnaliseProfissional.textContent = '';
@@ -273,7 +274,8 @@ function perfilRevisaoValido(item) {
     ['nome','cidade','servico'].every(c => typeof p[c] === 'string' && p[c].length >= 2 && p[c].length <= 120) &&
     (p.descricao === null || typeof p.descricao === 'string' && p.descricao.length <= 1000) &&
     (p.tipo_prestador === null || ['pessoa_fisica','mei','empresa'].includes(p.tipo_prestador)) &&
-    (p.tipo_atividade === null || ['regular','ocasional'].includes(p.tipo_atividade));
+    (p.tipo_atividade === null || ['regular','ocasional'].includes(p.tipo_atividade)) &&
+    (item.recusa == null || recusaPublicacaoValida(item.recusa));
 }
 async function carregarRevisao(pagina = 0, aviso = '') {
   if (ocupado || !sessaoServicos || !Number.isInteger(pagina) || pagina < 0 || pagina > 10000) return;
@@ -321,6 +323,19 @@ async function carregarRevisao(pagina = 0, aviso = '') {
       }
       rotulo.append(motivo);
       card.append(rotulo,botaoAcao('Pedir ajuste de ' + p.nome, () => pedirAjusteRevisao(item,motivo.value)));
+      if (item.recusa) card.append(texto('p','Última recusa registrada: ' +
+        motivosRecusaPublicacao[item.recusa.motivo] + '. ' +
+        (item.recusa.perfil_alterado ? 'O cadastro mudou desde essa decisão e pode ser reavaliado.' : 'Uma nova decisão pode ser registrada após a revisão.')));
+      const rotuloRecusa = document.createElement('label');
+      rotuloRecusa.append(texto('span','Motivo da recusa'));
+      const motivoRecusa = document.createElement('select');
+      motivoRecusa.setAttribute('aria-label','Motivo da recusa');
+      motivoRecusa.append(texto('option','Escolha o motivo')); motivoRecusa.firstChild.value='';
+      for (const [valor,mensagem] of Object.entries(motivosRecusaPublicacao)) {
+        const opcao=texto('option',mensagem);opcao.value=valor;motivoRecusa.append(opcao);
+      }
+      rotuloRecusa.append(motivoRecusa);
+      card.append(rotuloRecusa,botaoAcao('Recusar publicação de ' + p.nome,()=>recusarPublicacao(item,motivoRecusa.value)));
       listaRevisao.append(card);
     }
     paginaRevisao = pagina;
@@ -443,3 +458,68 @@ async function consultarOrientacaoProfissional() {
   }
 }
 elemento('consultar-orientacao-profissional').addEventListener('click',consultarOrientacaoProfissional);
+
+
+const motivosRecusaPublicacao = Object.freeze({
+  informacoes_inconsistentes:'As informações do perfil precisam ser revistas por inconsistência',
+  apresentacao_inadequada:'O conteúdo de apresentação precisa de adequação',
+  servico_nao_identificavel:'O serviço oferecido não está claro',
+});
+function recusaPublicacaoValida(registro) {
+  return registro && Object.prototype.hasOwnProperty.call(motivosRecusaPublicacao,registro.motivo) &&
+    typeof registro.criado_em === 'string' && Number.isFinite(Date.parse(registro.criado_em)) &&
+    typeof registro.perfil_alterado === 'boolean';
+}
+async function recusarPublicacao(item,motivo) {
+  if (ocupado || !sessaoServicos || !perfilRevisaoValido(item)) return;
+  if (!Object.prototype.hasOwnProperty.call(motivosRecusaPublicacao,motivo)) {
+    statusRevisao.textContent='Escolha o motivo antes de recusar a publicação.';return;
+  }
+  if (!window.confirm('Recusar a publicação do perfil de “' + item.perfil.nome + '”? Motivo: ' +
+      motivosRecusaPublicacao[motivo] + '. A conta e os contratos existentes não serão bloqueados.')) return;
+  const sessao=sessaoServicos,versao=versaoRevisao;
+  const atual=()=>sessaoServicos===sessao&&versaoRevisao===versao;
+  bloquear(secaoRevisao,true);statusRevisao.textContent='Registrando recusa de publicação…';
+  let salvo=false;
+  try {
+    const resposta=await apiRevisao('recusar_publicacao_perfil',{alvo:item.usuario_id,esperado:item.perfil,motivo_recusa:motivo});
+    if(!atual())return;
+    if(resposta.status===401){exigirNovoLogin('revisao');return;}
+    if(!resposta.ok)throw new Error();
+    const evento=await resposta.json();
+    if(!atual())return;
+    if(!Number.isSafeInteger(evento)||evento<1)throw new Error();
+    salvo=true;
+  }catch{
+    if(atual()){
+      listaRevisao.replaceChildren();anteriorRevisao.hidden=true;proximaRevisao.hidden=true;
+      statusRevisao.textContent='Não foi possível confirmar a recusa. Atualize a fila antes de tentar novamente.';
+    }
+  }finally{if(atual())bloquear(secaoRevisao,false);}
+  if(salvo&&atual())await carregarRevisao(0,'Recusa registrada. O profissional pode consultar o motivo e corrigir o cadastro para reavaliação.');
+}
+async function consultarRecusaProfissional() {
+  const perfil=perfilEmTela;
+  if(ocupado||carregandoPerfil||!perfil||perfil.tipo!=='profissional'||perfil.publicado||perfil.usuario!==sessaoServicos?.usuario)return;
+  const sessao=sessaoServicos,versao=versaoPerfil;
+  const atual=()=>sessaoServicos===sessao&&versaoPerfil===versao&&perfilEmTela===perfil;
+  const status=elemento('status-recusa-profissional');
+  carregandoPerfil=true;bloquear(secaoPerfil,true);status.textContent='Consultando decisão de publicação…';
+  try{
+    const resposta=await apiRevisao('consultar_recusa_publicacao',{});
+    if(!atual())return;
+    if(resposta.status===401){exigirNovoLogin('perfil');return;}
+    if(!resposta.ok)throw new Error();
+    const registros=await resposta.json();
+    if(!atual())return;
+    if(!Array.isArray(registros)||registros.length>1)throw new Error();
+    if(!registros.length){status.textContent='Nenhuma recusa de publicação pendente para seu cadastro.';return;}
+    const recusa=registros[0];
+    if(!recusaPublicacaoValida(recusa))throw new Error();
+    status.textContent='Última recusa de publicação: ' + motivosRecusaPublicacao[recusa.motivo] + '. ' +
+      (recusa.perfil_alterado?'Seu cadastro mudou desde essa decisão. A administração pode reavaliar os dados salvos.':
+        'Revise e salve seu cadastro para nova análise. A conta e os contratos existentes continuam disponíveis.');
+  }catch{if(atual())status.textContent='Não foi possível consultar a decisão. Tente novamente.';}
+  finally{if(atual()){carregandoPerfil=false;bloquear(secaoPerfil,false);}}
+}
+elemento('consultar-recusa-profissional').addEventListener('click',consultarRecusaProfissional);

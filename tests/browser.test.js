@@ -1117,3 +1117,73 @@ test('revisor pede ajuste com recuperação e somente profissional titular consu
   await page.getByRole('button',{name:'Consultar orientação da revisão',exact:true}).click();
   await page.getByText('Nenhuma orientação de ajuste pendente para seu cadastro.',{exact:true}).waitFor();
 });
+
+test('recusa administrativa exige motivo, recupera resposta perdida e permite consulta privada',async t=>{
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const server=createServer(async(req,res)=>{
+    const arquivo=req.url==='/'?'index.html':req.url.slice(1);
+    if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',arquivo.endsWith('.js')?'application/javascript':'text/html; charset=utf-8');
+    res.end(await readFile(new URL('../'+arquivo,import.meta.url)));
+  }).listen(0,'127.0.0.1');
+  await once(server,'listening');t.after(()=>server.close());
+  const browser=await chromium.launch({executablePath:process.env.TRAMPOFACIL_CHROMIUM||'/usr/bin/chromium'});
+  t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
+
+
+
+
+  const revisor='44444444-4444-4444-8444-444444444444',alvo='22222222-2222-4222-8222-222222222222';
+  const perfil={nome:'Perfil fictício',cidade:'Cidade',servico:'Costura',descricao:'Descrição',tipo_prestador:'pessoa_fisica',tipo_atividade:'ocasional'};
+  let recusa=null,escritas=0,perderResposta=true;
+  page.on('dialog',dialog=>dialog.accept());
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
+    const req=route.request(),url=new URL(req.url());
+    if(url.pathname==='/rest/v1/rpc/listar_perfis_revisao'){
+      assert.equal(req.headers().authorization,'Bearer revisor');
+      return route.fulfill({json:[{usuario_id:alvo,solicitado_em:'2026-11-24T18:00:00Z',perfil,recusa}]});
+    }
+    if(url.pathname==='/rest/v1/rpc/recusar_publicacao_perfil'){
+      assert.equal(req.headers().authorization,'Bearer revisor');
+      assert.deepEqual(req.postDataJSON(),{alvo,esperado:perfil,motivo_recusa:'servico_nao_identificavel'});
+      escritas++;recusa={motivo:'servico_nao_identificavel',criado_em:'2026-11-24T18:00:00Z',perfil_alterado:false};
+      if(perderResposta){perderResposta=false;return route.abort('failed');}
+      return route.fulfill({json:1});
+    }
+    assert.equal(url.pathname,'/rest/v1/rpc/consultar_recusa_publicacao');
+    assert.deepEqual(req.postDataJSON(),{});
+    return route.fulfill({json:req.headers().authorization==='Bearer profissional'?[recusa]:[]});
+  });
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  await page.evaluate(({revisor})=>iniciarSessao({usuario:revisor,token:'revisor'}),{revisor});
+  await page.getByRole('button',{name:'Área de revisão de profissionais',exact:true}).click();
+  await page.getByRole('heading',{name:perfil.nome,exact:true}).waitFor();
+  await page.getByRole('button',{name:'Recusar publicação de '+perfil.nome,exact:true}).click();
+  await page.getByText('Escolha o motivo antes de recusar a publicação.',{exact:true}).waitFor();
+  assert.equal(escritas,0);
+  await page.getByLabel('Motivo da recusa',{exact:true}).selectOption('servico_nao_identificavel');
+  await page.getByRole('button',{name:'Recusar publicação de '+perfil.nome,exact:true}).click();
+  await page.getByText('Não foi possível confirmar a recusa.',{exact:false}).waitFor();
+  assert.equal(escritas,1);
+  assert.equal(await page.locator('#lista-revisao article').count(),0);
+  await page.getByRole('button',{name:'Atualizar fila de análise',exact:true}).click();
+  await page.getByText('Última recusa registrada:',{exact:false}).waitFor();
+  assert.equal(escritas,1,'consultar não repete a decisão');
+  await page.getByLabel('Motivo da recusa',{exact:true}).selectOption('servico_nao_identificavel');
+  await page.getByRole('button',{name:'Recusar publicação de '+perfil.nome,exact:true}).click();
+  await page.getByText('Recusa registrada. O profissional pode consultar o motivo e corrigir o cadastro para reavaliação.',{exact:true}).waitFor();
+  const abrir=(usuario,token)=>page.evaluate(({usuario,token})=>{
+    iniciarSessao({usuario,token});mostrar('perfil');perfilEmTela={tipo:'profissional',usuario,publicado:false};
+    areaAnaliseProfissional.hidden=false;
+  },{usuario,token});
+  await abrir(alvo,'profissional');
+  await page.getByRole('button',{name:'Consultar decisão de publicação',exact:true}).click();
+  await page.getByText('Última recusa de publicação: O serviço oferecido não está claro.',{exact:false}).waitFor();
+  recusa={...recusa,perfil_alterado:true};
+  await page.getByRole('button',{name:'Consultar decisão de publicação',exact:true}).click();
+  await page.getByText('Seu cadastro mudou desde essa decisão.',{exact:false}).waitFor();
+  await abrir('33333333-3333-4333-8333-333333333333','terceiro');
+  assert.equal(await page.locator('#status-recusa-profissional').textContent(),'');
+  await page.getByRole('button',{name:'Consultar decisão de publicação',exact:true}).click();
+  await page.getByText('Nenhuma recusa de publicação pendente para seu cadastro.',{exact:true}).waitFor();
+});
