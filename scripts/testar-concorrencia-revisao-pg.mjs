@@ -33,7 +33,7 @@ try {
   `);
   for(const file of ['estrutura_interna_revisao_perfis.sql','painel_revisao_perfis.sql','reavaliar_publicacao_profissional.sql','recusa_publicacao_perfil.sql'])
     await admin.unsafe(await readFile(new URL('../supabase/homologacao/'+file,import.meta.url),'utf8'));
-  const revisor=randomUUID(),alvos=Array.from({length:8},()=>randomUUID());
+  const revisor=randomUUID(),alvos=Array.from({length:11},()=>randomUUID());
   await admin`insert into auth.users(id) values(${revisor})`;
   await admin`insert into private.revisores_perfil(usuario_id) values(${revisor})`;
   for(const alvo of alvos){
@@ -103,9 +103,9 @@ try {
   assert.deepEqual({...perfil},{publicado:false,pausado:true,descricao:'Mudança após aprovação'});
 
 
-  const recusar=async(tx,alvo)=>{
+  const recusar=async(tx,alvo,motivo='servico_nao_identificavel')=>{
     await assumir(tx,revisor);
-    return (await tx`select public.recusar_publicacao_perfil(${alvo}::uuid,${tx.json(snapshot)},'servico_nao_identificavel') as id`)[0].id;
+    return (await tx`select public.recusar_publicacao_perfil(${alvo}::uuid,${tx.json(snapshot)},${motivo}) as id`)[0].id;
   };
   const recusasDuplicadas=await disputar(tx=>recusar(tx,alvos[4]),tx=>recusar(tx,alvos[4]));
   assert.ok(recusasDuplicadas.every(r=>r.status==='fulfilled'));
@@ -130,6 +130,33 @@ try {
   assert.equal((await admin`select publicado from public.profissionais where usuario_id=${alvos[7]}`)[0].publicado,true);
   assert.equal((await admin`select count(*)::int as n from private.recusas_publicacao_perfil where profissional_usuario_id=${alvos[7]}`)[0].n,1);
 
+
+  const recusaAntesEdicao=await disputar(tx=>recusar(tx,alvos[8]),async tx=>{
+    await assumir(tx,alvos[8]);
+    return tx`update public.profissionais set descricao='Correção após decisão' where usuario_id=${alvos[8]}`;
+  });
+  assert.ok(recusaAntesEdicao.every(r=>r.status==='fulfilled'));
+  await a.begin(async tx=>{
+    await assumir(tx,alvos[8]);
+    const [resposta]=await tx`select public.consultar_recusa_publicacao() as recusas`;
+    assert.equal(resposta.recusas[0].perfil_alterado,true);
+  });
+  const [corrigido]=await admin`select publicado,pausado,descricao from public.profissionais where usuario_id=${alvos[8]}`;
+  assert.deepEqual({...corrigido},{publicado:false,pausado:true,descricao:'Correção após decisão'});
+
+  const motivosDiferentes=await disputar(tx=>recusar(tx,alvos[9]),tx=>recusar(tx,alvos[9],'informacoes_inconsistentes'));
+  assert.ok(motivosDiferentes.every(r=>r.status==='fulfilled'));
+  assert.notEqual(motivosDiferentes[0].value,motivosDiferentes[1].value);
+  await a.begin(async tx=>{
+    await assumir(tx,alvos[9]);
+    const [resposta]=await tx`select public.consultar_recusa_publicacao() as recusas`;
+    assert.equal(resposta.recusas[0].motivo,'informacoes_inconsistentes');
+  });
+  const novaDecisao=await a.begin(tx=>recusar(tx,alvos[9]));
+  assert.notEqual(novaDecisao,motivosDiferentes[0].value,'voltar ao motivo antigo deve registrar uma nova decisão');
+  assert.equal((await a.begin(tx=>recusar(tx,alvos[9]))),novaDecisao);
+  assert.equal((await admin`select count(*)::int as n from private.recusas_publicacao_perfil where profissional_usuario_id=${alvos[9]}`)[0].n,3);
+
   const revogacao=await disputar(tx=>tx`update private.revisores_perfil set ativo=false where usuario_id=${revisor}`,
     tx=>aprovar(tx,alvos[3]));
   assert.equal(revogacao[0].status,'fulfilled');
@@ -137,5 +164,14 @@ try {
   assert.equal(revogacao[1].reason.code,'42501');
   assert.equal((await admin`select count(*)::int as n from private.aprovacoes_perfil`)[0].n,4);
   assert.equal((await admin`select count(*)::int as n from private.eventos_revisores_perfil`)[0].n,2);
-  console.log('APROVADO: disputa real comprovada em oito cenários de revisão: aprovação duplicada, edição antes/depois, revogação, recusa duplicada, edição durante recusa e decisão concorrente nos dois sentidos. PostgreSQL descartável; nenhum Supabase acessado.');
+
+  await admin`update private.revisores_perfil set ativo=true where usuario_id=${revisor}`;
+  const revogacaoRecusa=await disputar(tx=>tx`update private.revisores_perfil set ativo=false where usuario_id=${revisor}`,
+    tx=>recusar(tx,alvos[10]));
+  assert.equal(revogacaoRecusa[0].status,'fulfilled');
+  assert.equal(revogacaoRecusa[1].status,'rejected');
+  assert.equal(revogacaoRecusa[1].reason.code,'42501');
+  assert.equal((await admin`select count(*)::int as n from private.recusas_publicacao_perfil where profissional_usuario_id=${alvos[10]}`)[0].n,0);
+  assert.equal((await admin`select count(*)::int as n from private.eventos_revisores_perfil`)[0].n,4);
+  console.log('APROVADO: disputa real comprovada em onze cenários de revisão: aprovação duplicada, edição antes/depois, revogação, recusa duplicada, edição durante recusa e decisão concorrente nos dois sentidos, edição após recusa, motivos concorrentes e revogação antes da recusa. PostgreSQL descartável; nenhum Supabase acessado.');
 } finally {await Promise.all([a.end({timeout:1}),b.end({timeout:1}),admin.end({timeout:1})]);}
