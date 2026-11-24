@@ -31,9 +31,9 @@ try {
     create table public.solicitacoes_analise_profissional(usuario_id uuid primary key references public.profissionais(usuario_id),
       estado text not null default 'aguardando_analise',criado_em timestamptz not null default now());
   `);
-  for(const file of ['estrutura_interna_revisao_perfis.sql','painel_revisao_perfis.sql','reavaliar_publicacao_profissional.sql'])
+  for(const file of ['estrutura_interna_revisao_perfis.sql','painel_revisao_perfis.sql','reavaliar_publicacao_profissional.sql','recusa_publicacao_perfil.sql'])
     await admin.unsafe(await readFile(new URL('../supabase/homologacao/'+file,import.meta.url),'utf8'));
-  const revisor=randomUUID(),alvos=Array.from({length:4},()=>randomUUID());
+  const revisor=randomUUID(),alvos=Array.from({length:8},()=>randomUUID());
   await admin`insert into auth.users(id) values(${revisor})`;
   await admin`insert into private.revisores_perfil(usuario_id) values(${revisor})`;
   for(const alvo of alvos){
@@ -102,12 +102,40 @@ try {
   const [perfil]=await admin`select publicado,pausado,descricao from public.profissionais where usuario_id=${alvos[2]}`;
   assert.deepEqual({...perfil},{publicado:false,pausado:true,descricao:'Mudança após aprovação'});
 
+
+  const recusar=async(tx,alvo)=>{
+    await assumir(tx,revisor);
+    return (await tx`select public.recusar_publicacao_perfil(${alvo}::uuid,${tx.json(snapshot)},'servico_nao_identificavel') as id`)[0].id;
+  };
+  const recusasDuplicadas=await disputar(tx=>recusar(tx,alvos[4]),tx=>recusar(tx,alvos[4]));
+  assert.ok(recusasDuplicadas.every(r=>r.status==='fulfilled'));
+  assert.equal(recusasDuplicadas[0].value,recusasDuplicadas[1].value);
+  assert.equal((await admin`select count(*)::int as n from private.recusas_publicacao_perfil where profissional_usuario_id=${alvos[4]}`)[0].n,1);
+
+  const edicaoAntesRecusa=await disputar(async tx=>{
+    await assumir(tx,alvos[5]);
+    return tx`update public.profissionais set descricao='Corrigida durante recusa' where usuario_id=${alvos[5]}`;
+  },tx=>recusar(tx,alvos[5]));
+  assert.equal(edicaoAntesRecusa[0].status,'fulfilled');
+  assert.equal(edicaoAntesRecusa[1].status,'rejected');
+  assert.equal(edicaoAntesRecusa[1].reason.code,'40001');
+
+  const aprovacaoAntesRecusa=await disputar(tx=>aprovar(tx,alvos[6]),tx=>recusar(tx,alvos[6]));
+  assert.equal(aprovacaoAntesRecusa[0].status,'fulfilled');
+  assert.equal(aprovacaoAntesRecusa[1].status,'rejected');
+  assert.equal(aprovacaoAntesRecusa[1].reason.code,'22023');
+
+  const recusaAntesAprovacao=await disputar(tx=>recusar(tx,alvos[7]),tx=>aprovar(tx,alvos[7]));
+  assert.ok(recusaAntesAprovacao.every(r=>r.status==='fulfilled'));
+  assert.equal((await admin`select publicado from public.profissionais where usuario_id=${alvos[7]}`)[0].publicado,true);
+  assert.equal((await admin`select count(*)::int as n from private.recusas_publicacao_perfil where profissional_usuario_id=${alvos[7]}`)[0].n,1);
+
   const revogacao=await disputar(tx=>tx`update private.revisores_perfil set ativo=false where usuario_id=${revisor}`,
     tx=>aprovar(tx,alvos[3]));
   assert.equal(revogacao[0].status,'fulfilled');
   assert.equal(revogacao[1].status,'rejected');
   assert.equal(revogacao[1].reason.code,'42501');
-  assert.equal((await admin`select count(*)::int as n from private.aprovacoes_perfil`)[0].n,2);
+  assert.equal((await admin`select count(*)::int as n from private.aprovacoes_perfil`)[0].n,4);
   assert.equal((await admin`select count(*)::int as n from private.eventos_revisores_perfil`)[0].n,2);
-  console.log('APROVADO: disputa real comprovada em quatro cenários de revisão: duplicação, edição antes/depois e revogação. PostgreSQL descartável; nenhum Supabase acessado.');
+  console.log('APROVADO: disputa real comprovada em oito cenários de revisão: aprovação duplicada, edição antes/depois, revogação, recusa duplicada, edição durante recusa e decisão concorrente nos dois sentidos. PostgreSQL descartável; nenhum Supabase acessado.');
 } finally {await Promise.all([a.end({timeout:1}),b.end({timeout:1}),admin.end({timeout:1})]);}
