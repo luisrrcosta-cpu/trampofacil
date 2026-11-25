@@ -108,7 +108,39 @@ function oferecerCheckoutSandbox(dados) {
     tentativasPreparacao.set(atual.chave, atual.tentativa);
     status.textContent = pendente;
   };
-  resultadoPreparacao.append(aviso, botao, status);
+  const conferir = texto('button', 'Consultar tentativa de checkout');
+  conferir.type = 'button';
+  resultadoPreparacao.append(aviso, botao, conferir, status);
+  conferir.addEventListener('click', async () => {
+    const atual = preparacaoAtual;
+    if (!atual || atual.carregando || atual.usuario !== sessaoServicos?.usuario) return;
+    atual.carregando = true; bloquear(secaoPreparacao, true);
+    status.textContent = 'Consultando o registro salvo. Nenhum checkout será criado…';
+    try {
+      const r = await controleSessao.requisitar(token => enviar('/functions/v1/consultar-tentativa-checkout-sandbox', {preparacaoId:dados.preparacaoId}, token));
+      if (preparacaoAtual !== atual) return;
+      if (r.status === 401) {exigirNovoLogin('solicitacoes');return;}
+      if (!r.ok) throw new Error();
+      const c = await r.json();
+      if (preparacaoAtual !== atual) return;
+      const mensagens = {
+        nao_iniciado:'Não há envio de checkout registrado para esta preparação. A consulta não criou checkout.',
+        envio_iniciado:'Há um envio registrado aguardando conferência. Não gere outro checkout.',
+        incerto:'A tentativa salva está com resultado incerto. Aguarde a conferência no provedor; não gere outro checkout.',
+        criado:'Há um checkout salvo. Esse registro não confirma pagamento.',
+        bloqueado:'O checkout salvo está bloqueado. Confira a solicitação; não gere outro checkout.'
+      };
+      if (c.preparacaoId !== dados.preparacaoId || c.ambiente !== 'sandbox' || c.pagamentoConfirmado !== false ||
+          c.liberarRepasse !== false || !Object.hasOwn(mensagens,c.estado)) throw new Error();
+      if (c.estado !== 'nao_iniciado') preservarIncerteza(atual);
+      status.textContent = mensagens[c.estado];
+    } catch {
+      if (preparacaoAtual === atual) status.textContent = 'Não foi possível consultar o registro. Nenhum checkout foi criado por esta consulta.';
+    } finally {
+      atual.carregando = false;
+      if (preparacaoAtual === atual) {bloquear(secaoPreparacao,false);controlesPreparacao();botao.disabled = Boolean(atual.checkoutCriado || atual.tentativa?.checkoutIncerto);}
+    }
+  });
   botao.addEventListener('click', async () => {
     const atual = preparacaoAtual;
     if (!atual || atual.carregando || atual.checkoutCriado || atual.tentativa?.checkoutIncerto || atual.usuario !== sessaoServicos?.usuario) return;

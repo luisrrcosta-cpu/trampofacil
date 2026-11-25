@@ -118,3 +118,10 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3e0a42f6871881918a4b8d34b6a0e48e confirmado succeeded/ready. As anotações anteriores pending descrevem o momento do envio, não o estado atual.
 - Plano em docs/PLANO-VERIFICACAO-PRIVADA-PROFISSIONAIS.md define etapas fictícias, acesso específico, isolamento, auditoria e decisões pendentes. Não houve coleta de documentos, criação de bucket, nova permissão ou selo de verificação.
 - Integração real do checkout continua bloqueada pela tentativa incerta sem CHEC_id. Não repetir POST nem tentativas de login no PagBank sem mudança relevante.
+
+## Consulta autenticada da tentativa salva — 24/11/2026
+- Endpoint consultar-tentativa-checkout-sandbox implantado somente na homologação, versão 1 ACTIVE. Autenticação normal no Auth; SELECT com filtro pelo titular e transação read only. Sem alteração de schema/grants, acesso ao PagBank ou mutação de registros.
+- Retorna somente estado local e flags de pagamento/repasse falsas; ausência e outro titular têm o mesmo 404. Corrupção/flag financeira incompatível falha fechada. Não devolve identidade, dados do orçamento, URL ou corpo do provedor.
+- Interface inclui Consultar tentativa de checkout. Estado salvo existente bloqueia novo envio; resposta inválida não autoriza reenvio. Não presume que estado criado comprova pagamento.
+- 19 testes locais aprovados (checkout, duplicidade e estado). SQL da homologação em read only/ROLLBACK confirmou incerto e flags falsas; chamada HTTP sem sessão retornou 401. Fluxo HTTP autenticado testado com API de Auth simulada e PGlite, não com a sessão real do navegador.
+- Aguardar CI da interface antes de publicar as novas telas. A tentativa incerta anterior não foi reenviada nem resolvida.

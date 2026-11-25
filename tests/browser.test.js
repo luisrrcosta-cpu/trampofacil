@@ -63,6 +63,11 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
     chamadasApi++;
     const req = route.request();
     const url = new URL(req.url());
+    if (url.pathname === '/functions/v1/consultar-tentativa-checkout-sandbox') {
+      assert.deepEqual(req.postDataJSON(), {preparacaoId:'55555555-5555-4555-8555-555555555555'});
+      assert.equal(req.headers().authorization, 'Bearer cliente');
+      return route.fulfill({json:{preparacaoId:'55555555-5555-4555-8555-555555555555',estado:'incerto',ambiente:'sandbox',pagamentoConfirmado:false,liberarRepasse:false}});
+    }
     if (url.pathname === '/functions/v1/criar-checkout-sandbox') {
       chamadasCheckout++;
       if (falhaCheckout === 'rede') return route.abort('failed');
@@ -395,6 +400,9 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
     await page.getByRole('button',{name:'Preparar pagamento de teste',exact:true}).click();
     assert.equal(await page.getByRole('button',{name:'Gerar checkout sandbox',exact:true}).isDisabled(),true);
     await page.getByText('Checkout pendente de conferência.',{exact:false}).waitFor();
+    await page.getByRole('button',{name:'Consultar tentativa de checkout',exact:true}).click();
+    await page.getByText('A tentativa salva está com resultado incerto.',{exact:false}).waitFor();
+    assert.equal(await page.getByRole('button',{name:'Gerar checkout sandbox',exact:true}).isDisabled(),true);
     assert.equal(chamadasCheckout,antes+1,'reabrir resultado incerto não chama o checkout');
     await page.locator('#preparacao').getByRole('button',{name:'Voltar às solicitações',exact:true}).click();
   }
