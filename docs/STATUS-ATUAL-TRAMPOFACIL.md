@@ -110,3 +110,6 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - O bloqueio de interface é adicional; o claim durável do servidor continua impedindo outro POST ao provedor após recarga/logout. Estado de sessão não é persistido no navegador.
 - Teste de navegador ampliado para rede, HTTP 503 e link/resposta inválidos, verificando reabertura e contagem de requisições.
 - Cinco testes locais de envios duplicados passaram. Execução local de Chromium impedida por socket() Operation not permitted antes dos testes; validar interface pelo GitHub Actions antes de publicar.
+
+- Validação remota concluída: geral/interface 45526874590, financeiros 45526874544, concorrência 45526874565 e prévia 45526874554 com success no commit 878ba44f405b78514903ffe454c8c4301eb787c4.
+- Prévia privada empacotada da fonte f16181b01a72e5f7ba94903129b6abaa45aa8dec. Publicação solicitada, ainda pending/publishing; consultar deployment_id appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3e0a42f6871881918a4b8d34b6a0e48e antes de afirmar que está disponível. Version_id appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_fcb7075cc084819182a6eabbd24a3bdc. Acesso permanece somente ao proprietário.
