@@ -274,6 +274,9 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   assert.equal(await page.locator('#mensagens-conversa img').count(), 0);
   assert.equal(await page.locator('#mensagens-conversa li').first().locator('strong').textContent(), 'Você');
   await page.getByRole('button', { name: 'Voltar às solicitações' }).click();
+  await page.waitForFunction(() => document.activeElement?.tagName === 'H3');
+  assert.equal(await page.locator('#lista-solicitacoes h3').first().evaluate(el=>el===document.activeElement),true,'retorno foca o pedido após atualizar');
+  assert.equal(await page.getByLabel('Buscar nas solicitações carregadas',{exact:true}).inputValue(),'sala','pesquisa é mantida no retorno');
   await page.locator('#solicitacoes').getByRole('button', { name: 'Página inicial' }).click();
   await page.getByRole('button', { name: 'Sair da conta' }).click();
   await page.getByRole('button', { name: 'Minhas solicitações' }).click();

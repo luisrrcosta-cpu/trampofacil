@@ -302,6 +302,25 @@ function proteger(destino) {
   if (destino === 'revisao') carregarRevisao();
 }
 
+async function retornarParaSolicitacoes(id) {
+  if (!sessaoServicos || !integrado || !autenticacaoPronta || ocupado) {proteger('solicitacoes');return;}
+  const sessaoOrigem = sessaoServicos;
+  const secao = elemento('solicitacoes');
+  mostrar('solicitacoes');
+  const carregamento = carregarPedidos();
+  const buscaRetorno = versaoPedidos;
+  await carregamento;
+  // Não roubar foco após outra navegação, atualização ou troca de conta.
+  if (sessaoServicos !== sessaoOrigem || secao.hidden || versaoPedidos !== buscaRetorno) return;
+  const card = Array.from(listaPedidos.children).find(item => item.dataset.solicitacaoId === id && !item.hidden);
+  const titulo = card?.querySelector('h3');
+  if (titulo) {
+    titulo.tabIndex = -1;
+    titulo.focus({preventScroll:true});
+    titulo.scrollIntoView({block:'center'});
+  }
+}
+
 elemento('abrir-solicitacoes').addEventListener('click', () => proteger('solicitacoes'));
 elemento('trocar-email').addEventListener('click', reiniciarLogin);
 elemento('cancelar-login').addEventListener('click', () => {
