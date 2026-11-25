@@ -6,7 +6,7 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Branch de desenvolvimento: codex/v16-seguranca-integracoes.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Site privado: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site
-- Fonte atual das telas: `904e138bf31735b307e3866222f81e429650fb82`.
+- Fonte preparada das telas: `abe628ed9379cd57656483a5c6f6e58468349f0c`.
 - Publicação das telas confirmada como succeeded/ready em 24/11/2026. Commit de hospedagem: `51c046012f76efc6aaa83c74559cda11fed24ef0`.
 - Última ampliação dos testes: `1a4f25b6b21d67e7fb401215525a62476312aea4`. Commits posteriores de documentação não mudam a interface.
 
@@ -27,7 +27,7 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Recusa aplicada somente na homologação; verificação posterior: zero recusas e aprovações, um profissional e um revisor ativo. Esses números são evidência da entrega de 24/11, não contagem permanentemente atualizada.
 
 ## Próximas etapas concretas
-1. Completar o acompanhamento do pedido fiscal além da confirmação de atendimento. Definir e implementar os estados declarados pelo prestador e a visualização do cliente, distinguindo declaração de entrega de documento validado. Preservar profissionais ocasionais e CPF; não presumir emissão habilitada.
+1. A declaração de entrega de nota foi implementada e validada (documento abaixo). Eventual confirmação ou contestação de recebimento pelo cliente é uma etapa distinta; não presumir recebimento a partir da declaração do prestador.
 2. Validar integração real de checkout/notificações exclusivamente de sandbox e cenários de falha. Respostas simuladas não comprovam integração com o provedor.
 3. Planejar verificação privada de documentos e habilitações antes de apresentar perfis como verificados. Não iniciar coleta de documentos sensíveis sem apresentar o escopo.
 4. Revisar pendências de lançamento com evidências atuais. Não reabrir tarefas concluídas sem mudança ou falha relevante.
@@ -51,3 +51,12 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - docs/RECUSA-PUBLICACAO-HOMOLOGACAO-2026-11-24.md
 - docs/CONCORRENCIA-RECUSA-2026-11-24.md
 - docs/REVOGACAO-RECUSA-2026-11-24.md
+
+
+## Declaração de entrega de nota — 24/11/2026
+- Migração entrega_pedido_nota aplicada somente na homologação, com RLS, sem UPDATE/DELETE e sem SECURITY DEFINER.
+- Profissional declara entrega após atendimento; cliente consulta. Não comprova emissão, validade fiscal ou recebimento.
+- CI completa, testes de interface/recuperação de rede e integração PostgreSQL com ROLLBACK aprovados.
+- Zero entregas e identidades QA persistidas. Avisos de segurança sem alteração.
+- Telas empacotadas para publicação privada; confirmação de publicação deve ser consultada pelo identificador retornado, sem presumir conclusão.
+- Evidência: docs/ENTREGA-NOTA-HOMOLOGACAO-2026-11-24.md.
