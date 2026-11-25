@@ -135,3 +135,8 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Botão Consultar tentativa de checkout executado na interface publicada. Tela mostrou resultado incerto e manteve Gerar checkout sandbox desativado; consulta e retorno às solicitações disponíveis.
 - Contagem antes/depois: uma tentativa, uma incerta, flags de cobrança real e repasse desativadas. Integração autenticada da consulta local comprovada; não comprova checkout ou notificação real do PagBank.
 - Próximo bloqueio externo permanece recuperar CHEC_id/conferir a tentativa no provedor. Não repetir POST nem recriar preparação para contornar esse estado.
+
+## Conferência externa pendente — 24/11/2026
+- Pesquisa oficial não confirmou consulta por referência para recuperar checkout sem CHEC_id. Orientação geral de idempotência não foi tratada como autorização para reenvio desta tentativa.
+- Rascunho pronto, não enviado: docs/RASCUNHO-SUPORTE-PAGBANK-CHECKOUT-INCERTO.md. Inclui referência, timestamp, valor e perguntas sobre criação, idempotência, acesso ao sandbox e assinatura de notificações. Sem credenciais ou documentos pessoais.
+- Bloqueio principal de pagamentos é externo: obter CHEC_id/evidência de rejeição e compatibilidade do webhook. Consulta local, bloqueio de duplicação e testes automáticos não substituem isso. Não ativar pagamentos reais.
