@@ -260,3 +260,8 @@ Atualização: 25/11/2026. Este resumo é o ponto de retomada atual; as entradas
 ## Identificação do serviço nas confirmações — 25/11/2026
 - Diálogos de proposta, aceite, início, entrega, conclusão e cancelamento exibem o título do serviço. Atualizar proposta exibe valor anterior e novo para conferência antes da decisão.
 - Nenhuma regra de transição, payload, autorização ou pagamento alterada. Sintaxe e regressões locais aprovadas; validar a suíte existente de interface antes de publicar. Sem novos testes para simples alteração de texto.
+
+
+- CI confirmada success no commit 2b2e0c589f96e7613ca581e24f8af30bf0ba2c44: geral/interface 45627923791, financeiro 45627923745, concorrência 45627923735 e prévia 45627923862. Conferência na página Actions; nenhum teste manual repetido.
+- Arquivo dist/servicos.js da prévia comparado integralmente ao servicos.js desse commit, com igualdade confirmada e sintaxe aprovada. Fonte hospedada 9d1c466fa58400f2fa1670b53999f32b6bb815ef.
+- Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_f902ffe516988191878a1788a4f10800; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_ce3eb28b0044819184a6ce0f32df817e. Confirmar status no próximo turno antes de afirmar disponibilidade. Acesso somente ao proprietário preservado; nenhuma alteração de banco, produção ou pagamentos.
