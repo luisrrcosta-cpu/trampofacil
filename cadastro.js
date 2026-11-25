@@ -19,6 +19,22 @@ document.querySelector('#aviso-demo').hidden = integrado;
 document.querySelector('#aviso-homologacao').hidden = !integrado;
 document.querySelector('#aviso-autenticacao').hidden = !integrado || autenticacaoPronta;
 
+const statusConexao = document.getElementById('status-conexao');
+let esteveSemConexao = false;
+function atualizarStatusConexao() {
+  if (navigator.onLine === false) {
+    esteveSemConexao = true;
+    statusConexao.textContent = 'Sem conexão. Mantenha esta tela aberta para conservar o preenchimento. Se tentou enviar algo, confira o resultado antes de repetir.';
+  } else {
+    statusConexao.textContent = esteveSemConexao
+      ? 'Conexão disponível novamente. Confira os envios pendentes antes de repetir. Nenhum envio foi repetido automaticamente.'
+      : '';
+  }
+}
+window.addEventListener('offline', atualizarStatusConexao);
+window.addEventListener('online', atualizarStatusConexao);
+atualizarStatusConexao();
+
 function mostrar(id) {
   for (const secao of document.querySelectorAll('main section')) {
     secao.hidden = secao.id !== id;

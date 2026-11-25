@@ -231,3 +231,11 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 
 - CI aprovada no commit caf73a54fc27a785475a8f29f2b2eed93bc7cefd: geral/interface 45625746013 (255 testes, zero falhas), financeiro 45625745985, concorrência 45625746091 e prévia 45625745925. Nove testes locais de sessão/segurança também passaram.
 - Fonte hospedada 8f38ad6efb5b79b335531768836aee8dbb06dcda. Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_ad07e404b17c8191bd9fc2af6b070d99; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_4dd26ce0a24481919a1a867ad35895e3. Conferir no próximo turno antes de afirmar disponibilidade. Proteção cobre recarga pelo app e troca de tipo, sem promessa de recuperar após fechamento ou recarga do navegador. Sem alteração de banco ou pagamento.
+
+
+## Aviso contextual de conexão — 25/11/2026
+- Proteção da edição de perfil publicada e confirmada succeeded/ready: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_ad07e404b17c8191bd9fc2af6b070d99.
+- Confirmado timeout de 15 segundos já existente nas chamadas; preservado.
+- Aviso de perda/retorno da conexão com role status e aria-live. Orienta conservar a tela e conferir envio pendente antes de repetir. Não envia, consulta, recarrega, salva ou limpa dados automaticamente.
+- Eventos online/offline indicam a conectividade do dispositivo; não comprovam disponibilidade do Supabase nem resultado de gravação. Não há promessa de funcionamento offline ou persistência após fechar a página.
+- Testes locais de segurança e regressões aprovados; teste de navegador com rede offline/online, foco, preenchimento e zero requisições aguardando CI antes de publicar.
