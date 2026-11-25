@@ -152,3 +152,9 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Após retorno de controle, desafio não estava mais visível; botão Abrir Chamado permaneceu desativado. Não houve tela de sucesso ou número de protocolo observado.
 - Situação do chamado: ENVIO NÃO CONFIRMADO. Não registrar como aberto e não duplicar o envio sem conferir confirmação no canal de contato/suporte. Rascunho técnico continua em docs/RASCUNHO-SUPORTE-PAGBANK-CHECKOUT-INCERTO.md.
 - Login no sandbox e envio do suporte são bloqueios distintos. Não há checkout ou pagamento confirmado e nenhum novo POST de checkout foi feito.
+
+## Busca e organização das solicitações — 24/11/2026
+- Cliente e profissional podem pesquisar título/descrição dos pedidos carregados, sem distinção de acento/maiúsculas; filtros por enviadas/recebidas e situação combinam entre si. Botão Limpar filtros restaura a lista.
+- Busca e tipo são apagados ao trocar de sessão; pesquisa não cria requisições ao servidor e não é persistida. Aviso de escopo explica a paginação para pedidos anteriores.
+- Sete testes locais de segurança/duplicidade e regressões de finanças, valores, sessão, estados, contratação, rascunhos e interface aprovados. Chromium local ausente; aguardar teste de navegador no CI antes de publicar.
+- Teste de navegador ampliado para busca, filtros combinados, limpeza, ausência de novas chamadas e troca de conta.

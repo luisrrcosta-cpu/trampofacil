@@ -238,6 +238,26 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   assert.equal(criacoes.length, 2);
   assert.equal(criacoes[0].id, criacoes[1].id);
   assert.equal(await page.getByRole('button', { name: 'Enviar proposta' }).count(), 0);
+  const chamadasAntesFiltros = chamadasApi;
+  const cardsPedidos = page.locator('#lista-solicitacoes article:visible');
+  await page.getByLabel('Buscar nas solicitações carregadas',{exact:true}).fill('PÍNTAR');
+  assert.equal(await cardsPedidos.count(),1,'busca ignora acento e maiúsculas');
+  await page.getByLabel('Buscar nas solicitações carregadas',{exact:true}).fill('parede');
+  assert.equal(await cardsPedidos.count(),1,'busca também encontra descrição');
+  await page.getByLabel('Tipo de solicitação',{exact:true}).selectOption('recebida');
+  assert.equal(await cardsPedidos.count(),0,'cliente não vê enviada como recebida');
+  await page.getByLabel('Tipo de solicitação',{exact:true}).selectOption('enviada');
+  await page.getByLabel('Filtrar por situação',{exact:true}).selectOption('concluida');
+  assert.equal(await cardsPedidos.count(),0,'combina tipo, busca e situação');
+  await page.getByLabel('Filtrar por situação',{exact:true}).selectOption('todas');
+  await page.getByLabel('Buscar nas solicitações carregadas',{exact:true}).fill('serviço inexistente');
+  assert.equal(await cardsPedidos.count(),0);
+  await page.locator('#solicitacoes').getByRole('button',{name:'Limpar filtros',exact:true}).click();
+  assert.equal(await cardsPedidos.count(),1);
+  assert.equal(chamadasApi,chamadasAntesFiltros,'filtros não enviam texto ao servidor');
+  // A pesquisa será apagada na próxima troca de conta.
+  await page.getByLabel('Buscar nas solicitações carregadas',{exact:true}).fill('sala');
+
 
   await page.getByRole('button', { name: 'Ver histórico e mensagens' }).click();
   await page.locator('#historico-conversa').getByText('Solicitada', { exact: false }).waitFor();
@@ -255,6 +275,12 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await page.getByRole('button', { name: 'Minhas solicitações' }).click();
   await entrar('profissional@example.com');
   await page.getByText('Recebida · Solicitada').waitFor();
+  assert.equal(await page.getByLabel('Buscar nas solicitações carregadas',{exact:true}).inputValue(),'');
+  assert.equal(await page.getByLabel('Tipo de solicitação',{exact:true}).inputValue(),'todas');
+  await page.getByLabel('Tipo de solicitação',{exact:true}).selectOption('recebida');
+  assert.equal(await page.locator('#lista-solicitacoes article:visible').count(),1);
+  await page.locator('#solicitacoes').getByRole('button',{name:'Limpar filtros',exact:true}).click();
+
   await page.locator('#solicitacoes').getByRole('button',{name:'Página inicial',exact:true}).click();
   await page.getByRole('button',{name:'Meu cadastro',exact:true}).click();
   await page.locator('#status-perfil').getByText('Você ainda não tem este cadastro.',{exact:false}).waitFor();

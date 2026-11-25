@@ -51,16 +51,23 @@ const tamanhoPaginaPedidos = 50;
 let cursorPedidos;
 let versaoPedidos = 0;
 const filtroPedidos = elemento('filtro-solicitacoes');
+const buscaPedidos = elemento('busca-solicitacoes');
+const direcaoPedidos = elemento('direcao-solicitacoes');
+const normalizarBuscaPedido = valor => String(valor ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/\s+/g, ' ');
 function aplicarFiltroPedidos() {
   const filtro = filtroPedidos.value;
+  const termos = normalizarBuscaPedido(buscaPedidos.value).split(' ').filter(Boolean);
+  const direcao = direcaoPedidos.value;
   let visiveis = 0;
   for (const card of listaPedidos.children) {
     const situacao = card.dataset.status;
-    card.hidden = filtro === 'ativas'
+    const ocultarSituacao = filtro === 'ativas'
       ? situacao === 'concluida' || situacao === 'cancelada'
       : filtro === 'minha_acao'
         ? card.dataset.minhaAcao !== 'sim'
         : filtro !== 'todas' && situacao !== filtro;
+    card.hidden = ocultarSituacao || (direcao !== 'todas' && card.dataset.direcao !== direcao) ||
+      !termos.every(termo => (card.dataset.busca ?? '').includes(termo));
     if (!card.hidden) visiveis++;
   }
   const status = elemento('status-solicitacoes');
@@ -73,6 +80,12 @@ function aplicarFiltroPedidos() {
   }
 }
 filtroPedidos.addEventListener('change', aplicarFiltroPedidos);
+buscaPedidos.addEventListener('input', aplicarFiltroPedidos);
+direcaoPedidos.addEventListener('change', aplicarFiltroPedidos);
+elemento('limpar-filtros-solicitacoes').addEventListener('click', () => {
+  buscaPedidos.value = ''; direcaoPedidos.value = 'todas'; filtroPedidos.value = 'todas';
+  aplicarFiltroPedidos(); buscaPedidos.focus();
+});
 
 elemento('menu-servicos').hidden = !integrado;
 
@@ -94,6 +107,7 @@ function iniciarSessao(sessao) {
   paginaBusca = 0;
   versaoPedidos++;
   filtroPedidos.value = 'todas';
+  buscaPedidos.value = ''; direcaoPedidos.value = 'todas';
   elemento('status-solicitacoes').textContent = '';
   bloquear(elemento('solicitacoes'), false);
   listaPedidos.replaceChildren();
@@ -476,6 +490,8 @@ function mostrarPedido(pedido) {
   }
   card.dataset.status = pedido.status;
   const cliente = pedido.cliente_usuario_id === sessaoServicos.usuario;
+  card.dataset.direcao = cliente ? 'enviada' : 'recebida';
+  card.dataset.busca = normalizarBuscaPedido(pedido.titulo + ' ' + pedido.descricao);
   card.dataset.minhaAcao = (
     (cliente && ['proposta', 'entregue'].includes(pedido.status)) ||
     (!cliente && ['solicitada', 'aceita', 'em_andamento'].includes(pedido.status))
@@ -577,6 +593,8 @@ function mostrarPedido(pedido) {
     }));
   }
   adicionarPedidoNotaFiscal(card, pedido, cliente);
+  card.dataset.direcao = cliente ? 'enviada' : 'recebida';
+  card.dataset.busca = normalizarBuscaPedido(pedido.titulo + ' ' + pedido.descricao);
   card.append(botaoAcao('Ver histórico e mensagens', () => abrirConversa(pedido.id)));
   return card;
 }
