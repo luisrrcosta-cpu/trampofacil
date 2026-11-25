@@ -47,11 +47,11 @@ test('voltar do cadastro pede confirmação apenas com dados e preserva formulá
  await page.locator('#profissional').getByRole('button',{name:'Voltar',exact:true}).click();
  assert.equal(dialogos,2);
  await page.getByRole('button',{name:'Sou Profissional',exact:true}).click();
- await page.getByLabel('Como você oferece seus serviços?',{exact:true}).selectOption('mei');
+ await page.locator('#profissional select[name="tipo_prestador"]').selectOption('mei');
  aceitar=false;
  await page.locator('#profissional').getByRole('button',{name:'Voltar',exact:true}).click();
  assert.equal(await page.locator('#profissional').isVisible(),true);
- assert.equal(await page.getByLabel('Como você oferece seus serviços?',{exact:true}).inputValue(),'mei');
+ assert.equal(await page.locator('#profissional select[name="tipo_prestador"]').inputValue(),'mei');
  await page.getByLabel('Descrição do serviço (opcional)',{exact:true}).fill('Reparos fictícios');
  await page.locator('#profissional').getByRole('button',{name:'Voltar',exact:true}).click();
  assert.equal(await page.getByLabel('Descrição do serviço (opcional)',{exact:true}).inputValue(),'Reparos fictícios');
@@ -59,7 +59,7 @@ test('voltar do cadastro pede confirmação apenas com dados e preserva formulá
  aceitar=true;
  await page.locator('#profissional').getByRole('button',{name:'Voltar',exact:true}).click();
  await page.getByRole('button',{name:'Sou Profissional',exact:true}).click();
- assert.equal(await page.getByLabel('Como você oferece seus serviços?',{exact:true}).inputValue(),'');
+ assert.equal(await page.locator('#profissional select[name="tipo_prestador"]').inputValue(),'');
  assert.equal(await page.getByLabel('Descrição do serviço (opcional)',{exact:true}).inputValue(),'');
  assert.equal(await page.locator('#contador-perfil-profissional').textContent(),'0/1000 caracteres');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true);
