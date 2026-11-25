@@ -81,3 +81,10 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - 24 testes locais de checkout/chaves/assinatura/receptor aprovados; inclusão destas suítes no workflow financeiro com instalação travada pelo lockfile.
 - Correção aplicada exclusivamente ao webhook-pagbank-sandbox da homologação, versão 2. Dependências implantadas preservadas; somente o receptor foi modificado.
 - Evidência: docs/ASSINATURA-EXCLUSIVA-SANDBOX-2026-11-24.md.
+
+## Acesso autenticado e bloqueio do ensaio externo — 24/11/2026
+- CI do commit 7631bc5: geral/interface 45521487164, financeiro 45521487308 e concorrência 45521487325 concluídos com success.
+- Acesso ao site privado e login normal do cliente por código concluídos pelo proprietário, sem sessão administrativa. Tela Minhas solicitações exibiu um pedido enviado concluído.
+- Consulta agregada da homologação: uma solicitação concluída, uma em andamento, nenhuma aceita; zero checkouts e zero notificações.
+- Webhook com apenas assinatura fictícia retornou 401 ASSINATURA_INVALIDA. Pelo caminho do código, a consulta de chave foi concluída (ou atendida pelo cache); isso não comprova checkout ou evento autêntico do provedor.
+- Próximo ensaio externo exige novo orçamento de teste aceito com participação legítima da conta profissional. Não reabrir pedidos existentes nem aprovar perfil somente para obter acesso ao teste.
