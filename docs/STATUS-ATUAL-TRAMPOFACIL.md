@@ -69,3 +69,9 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Migração recebimento_pedido_nota aplicada somente na homologação. Zero recebimentos/identidades QA persistidos; RLS ativa e sem UPDATE/DELETE.
 - Novas telas preparadas para publicação privada; não presumir conclusão sem verificar status retornado.
 - Evidência: docs/RECEBIMENTO-NOTA-HOMOLOGACAO-2026-11-24.md.
+
+## Verificação de checkout sandbox — 24/11/2026
+- Funções de checkout e webhook ativas na homologação; chamadas sem autenticação/assinatura retornaram 401.
+- Acrescentada cobertura para doze respostas divergentes do provedor; suíte checkout: 9 testes aprovados.
+- Integração real do provedor ainda pendente; não confundir sondagens 401 ou respostas simuladas com checkout completo.
+- Evidência: docs/VALIDACAO-CHECKOUT-SANDBOX-2026-11-24.md.

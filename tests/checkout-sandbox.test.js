@@ -82,3 +82,21 @@ test('orquestrador retorna link salvo e bloqueia checkout expirado',async()=>{
  assert.equal((await montar(Date.now).preparar(d)).url,url);
  await assert.rejects(montar(()=>Date.parse(c.criadoEm)+900001).preparar(d),e=>e.status===409);assert.equal(posts,0);
 });
+test('respostas divergentes do provedor falham sem expor dados ou repetir envio',async()=>{
+ const c=await iniciar();
+ const resposta=()=>({id:'CHEC_ficticio',status:'ACTIVE',reference_id:c.referencia,items:[{unit_amount:10000,quantity:1}],links:[{rel:'PAY',href:url}]});
+ const casos=[
+  d=>({...d,reference_id:'outro-pedido'}),d=>({...d,status:'PAID'}),
+  d=>({...d,items:[{unit_amount:1,quantity:1}]}),d=>({...d,items:[{unit_amount:10000,quantity:2}]}),
+  d=>({...d,additional_amount:1}),d=>({...d,discount_amount:1}),
+  d=>({...d,recurrence_plan:{id:'ficticio'}}),d=>({...d,shipping:{}}),
+  d=>({...d,links:[...d.links,...d.links]}),d=>({...d,links:[{rel:'PAY',href:'https://externo.invalid/segredo'}]}),
+  ()=>null,()=>({})
+ ];
+ for(const alterar of casos){
+  let chamadas=0;
+  const api=criarCheckoutPagBankSandbox({ambiente:'sandbox',token:'ficticio',fetchImpl:async()=>{chamadas++;return Response.json(alterar(resposta()));}});
+  await assert.rejects(api.criar(c),{message:'Resultado do checkout sandbox não confirmado. Não reenviar automaticamente.'});
+  assert.equal(chamadas,1);
+ }
+});
