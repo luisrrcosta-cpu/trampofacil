@@ -88,3 +88,11 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Consulta agregada da homologação: uma solicitação concluída, uma em andamento, nenhuma aceita; zero checkouts e zero notificações.
 - Webhook com apenas assinatura fictícia retornou 401 ASSINATURA_INVALIDA. Pelo caminho do código, a consulta de chave foi concluída (ou atendida pelo cache); isso não comprova checkout ou evento autêntico do provedor.
 - Próximo ensaio externo exige novo orçamento de teste aceito com participação legítima da conta profissional. Não reabrir pedidos existentes nem aprovar perfil somente para obter acesso ao teste.
+
+## Ensaio externo autenticado do checkout — 24/11/2026
+- Login normal nas duas contas de teste concluído; sessões mantidas em abas separadas, sem guardar tokens em disco.
+- Novo pedido explicitamente fictício criado pela interface: Teste checkout sandbox — sem serviço real. Profissional propôs R$ 1,00; cliente aceitou. Pedidos anteriores preservados.
+- Preparação 88cecf6d-cf3b-4112-a8ca-9a33d767a58e registrada. Uma chamada de criação de checkout retornou resultado não confirmado; banco confirmou estado incerto, valor 100 centavos, sem checkout_id, pagamento_real_habilitado=false e repasse_habilitado=false.
+- Não reenviar a operação, apagar o claim ou gerar outra preparação para contornar a incerteza. Antes de novo POST, conferir a tentativa no provedor por referência usando acesso autorizado; ainda não há checkout nem pagamento autenticado confirmado.
+- Logs anteriores mostraram apenas inicialização/encerramento. Acrescentado diagnóstico interno mínimo: TRANSPORTE, HTTP com status 400–599, ou RESPOSTA_INVALIDA. Nunca registrar corpo da resposta, token ou dados do comprador. Erro público e bloqueio de repetição preservados.
+- Onze testes locais de checkout/pacote Edge aprovados. Adaptador e entrada atualizados somente em criar-checkout-sandbox da homologação, versão 2 ACTIVE; demais dependências implantadas preservadas.

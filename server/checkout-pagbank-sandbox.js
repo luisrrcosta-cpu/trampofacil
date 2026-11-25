@@ -7,8 +7,8 @@ export function validarUrlCheckoutSandbox(valor) {
    u.pathname==='/pagamento'&&[...u.searchParams].length===1&&/^[A-Za-z0-9-]{1,100}$/.test(u.searchParams.get('code')||'');
  }catch{return false;}
 }
-export function criarCheckoutPagBankSandbox({ambiente,token,fetchImpl=globalThis.fetch}={}) {
- if(ambiente!=='sandbox'||typeof token!=='string'||!/^[A-Za-z0-9._-]{1,4096}$/.test(token)||typeof fetchImpl!=='function')throw new Error('Configuração sandbox inválida.');
+export function criarCheckoutPagBankSandbox({ambiente,token,fetchImpl=globalThis.fetch,registrarFalha=()=>{}}={}) {
+ if(ambiente!=='sandbox'||typeof token!=='string'||!/^[A-Za-z0-9._-]{1,4096}$/.test(token)||typeof fetchImpl!=='function'||typeof registrarFalha!=='function')throw new Error('Configuração sandbox inválida.');
  return Object.freeze({
   async criar({id,referencia,valorCentavos,criadoEm}={}) {
    if(!uuid.test(id||'')||referencia!=='tf-sandbox-'+id||!Number.isSafeInteger(valorCentavos)||valorCentavos<100||valorCentavos>100000000||
@@ -22,12 +22,14 @@ export function criarCheckoutPagBankSandbox({ambiente,token,fetchImpl=globalThis
     payment_notification_urls:['https://asdszqtpydiowgerxwee.supabase.co/functions/v1/webhook-pagbank-sandbox'],
     return_url:'https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site'
    };
+   let categoria='TRANSPORTE';let statusHttp;
    try {
     const r=await fetchImpl('https://sandbox.api.pagseguro.com/checkouts',{
       method:'POST',headers:{Authorization:'Bearer '+token,Accept:'application/json','Content-Type':'application/json'},
       body:JSON.stringify(body),credentials:'omit',redirect:'error',cache:'no-store',signal:AbortSignal.timeout(10000)
     });
-    if(!r.ok)throw new Error();
+    if(!r.ok){categoria='HTTP';if(Number.isInteger(r.status)&&r.status>=400&&r.status<=599)statusHttp=r.status;throw new Error();}
+    categoria='RESPOSTA_INVALIDA';
     const d=await r.json();const links=Array.isArray(d?.links)?d.links.filter(x=>x?.rel==='PAY'):[];
     if(typeof d?.id!=='string'||!/^CHEC_[A-Za-z0-9-]{1,100}$/.test(d.id)||d.reference_id!==referencia||
        d.status!=='ACTIVE'||!Array.isArray(d.items)||d.items.length!==1||
@@ -35,7 +37,9 @@ export function criarCheckoutPagBankSandbox({ambiente,token,fetchImpl=globalThis
        (d.additional_amount??0)!==0||(d.discount_amount??0)!==0||d.recurrence_plan||d.shipping||
        links.length!==1||!validarUrlCheckoutSandbox(links[0]?.href))throw new Error();
     return Object.freeze({checkoutId:d.id,url:links[0].href});
-   }catch {throw new Error('Resultado do checkout sandbox não confirmado. Não reenviar automaticamente.');}
+   }catch {
+    try{registrarFalha(Object.freeze({categoria,...(statusHttp===undefined?{}:{statusHttp})}));}catch{}
+    throw new Error('Resultado do checkout sandbox não confirmado. Não reenviar automaticamente.');}
   }
  });
 }

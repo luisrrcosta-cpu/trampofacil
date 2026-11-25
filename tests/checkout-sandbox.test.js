@@ -100,3 +100,18 @@ test('respostas divergentes do provedor falham sem expor dados ou repetir envio'
   assert.equal(chamadas,1);
  }
 });
+test('diagnóstico interno permite somente categoria e status, sem resposta ou credenciais',async()=>{
+ const c=await iniciar();
+ for(const [fetchImpl,esperado] of [
+  [async()=>new Response('segredo do provedor',{status:401}),{categoria:'HTTP',statusHttp:401}],
+  [async()=>{throw Error('token privado')},{categoria:'TRANSPORTE'}],
+  [async()=>Response.json({segredo:'não registrar'}),{categoria:'RESPOSTA_INVALIDA'}]
+ ]){
+  const eventos=[];
+  const api=criarCheckoutPagBankSandbox({ambiente:'sandbox',token:'token-privado',fetchImpl,registrarFalha:d=>eventos.push(d)});
+  await assert.rejects(api.criar(c),{message:'Resultado do checkout sandbox não confirmado. Não reenviar automaticamente.'});
+  assert.deepEqual(eventos,[esperado]);assert.equal(Object.isFrozen(eventos[0]),true);
+ }
+ const api=criarCheckoutPagBankSandbox({ambiente:'sandbox',token:'ficticio',fetchImpl:async()=>{throw Error()},registrarFalha:()=>{throw Error('logger')}});
+ await assert.rejects(api.criar(c),{message:'Resultado do checkout sandbox não confirmado. Não reenviar automaticamente.'});
+});

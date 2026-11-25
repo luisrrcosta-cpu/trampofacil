@@ -9,7 +9,8 @@ try {
  if(Deno.env.get('SUPABASE_URL')!==urlHomologacao)throw new Error();
  const adaptadores=criarAdaptadoresHomologacao({ambiente:'teste',projetoHomologacaoConfirmado:true,
   supabaseUrl:urlHomologacao,chavePublicavel:'sb_publishable_LqyoPHGK1jifRxab6vPgYg_H26zanvz'});
- const api=criarCheckoutPagBankSandbox({ambiente:'sandbox',token:Deno.env.get('PAGBANK_SANDBOX_TOKEN')});
+ const api=criarCheckoutPagBankSandbox({ambiente:'sandbox',token:Deno.env.get('PAGBANK_SANDBOX_TOKEN'),
+  registrarFalha:dados=>console.error(JSON.stringify({evento:'falha_checkout_sandbox',...dados}))});
  let banco;
  const transacao=async f=>{
   banco??=postgres(validarConexaoBancoHomologacao(Deno.env.get('SUPABASE_DB_URL')));
