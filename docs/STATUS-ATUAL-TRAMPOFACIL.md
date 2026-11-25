@@ -104,3 +104,9 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Retorno mínimo: estado ACTIVE/INACTIVE/EXPIRED, valor e flags pagamentoConfirmado=false/liberarRepasse=false. Não retorna dados do comprador, links, pagamentos associados ou corpo bruto; não escreve no banco.
 - Quatro testes locais aprovados e incluídos no workflow financeiro. Consulta não implantada como endpoint público e não executada com credencial real.
 - Continua pendente recuperar CHEC_id da tentativa incerta, referência tf-sandbox-89934739-87f9-4c53-b8ca-8b757dd81f53. O endpoint oficial exige o ID: https://developer.pagbank.com.br/reference/consultar-checkout . Não há consulta por referência comprovada para este produto. 404 não prova que uma criação anterior falhou; não reabrir o claim nem reenviar POST.
+
+## Interface após checkout incerto — 24/11/2026
+- Resultado HTTP malsucedido, falha de rede ou resposta inválida deixam Gerar checkout sandbox desativado, com orientação para conferência. Reabrir a mesma preparação durante a sessão mantém o bloqueio, sem nova chamada.
+- O bloqueio de interface é adicional; o claim durável do servidor continua impedindo outro POST ao provedor após recarga/logout. Estado de sessão não é persistido no navegador.
+- Teste de navegador ampliado para rede, HTTP 503 e link/resposta inválidos, verificando reabertura e contagem de requisições.
+- Cinco testes locais de envios duplicados passaram. Execução local de Chromium impedida por socket() Operation not permitted antes dos testes; validar interface pelo GitHub Actions antes de publicar.

@@ -100,11 +100,18 @@ function oferecerCheckoutSandbox(dados) {
   const aviso = texto('p', 'Checkout sandbox: use somente dados e cartão fictícios de teste. O valor simulado considera apenas o serviço, sem taxas ou repasse.');
   const botao = texto('button', 'Gerar checkout sandbox');
   botao.type = 'button';
-  const status = texto('p', '');
+  const pendente = 'Checkout pendente de conferência. A tentativa foi preservada; não gere outro checkout. Volte às solicitações para acompanhar.';
+  const status = texto('p', preparacaoAtual?.tentativa?.checkoutIncerto ? pendente : '');
+  botao.disabled = Boolean(preparacaoAtual?.tentativa?.checkoutIncerto);
+  const preservarIncerteza = atual => {
+    atual.tentativa = Object.freeze({...atual.tentativa, checkoutIncerto:true});
+    tentativasPreparacao.set(atual.chave, atual.tentativa);
+    status.textContent = pendente;
+  };
   resultadoPreparacao.append(aviso, botao, status);
   botao.addEventListener('click', async () => {
     const atual = preparacaoAtual;
-    if (!atual || atual.carregando || atual.usuario !== sessaoServicos?.usuario) return;
+    if (!atual || atual.carregando || atual.checkoutCriado || atual.tentativa?.checkoutIncerto || atual.usuario !== sessaoServicos?.usuario) return;
     if (!window.confirm('Abrir um checkout no ambiente sandbox do PagBank? Use somente dados fictícios. Não há cobrança real.')) return;
     atual.carregando = true; bloquear(secaoPreparacao, true);
     status.textContent = 'Conferindo a preparação e criando o checkout sandbox…';
@@ -113,7 +120,7 @@ function oferecerCheckoutSandbox(dados) {
       if (preparacaoAtual !== atual) return;
       if (r.status === 401) {exigirNovoLogin('solicitacoes'); return;}
       if (!r.ok) {
-        status.textContent = 'Checkout não confirmado. Não foi gerado outro automaticamente. Atualize as solicitações; orçamento alterado ou resultado incerto precisa ser conferido.';
+        preservarIncerteza(atual);
         return;
       }
       const c = await r.json();
@@ -129,10 +136,10 @@ function oferecerCheckoutSandbox(dados) {
       status.replaceChildren(texto('p', 'Checkout sandbox pronto. Abrir ou retornar desta página não confirma pagamento.'), link);
       atual.checkoutCriado = true;
     } catch {
-      if (preparacaoAtual === atual) status.textContent = 'Não foi possível confirmar o checkout. A tentativa foi preservada para conferência, sem repetição automática.';
+      if (preparacaoAtual === atual) preservarIncerteza(atual);
     } finally {
       atual.carregando = false;
-      if (preparacaoAtual === atual) {bloquear(secaoPreparacao, false);controlesPreparacao();botao.disabled = Boolean(atual.checkoutCriado);}
+      if (preparacaoAtual === atual) {bloquear(secaoPreparacao, false);controlesPreparacao();botao.disabled = Boolean(atual.checkoutCriado || atual.tentativa?.checkoutIncerto);}
     }
   });
 }

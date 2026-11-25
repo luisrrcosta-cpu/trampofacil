@@ -38,6 +38,8 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
     cidade: 'São Paulo', servico: 'Pintura', descricao: 'Paredes internas',
   };
   let pedido;
+  let falhaCheckout;
+  let chamadasCheckout = 0;
   let falharAtualizacao = true;
   const criacoes = [];
   const data = '2026-11-18T12:00:00+00:00';
@@ -62,6 +64,10 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
     const req = route.request();
     const url = new URL(req.url());
     if (url.pathname === '/functions/v1/criar-checkout-sandbox') {
+      chamadasCheckout++;
+      if (falhaCheckout === 'rede') return route.abort('failed');
+      if (falhaCheckout === 'http') return route.fulfill({status:503,json:{erro:'CHECKOUT_NAO_CONFIRMADO'}});
+      if (falhaCheckout === 'resposta') return route.fulfill({json:{url:'https://externo.invalid'}});
       assert.deepEqual(req.postDataJSON(), {preparacaoId:'55555555-5555-4555-8555-555555555555'});
       assert.equal(req.headers().authorization, 'Bearer cliente');
       return route.fulfill({json:{ambiente:'sandbox',pagamentoRealHabilitado:false,repasseHabilitado:false,
@@ -375,6 +381,24 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   assert.equal(await linkSandbox.getAttribute('rel'),'noopener noreferrer');
   assert.equal(await page.getByRole('button', {name:'Gerar checkout sandbox',exact:true}).isDisabled(),true);
   await page.locator('#preparacao').getByRole('button', {name:'Voltar às solicitações',exact:true}).click();
+  for (const [indice,modo] of ['rede','http','resposta'].entries()) {
+    falhaCheckout = modo;
+    pedido.atualizado_em = `2026-11-19T12:${51+indice}:00Z`;
+    await page.locator('#solicitacoes').getByRole('button',{name:'Atualizar',exact:true}).click();
+    await page.getByRole('button',{name:'Preparar pagamento de teste',exact:true}).click();
+    await page.getByRole('button',{name:'Registrar preparação de teste',exact:true}).click();
+    const antes = chamadasCheckout;
+    await page.getByRole('button',{name:'Gerar checkout sandbox',exact:true}).click();
+    await page.getByText('Checkout pendente de conferência.',{exact:false}).waitFor();
+    assert.equal(await page.getByRole('button',{name:'Gerar checkout sandbox',exact:true}).isDisabled(),true);
+    await page.locator('#preparacao').getByRole('button',{name:'Voltar às solicitações',exact:true}).click();
+    await page.getByRole('button',{name:'Preparar pagamento de teste',exact:true}).click();
+    assert.equal(await page.getByRole('button',{name:'Gerar checkout sandbox',exact:true}).isDisabled(),true);
+    await page.getByText('Checkout pendente de conferência.',{exact:false}).waitFor();
+    assert.equal(chamadasCheckout,antes+1,'reabrir resultado incerto não chama o checkout');
+    await page.locator('#preparacao').getByRole('button',{name:'Voltar às solicitações',exact:true}).click();
+  }
+  falhaCheckout = undefined;
   pedido.atualizado_em = '2026-11-19T13:00:00Z';
   await page.locator('#solicitacoes').getByRole('button', {name:'Atualizar',exact:true}).click();
   await page.getByRole('button', {name:'Preparar pagamento de teste',exact:true}).click();
