@@ -255,3 +255,8 @@ Atualização: 25/11/2026. Este resumo é o ponto de retomada atual; as entradas
 
 - CI aprovada no commit 05ff6455cb79cddc6681b6cdfd7ffb8b39aa9363: geral/interface 45626595596 (256 testes, zero falhas), financeiro 45626597535, concorrência 45626595548, prévia 45626595591 e cadastro inclusivo 45626595686.
 - Fonte hospedada ef6af1a2ba18f8eb9d728fd68c4bf5bf24d2634c. Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_45a5a68d178081919b0f04ce52e5a979; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_40236a31f630819189a90d60fd337850. Conferir status no próximo turno antes de afirmar conclusão. Nenhuma nova persistência, requisição de recuperação ou alteração financeira.
+
+
+## Identificação do serviço nas confirmações — 25/11/2026
+- Diálogos de proposta, aceite, início, entrega, conclusão e cancelamento exibem o título do serviço. Atualizar proposta exibe valor anterior e novo para conferência antes da decisão.
+- Nenhuma regra de transição, payload, autorização ou pagamento alterada. Sintaxe e regressões locais aprovadas; validar a suíte existente de interface antes de publicar. Sem novos testes para simples alteração de texto.

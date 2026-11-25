@@ -572,7 +572,10 @@ function mostrarPedido(pedido) {
       try {
         const valor_centavos = propostaEmCentavos(campo.value);
         const valor = moeda.format(valor_centavos / 100);
-        if (window.confirm(`Enviar proposta de ${valor} para este serviço? O cliente precisará aceitar o orçamento. Nenhum pagamento será realizado agora.`)) {
+        const confirmacaoProposta = pedido.status === 'proposta'
+          ? `Substituir o orçamento de ${moeda.format(pedido.valor_centavos / 100)} por ${valor} em “${pedido.titulo}”? O cliente precisará aceitar o orçamento atualizado. Nenhum pagamento será realizado agora.`
+          : `Enviar proposta de ${valor} para “${pedido.titulo}”? O cliente precisará aceitar o orçamento. Nenhum pagamento será realizado agora.`;
+        if (window.confirm(confirmacaoProposta)) {
           atualizarPedido(pedido, { status: 'proposta', valor_centavos });
         }
       } catch (falha) {
@@ -589,7 +592,7 @@ function mostrarPedido(pedido) {
         return;
       }
       const valor = moeda.format(pedido.valor_centavos / 100);
-      if (window.confirm(`Aceitar o orçamento de ${valor} para este serviço? Esta ação não realiza pagamento nem reserva dinheiro. O pagamento online ainda não está disponível.`)) {
+      if (window.confirm(`Aceitar o orçamento de ${valor} para “${pedido.titulo}”? Esta ação não realiza pagamento nem reserva dinheiro. O pagamento online ainda não está disponível.`)) {
         atualizarPedido(pedido, { status: 'aceita' });
       }
     }));
@@ -599,21 +602,21 @@ function mostrarPedido(pedido) {
   );
   if (!cliente && pedido.status === 'aceita') {
     card.append(botaoAcao('Iniciar serviço', () => {
-      if (window.confirm('Confirmar o início do serviço? O cliente poderá acompanhar o andamento.')) {
+      if (window.confirm(`Confirmar o início de “${pedido.titulo}”? O cliente poderá acompanhar o andamento.`)) {
         atualizarPedido(pedido, { status: 'em_andamento' });
       }
     }));
   }
   if (!cliente && pedido.status === 'em_andamento') {
     card.append(botaoAcao('Marcar como entregue', () => {
-      if (window.confirm('O serviço foi realmente entregue? O cliente precisará confirmar a conclusão. Esta etapa não confirma pagamento nem repasse.')) {
+      if (window.confirm(`O serviço “${pedido.titulo}” foi realmente entregue? O cliente precisará confirmar a conclusão. Esta etapa não confirma pagamento nem repasse.`)) {
         atualizarPedido(pedido, { status: 'entregue' });
       }
     }));
   }
   if (cliente && pedido.status === 'entregue') {
     card.append(botaoAcao('Concluir serviço', () => {
-      if (window.confirm('Confirmar que o serviço foi entregue e concluído? Isso encerra a solicitação e não representa pagamento ao profissional.')) {
+      if (window.confirm(`Confirmar que “${pedido.titulo}” foi entregue e concluído? Isso encerra a solicitação e não representa pagamento ao profissional.`)) {
         atualizarPedido(pedido, { status: 'concluida' });
       }
     }));
@@ -621,8 +624,8 @@ function mostrarPedido(pedido) {
   if (['solicitada', 'proposta', 'aceita'].includes(pedido.status)) {
     card.append(botaoAcao('Cancelar solicitação', () => {
       const aviso = pedido.status === 'aceita'
-        ? 'Esta contratação já foi aceita. Deseja cancelar a solicitação? Avise a outra parte pelas mensagens, se necessário. Nenhum estorno ou reembolso será realizado automaticamente.'
-        : 'Deseja cancelar esta solicitação? Esta ação encerra a negociação e não realiza pagamentos nem estornos.';
+        ? `A contratação “${pedido.titulo}” já foi aceita. Deseja cancelar a solicitação? Avise a outra parte pelas mensagens, se necessário. Nenhum estorno ou reembolso será realizado automaticamente.`
+        : `Deseja cancelar “${pedido.titulo}”? Esta ação encerra a negociação e não realiza pagamentos nem estornos.`;
       if (window.confirm(aviso)) {
         atualizarPedido(pedido, { status: 'cancelada' });
       }
