@@ -239,3 +239,6 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Aviso de perda/retorno da conexão com role status e aria-live. Orienta conservar a tela e conferir envio pendente antes de repetir. Não envia, consulta, recarrega, salva ou limpa dados automaticamente.
 - Eventos online/offline indicam a conectividade do dispositivo; não comprovam disponibilidade do Supabase nem resultado de gravação. Não há promessa de funcionamento offline ou persistência após fechar a página.
 - Testes locais de segurança e regressões aprovados; teste de navegador com rede offline/online, foco, preenchimento e zero requisições aguardando CI antes de publicar.
+
+- CI aprovada no commit 05ff6455cb79cddc6681b6cdfd7ffb8b39aa9363: geral/interface 45626595596 (256 testes, zero falhas), financeiro 45626597535, concorrência 45626595548, prévia 45626595591 e cadastro inclusivo 45626595686.
+- Fonte hospedada ef6af1a2ba18f8eb9d728fd68c4bf5bf24d2634c. Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_45a5a68d178081919b0f04ce52e5a979; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_40236a31f630819189a90d60fd337850. Conferir status no próximo turno antes de afirmar conclusão. Nenhuma nova persistência, requisição de recuperação ou alteração financeira.
