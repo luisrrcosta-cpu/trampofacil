@@ -6,8 +6,8 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Branch de desenvolvimento: codex/v16-seguranca-integracoes.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Site privado: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site
-- Última alteração de interface validada: `878ba44f405b78514903ffe454c8c4301eb787c4` (proteção após checkout incerto).
-- Publicação privada da proteção de checkout confirmada como succeeded/ready em 24/11/2026. Fonte hospedada: `f16181b01a72e5f7ba94903129b6abaa45aa8dec`.
+- Última alteração de interface validada: `23ae7994cd7c8f52f322baa014bddf624e0def8f` (consulta autenticada da tentativa salva).
+- Publicação privada da consulta confirmada como succeeded/ready. Fonte hospedada: `88d63c6b3b6787f6e7d81e615212a9cf9a3f6815`.
 - CI do commit de interface `878ba44f405b78514903ffe454c8c4301eb787c4`: geral/interface, financeiros, concorrência e prévia com success. Checkout externo ainda incerto.
 
 ## Concluído
@@ -128,3 +128,10 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 
 - CI confirmada success: geral/interface 45527910268, financeiros 45527910213, concorrência 45527910279 e prévia 45527910321 no commit 23ae7994cd7c8f52f322baa014bddf624e0def8f.
 - Telas preparadas da fonte hospedada 88d63c6b3b6787f6e7d81e615212a9cf9a3f6815. Publicação privada solicitada, pending/publishing. Deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5d7294fd3ca881919b39512d70659832; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_def216c744fc8191861286498bb38a34. Consultar status antes de afirmar disponibilidade.
+
+## Consulta validada com sessão real do cliente — 24/11/2026
+- Publicação da consulta confirmada succeeded/ready: deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5d7294fd3ca881919b39512d70659832.
+- Após retomada do navegador, cliente entrou normalmente por código seguro. Mesmas condições de crédito à vista recuperaram a preparação 88cecf6d-cf3b-4112-a8ca-9a33d767a58e; não foi criado outro orçamento ou checkout.
+- Botão Consultar tentativa de checkout executado na interface publicada. Tela mostrou resultado incerto e manteve Gerar checkout sandbox desativado; consulta e retorno às solicitações disponíveis.
+- Contagem antes/depois: uma tentativa, uma incerta, flags de cobrança real e repasse desativadas. Integração autenticada da consulta local comprovada; não comprova checkout ou notificação real do PagBank.
+- Próximo bloqueio externo permanece recuperar CHEC_id/conferir a tentativa no provedor. Não repetir POST nem recriar preparação para contornar esse estado.
