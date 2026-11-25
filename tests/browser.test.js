@@ -238,6 +238,9 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   assert.equal(criacoes.length, 2);
   assert.equal(criacoes[0].id, criacoes[1].id);
   assert.equal(await page.getByRole('button', { name: 'Enviar proposta' }).count(), 0);
+  assert.match(await page.locator('#resumo-solicitacoes').innerText(), /1 solicitações carregadas: 1 em aberto, 0 aguardando sua ação/);
+  assert.match(await page.locator('#lista-solicitacoes time').innerText(), /Última atualização:.*horário de Brasília/);
+  assert.equal(await page.locator('#lista-solicitacoes time').getAttribute('datetime'), new Date(pedido.atualizado_em).toISOString());
   const chamadasAntesFiltros = chamadasApi;
   const cardsPedidos = page.locator('#lista-solicitacoes article:visible');
   await page.getByLabel('Buscar nas solicitações carregadas',{exact:true}).fill('PÍNTAR');
@@ -249,6 +252,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await page.getByLabel('Tipo de solicitação').selectOption('enviada');
   await page.getByLabel('Filtrar por situação').selectOption('concluida');
   assert.equal(await cardsPedidos.count(),0,'combina tipo, busca e situação');
+  assert.match(await page.locator('#resumo-solicitacoes').innerText(), /1 solicitações carregadas: 1 em aberto/, 'resumo não confunde filtro vazio com ausência de pedidos');
   await page.getByLabel('Filtrar por situação').selectOption('todas');
   await page.getByLabel('Buscar nas solicitações carregadas',{exact:true}).fill('serviço inexistente');
   assert.equal(await cardsPedidos.count(),0);

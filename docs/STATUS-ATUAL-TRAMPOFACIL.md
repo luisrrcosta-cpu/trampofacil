@@ -161,3 +161,10 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 
 - CI aprovada no commit 583e295c43f690171dbf1d4c14767f7daad4c0c9: geral/interface 45606175322, financeiros 45606175133 e concorrência 45606175189. Correção do seletor de teste após falha inicial; não houve publicação com CI falhando.
 - Fonte hospedada f7cc8f75fdbac1704c50b2cfafba17a851ae291e. Atualização privada solicitada e ainda pending/publishing: deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_4b81dfeb75e8819183aeae92d9f9e314; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_4bfb12b433248191be719cb4d1aeaba8. Consultar status antes de afirmar disponibilidade. Acesso restrito ao proprietário preservado.
+
+## Resumo de solicitações e última atualização — 25/11/2026
+- Publicação anterior dos filtros confirmada succeeded/ready, deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_4b81dfeb75e8819183aeae92d9f9e314.
+- Painel mostra contagens das solicitações carregadas por situação e pendência de ação da conta, explicitamente antes dos filtros e sem presumir totais do banco.
+- Cada pedido mostra a última atualização com elemento time e horário de Brasília. Não representa agendamento ou início do serviço.
+- Contagens são limpas na troca de sessão. Sem consulta adicional, alteração de banco ou efeito financeiro.
+- Sete testes locais e regressões aprovados; aguardando CI de navegador antes de publicar novas telas.

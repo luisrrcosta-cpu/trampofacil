@@ -53,14 +53,20 @@ let versaoPedidos = 0;
 const filtroPedidos = elemento('filtro-solicitacoes');
 const buscaPedidos = elemento('busca-solicitacoes');
 const direcaoPedidos = elemento('direcao-solicitacoes');
+const resumoPedidos = elemento('resumo-solicitacoes');
+const dataAtualizacaoPedido = new Intl.DateTimeFormat('pt-BR', {dateStyle:'short',timeStyle:'short',timeZone:'America/Sao_Paulo'});
 const normalizarBuscaPedido = valor => String(valor ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/\s+/g, ' ');
 function aplicarFiltroPedidos() {
   const filtro = filtroPedidos.value;
   const termos = normalizarBuscaPedido(buscaPedidos.value).split(' ').filter(Boolean);
   const direcao = direcaoPedidos.value;
-  let visiveis = 0;
+  let visiveis = 0, abertas = 0, pendentes = 0, concluidas = 0, canceladas = 0;
   for (const card of listaPedidos.children) {
     const situacao = card.dataset.status;
+    if (situacao === 'concluida') concluidas++;
+    else if (situacao === 'cancelada') canceladas++;
+    else abertas++;
+    if (card.dataset.minhaAcao === 'sim') pendentes++;
     const ocultarSituacao = filtro === 'ativas'
       ? situacao === 'concluida' || situacao === 'cancelada'
       : filtro === 'minha_acao'
@@ -70,6 +76,10 @@ function aplicarFiltroPedidos() {
       !termos.every(termo => (card.dataset.busca ?? '').includes(termo));
     if (!card.hidden) visiveis++;
   }
+  const total = listaPedidos.childElementCount;
+  resumoPedidos.textContent = total
+    ? `Entre as ${total} solicitações carregadas: ${abertas} em aberto, ${pendentes} aguardando sua ação, ${concluidas} concluídas e ${canceladas} canceladas. Os números consideram todas as carregadas, antes dos filtros.`
+    : '';
   const status = elemento('status-solicitacoes');
   if (listaPedidos.childElementCount) {
     status.textContent = visiveis
@@ -107,6 +117,7 @@ function iniciarSessao(sessao) {
   paginaBusca = 0;
   versaoPedidos++;
   filtroPedidos.value = 'todas';
+  resumoPedidos.textContent = '';
   buscaPedidos.value = ''; direcaoPedidos.value = 'todas';
   elemento('status-solicitacoes').textContent = '';
   bloquear(elemento('solicitacoes'), false);
@@ -498,6 +509,12 @@ function mostrarPedido(pedido) {
   ) ? 'sim' : 'nao';
   card.append(texto('h3', pedido.titulo), texto('p', pedido.descricao),
     texto('p', `${cliente ? 'Enviada' : 'Recebida'} · ${nomesStatus[pedido.status] ?? pedido.status}`));
+  const instanteAtualizacao = new Date(pedido.atualizado_em);
+  if (Number.isFinite(instanteAtualizacao.getTime())) {
+    const quando = texto('time', `Última atualização: ${dataAtualizacaoPedido.format(instanteAtualizacao)} (horário de Brasília).`);
+    quando.dateTime = instanteAtualizacao.toISOString();
+    card.append(quando);
+  }
   if (Object.prototype.hasOwnProperty.call(proximosPassos, pedido.status)) {
     card.append(texto('p', proximosPassos[pedido.status]));
   }
