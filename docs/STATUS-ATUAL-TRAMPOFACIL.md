@@ -203,3 +203,9 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - CI do registro b446f24b1139c630d174713c771651c2ff367257 também aprovada: geral/interface, financeiro e concorrência. Nenhum novo teste manual repetido.
 - Revisão de prontidão atualizada com as avaliações entregues e situação correta do suporte: envio não confirmado, sem protocolo. PagBank continua dependente da conferência externa; não reenviar checkout.
 - Sem alterações executáveis, banco ou acesso nesta confirmação. Produção e pagamentos reais preservados.
+
+
+## Data da avaliação e integração da tela — 25/11/2026
+- Avaliação confirmada agora exibe data/hora em Brasília com elemento time e datetime ISO. Falha ou nova consulta oculta a data anterior; sem alteração do contrato ou do registro no banco.
+- Teste da aplicação completa com API simulada cobre persistência visual após recarga sem POST, consulta tardia após logout e retorno ao login após 401. Usa os scripts reais do index.html, além do ensaio isolado anterior.
+- Sintaxe e três testes locais de acesso/segurança aprovados. Teste de navegador aguardando CI; ainda não publicada esta alteração de tela.

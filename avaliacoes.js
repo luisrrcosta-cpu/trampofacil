@@ -5,6 +5,7 @@ function adicionarAvaliacaoServico(card, pedido, cliente) {
   const area = document.createElement('div');
   area.append(texto('h4', `Avaliação do serviço — ${pedido.titulo}`));
   const estado = texto('p', ''); estado.setAttribute('role','status');
+  const dataRegistro = document.createElement('time'); dataRegistro.hidden = true;
   const form = document.createElement('form'); form.hidden = true;
   const label = texto('label', 'Sua nota (1 a 5)');
   const nota = document.createElement('select'); nota.required = true;
@@ -16,7 +17,7 @@ function adicionarAvaliacaoServico(card, pedido, cliente) {
   form.append(label,texto('p','Sua nota será visível para você e para o profissional. Depois de registrada, não poderá ser alterada por esta tela.'),enviarNota);
   let carregando=false,incerta=false,registrada=false;
   const consultar=botaoAcao('Consultar avaliação do serviço',()=>executar());
-  area.append(consultar,form,estado); card.append(area);
+  area.append(consultar,form,estado,dataRegistro); card.append(area);
   form.addEventListener('submit',evento=>{
     evento.preventDefault();
     if (carregando || registrada || incerta || !cliente || !/^[1-5]$/.test(nota.value)) return;
@@ -30,7 +31,7 @@ function adicionarAvaliacaoServico(card, pedido, cliente) {
     if (![pedido.cliente_usuario_id,pedido.profissional_usuario_id].includes(sessaoOriginal.usuario)) return;
     if (valor!==undefined && (!cliente || sessaoOriginal.usuario!==pedido.cliente_usuario_id || incerta || registrada || !Number.isInteger(valor) || valor<1 || valor>5)) return;
     const atual=()=>sessaoServicos===sessaoOriginal && versaoPedidos===versaoOriginal;
-    carregando=true;form.hidden=true;bloquear(elemento('solicitacoes'),true);
+    carregando=true;form.hidden=true;dataRegistro.hidden=true;dataRegistro.textContent='';dataRegistro.removeAttribute('datetime');bloquear(elemento('solicitacoes'),true);
     estado.textContent=valor===undefined?'Consultando avaliação…':'Registrando avaliação…';
     try {
       if (valor!==undefined) {
@@ -53,6 +54,9 @@ function adicionarAvaliacaoServico(card, pedido, cliente) {
       const a=linhas[0];
       if(a.solicitacao_id!==pedido.id||a.cliente_usuario_id!==pedido.cliente_usuario_id||!Number.isInteger(a.nota)||a.nota<1||a.nota>5||typeof a.criado_em!=='string'||!Number.isFinite(Date.parse(a.criado_em)))throw Error();
       registrada=true;incerta=false;
+      dataRegistro.dateTime=new Date(a.criado_em).toISOString();
+      dataRegistro.textContent='Registrada em '+new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short',timeZone:'America/Sao_Paulo'}).format(new Date(a.criado_em))+' (horário de Brasília).';
+      dataRegistro.hidden=false;
       estado.textContent=`Avaliação registrada: ${a.nota} de 5. Visível somente para as partes deste serviço.`;
     }catch{
       if(atual())estado.textContent=incerta?'Não foi possível confirmar o registro. Consulte a avaliação antes de qualquer nova ação.':'Não foi possível consultar a avaliação. Tente novamente.';
