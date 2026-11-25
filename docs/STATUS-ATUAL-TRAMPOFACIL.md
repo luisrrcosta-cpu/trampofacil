@@ -6,9 +6,9 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Branch de desenvolvimento: codex/v16-seguranca-integracoes.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Site privado: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site
-- Fonte preparada das telas: `9455e39495fced798be5acb9b03692e7555f613a`.
-- Publicação das telas confirmada como succeeded/ready em 24/11/2026. Commit de hospedagem: `51c046012f76efc6aaa83c74559cda11fed24ef0`.
-- Última ampliação dos testes: `1a4f25b6b21d67e7fb401215525a62476312aea4`. Commits posteriores de documentação não mudam a interface.
+- Última alteração de interface validada: `878ba44f405b78514903ffe454c8c4301eb787c4` (proteção após checkout incerto).
+- Publicação privada da proteção de checkout confirmada como succeeded/ready em 24/11/2026. Fonte hospedada: `f16181b01a72e5f7ba94903129b6abaa45aa8dec`.
+- CI do commit de interface `878ba44f405b78514903ffe454c8c4301eb787c4`: geral/interface, financeiros, concorrência e prévia com success. Checkout externo ainda incerto.
 
 ## Concluído
 1. Cadastro e edição de profissionais CPF, MEI e empresa, atividade regular ou ocasional; sem coletar números de documentos em campos públicos.
@@ -113,3 +113,8 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 
 - Validação remota concluída: geral/interface 45526874590, financeiros 45526874544, concorrência 45526874565 e prévia 45526874554 com success no commit 878ba44f405b78514903ffe454c8c4301eb787c4.
 - Prévia privada empacotada da fonte f16181b01a72e5f7ba94903129b6abaa45aa8dec. Publicação solicitada, ainda pending/publishing; consultar deployment_id appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3e0a42f6871881918a4b8d34b6a0e48e antes de afirmar que está disponível. Version_id appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_fcb7075cc084819182a6eabbd24a3bdc. Acesso permanece somente ao proprietário.
+
+## Publicação confirmada e escopo documental — 24/11/2026
+- Deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3e0a42f6871881918a4b8d34b6a0e48e confirmado succeeded/ready. As anotações anteriores pending descrevem o momento do envio, não o estado atual.
+- Plano em docs/PLANO-VERIFICACAO-PRIVADA-PROFISSIONAIS.md define etapas fictícias, acesso específico, isolamento, auditoria e decisões pendentes. Não houve coleta de documentos, criação de bucket, nova permissão ou selo de verificação.
+- Integração real do checkout continua bloqueada pela tentativa incerta sem CHEC_id. Não repetir POST nem tentativas de login no PagBank sem mudança relevante.
