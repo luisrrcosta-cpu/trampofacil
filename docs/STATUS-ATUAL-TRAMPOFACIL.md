@@ -140,3 +140,8 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Pesquisa oficial não confirmou consulta por referência para recuperar checkout sem CHEC_id. Orientação geral de idempotência não foi tratada como autorização para reenvio desta tentativa.
 - Rascunho pronto, não enviado: docs/RASCUNHO-SUPORTE-PAGBANK-CHECKOUT-INCERTO.md. Inclui referência, timestamp, valor e perguntas sobre criação, idempotência, acesso ao sandbox e assinatura de notificações. Sem credenciais ou documentos pessoais.
 - Bloqueio principal de pagamentos é externo: obter CHEC_id/evidência de rejeição e compatibilidade do webhook. Consulta local, bloqueio de duplicação e testes automáticos não substituem isso. Não ativar pagamentos reais.
+
+## Revisão de prontidão consolidada — 24/11/2026
+- Documento docs/REVISAO-PRONTIDAO-TRAMPOFACIL.md separa evidências internas, pendências externas e condições para propor lançamento.
+- Consulta atual: um checkout registrado, zero flags reais ativas, zero notificações recebidas e zero notificações financeiras. Advisors sem mudança em relação aos avisos já registrados.
+- Não foram criados novos testes, alterado código executável, reenviado checkout ou modificada produção nesta revisão. Não confundir consolidação de evidências com conclusão da integração PagBank.
