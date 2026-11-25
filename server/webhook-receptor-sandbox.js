@@ -10,7 +10,7 @@ export function criarReceptorWebhookSandbox({ambiente,obterValidador,registrar,t
     if(url.search||!['/webhook-pagbank-sandbox','/functions/v1/webhook-pagbank-sandbox'].includes(url.pathname))return resposta(404,'ROTA_INDISPONIVEL');
     if(request.method!=='POST')return resposta(405,'METODO_NAO_PERMITIDO');
     const assinatura=request.headers.get('x-payload-signature');
-    if(!assinatura||assinatura.length>8192)return resposta(401,'ASSINATURA_INVALIDA');
+    if(request.headers.has('x-authenticity-token')||!assinatura||assinatura.length>8192)return resposta(401,'ASSINATURA_INVALIDA');
     if(!/^application\/json(?:\s*;|$)/i.test(request.headers.get('Content-Type')||''))return resposta(415,'JSON_NECESSARIO');
     const tamanho=request.headers.get('Content-Length');
     if(tamanho&&(!/^\d+$/.test(tamanho)||Number(tamanho)>65536))return resposta(413,'CORPO_MUITO_GRANDE');

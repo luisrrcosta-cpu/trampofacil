@@ -75,3 +75,9 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Acrescentada cobertura para doze respostas divergentes do provedor; suíte checkout: 9 testes aprovados.
 - Integração real do provedor ainda pendente; não confundir sondagens 401 ou respostas simuladas com checkout completo.
 - Evidência: docs/VALIDACAO-CHECKOUT-SANDBOX-2026-11-24.md.
+
+## Exclusividade de assinatura no webhook — 24/11/2026
+- Rota ECDSA agora rejeita a presença simultânea de x-authenticity-token, inclusive vazio, antes de consultar chave, ler corpo ou registrar evento.
+- 24 testes locais de checkout/chaves/assinatura/receptor aprovados; inclusão destas suítes no workflow financeiro com instalação travada pelo lockfile.
+- Correção aplicada exclusivamente ao webhook-pagbank-sandbox da homologação, versão 2. Dependências implantadas preservadas; somente o receptor foi modificado.
+- Evidência: docs/ASSINATURA-EXCLUSIVA-SANDBOX-2026-11-24.md.

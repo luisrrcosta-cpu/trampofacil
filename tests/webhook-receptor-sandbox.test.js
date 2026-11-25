@@ -74,3 +74,17 @@ test('replays idênticos têm unicidade durável e clientes não acessam fila',a
   await assert.rejects(db.transaction(async tx=>{await tx.exec('set local role service_role');await tx.exec(sql);}));
  }
 });
+test('cabeçalhos de autenticação misturados são recusados antes da chave ou registro',async()=>{
+ let consultas=0,registros=0;
+ const h=criarReceptorWebhookSandbox({ambiente:'sandbox',obterValidador:async()=>{consultas++;return validador;},registrar:async()=>{registros++;}});
+ for(const token of ['', 'legado-ficticio']){
+  const req=request();req.headers.set('X-Authenticity-Token',token);
+  const r=await h(req);
+  assert.equal(r.status,401);
+  assert.deepEqual(await r.json(),{erro:'ASSINATURA_INVALIDA'});
+ }
+ assert.equal(consultas,0);assert.equal(registros,0);
+ // O cabeçalho ECDSA sozinho continua aceito.
+ assert.equal((await h(request())).status,202);
+ assert.equal(consultas,1);assert.equal(registros,1);
+});
