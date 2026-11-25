@@ -6,7 +6,7 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Branch de desenvolvimento: codex/v16-seguranca-integracoes.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Site privado: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site
-- Fonte preparada das telas: `abe628ed9379cd57656483a5c6f6e58468349f0c`.
+- Fonte preparada das telas: `9455e39495fced798be5acb9b03692e7555f613a`.
 - Publicação das telas confirmada como succeeded/ready em 24/11/2026. Commit de hospedagem: `51c046012f76efc6aaa83c74559cda11fed24ef0`.
 - Última ampliação dos testes: `1a4f25b6b21d67e7fb401215525a62476312aea4`. Commits posteriores de documentação não mudam a interface.
 
@@ -27,7 +27,7 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Recusa aplicada somente na homologação; verificação posterior: zero recusas e aprovações, um profissional e um revisor ativo. Esses números são evidência da entrega de 24/11, não contagem permanentemente atualizada.
 
 ## Próximas etapas concretas
-1. A declaração de entrega de nota foi implementada e validada (documento abaixo). Eventual confirmação ou contestação de recebimento pelo cliente é uma etapa distinta; não presumir recebimento a partir da declaração do prestador.
+1. Pedido fiscal: atendimento, declaração de entrega e confirmação de recebimento implementados. Não presumir recebimento quando o cliente não confirmou; eventual divergência deve ser tratada separadamente, sem apagar os registros.
 2. Validar integração real de checkout/notificações exclusivamente de sandbox e cenários de falha. Respostas simuladas não comprovam integração com o provedor.
 3. Planejar verificação privada de documentos e habilitações antes de apresentar perfis como verificados. Não iniciar coleta de documentos sensíveis sem apresentar o escopo.
 4. Revisar pendências de lançamento com evidências atuais. Não reabrir tarefas concluídas sem mudança ou falha relevante.
@@ -60,3 +60,12 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Zero entregas e identidades QA persistidas. Avisos de segurança sem alteração.
 - Telas empacotadas para publicação privada; confirmação de publicação deve ser consultada pelo identificador retornado, sem presumir conclusão.
 - Evidência: docs/ENTREGA-NOTA-HOMOLOGACAO-2026-11-24.md.
+
+
+## Recebimento do documento pelo cliente — 24/11/2026
+- Entrega declarada anterior confirmada como publicada (succeeded/ready).
+- Confirmação exclusiva do cliente, após entrega declarada; duas partes consultam. Sem emissão/verificação fiscal, efeitos no serviço ou pagamentos.
+- CI geral/interface, concorrência, financeiros e prévia aprovados; integração remota com ROLLBACK aprovada.
+- Migração recebimento_pedido_nota aplicada somente na homologação. Zero recebimentos/identidades QA persistidos; RLS ativa e sem UPDATE/DELETE.
+- Novas telas preparadas para publicação privada; não presumir conclusão sem verificar status retornado.
+- Evidência: docs/RECEBIMENTO-NOTA-HOMOLOGACAO-2026-11-24.md.

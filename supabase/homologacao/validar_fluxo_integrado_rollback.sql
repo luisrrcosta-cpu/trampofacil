@@ -117,6 +117,10 @@ begin
     insert into public.entregas_pedido_nota(solicitacao_id) values(sid);
     raise exception 'FAIL: entrega sem atendimento';
   exception when insufficient_privilege then null; end;
+  begin
+    insert into public.recebimentos_pedido_nota(solicitacao_id) values(sid);
+    raise exception 'FAIL: profissional confirma pelo cliente';
+  exception when insufficient_privilege then null; end;
   insert into public.atendimentos_pedido_nota(solicitacao_id) values(sid);
   insert into public.entregas_pedido_nota(solicitacao_id) values(sid);
   begin
@@ -147,6 +151,13 @@ begin
     insert into public.entregas_pedido_nota(solicitacao_id) values(sid);
     raise exception 'FAIL: cliente declara entrega';
   exception when insufficient_privilege then null; end;
+  insert into public.recebimentos_pedido_nota(solicitacao_id) values(sid);
+  begin
+    insert into public.recebimentos_pedido_nota(solicitacao_id) values(sid);
+    raise exception 'FAIL: recebimento duplicado';
+  exception when unique_violation then null; end;
+  if not exists(select 1 from public.recebimentos_pedido_nota where solicitacao_id=sid and cliente_usuario_id=cli)
+    then raise exception 'FAIL: cliente não lê recebimento'; end if;
   update public.solicitacoes set status='concluida' where id=sid;
   if not exists(select 1 from public.solicitacoes where id=sid and status='concluida' and valor_centavos=10000)
     then raise exception 'FAIL: conclusão ou valor'; end if;
@@ -162,7 +173,7 @@ begin
   perform set_config('request.jwt.claims',jsonb_build_object('sub',terceiro,'role','authenticated','is_anonymous',false)::text,true);
   perform set_config('request.jwt.claim.sub',terceiro::text,true);
   execute 'set local role authenticated';
-  if exists(select 1 from public.entregas_pedido_nota where solicitacao_id=sid) or exists(select 1 from public.atendimentos_pedido_nota where solicitacao_id=sid)
+  if exists(select 1 from public.recebimentos_pedido_nota where solicitacao_id=sid) or exists(select 1 from public.entregas_pedido_nota where solicitacao_id=sid) or exists(select 1 from public.atendimentos_pedido_nota where solicitacao_id=sid)
     then raise exception 'FAIL: terceiro lê atendimento'; end if;
   execute 'reset role';
   perform set_config('request.jwt.claims','{}',true);
