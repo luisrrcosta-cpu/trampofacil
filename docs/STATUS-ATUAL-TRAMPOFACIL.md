@@ -177,3 +177,6 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Ao voltar do histórico, lista continua sendo atualizada; foco retorna ao título do pedido se ele estiver entre os carregados e passar nos filtros. Não força exibição de pedido filtrado ou fora da página.
 - Respostas após outra navegação, busca mais nova ou troca de conta não alteram o foco. Rascunho e incerteza de mensagens mantêm comportamento anterior.
 - Doze testes locais de sessão/duplicidade e regressões aprovados. Teste de navegador ampliado para foco após atualização e preservação da busca; aguardar CI antes de publicar.
+
+- CI confirmada success no commit 79afc04b450dd6b8872dbf77b906b5540d892500: geral/interface 45618154895, financeiros 45618154958, concorrência 45618155170 e prévia 45618155079.
+- Fonte hospedada c5ed5724721ec4b0992fd68956e906891386228f. Publicação privada solicitada pending/publishing: deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_940228f975a8819199fcdb4e22d2f65a; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_d1240a64eee48191a99a455708497b25. Consultar antes de afirmar disponibilidade.
