@@ -196,3 +196,10 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Advisories de segurança antes/depois iguais: INFO rls_enabled_no_policy e WARN auth_leaked_password_protection já existentes.
 - Publicação privada solicitada: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5f256e4ca5588191826ee1c075631ed2; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_b1a1597c83dc81919364c837929e2ee7; fonte f91221b37c4a8c24858db554c2fc34c73d49301c. Retorno pending/publishing; confirmar no próximo turno, sem afirmar publicação concluída.
 - Pagamentos reais/repasse continuam desabilitados; tentativa PagBank incerta segue bloqueada e depende de conferência externa.
+
+
+## Avaliações disponíveis na prévia privada — 25/11/2026
+- Confirmado succeeded/ready no deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5f256e4ca5588191826ee1c075631ed2, fonte f91221b37c4a8c24858db554c2fc34c73d49301c. As anotações pending anteriores são históricas.
+- CI do registro b446f24b1139c630d174713c771651c2ff367257 também aprovada: geral/interface, financeiro e concorrência. Nenhum novo teste manual repetido.
+- Revisão de prontidão atualizada com as avaliações entregues e situação correta do suporte: envio não confirmado, sem protocolo. PagBank continua dependente da conferência externa; não reenviar checkout.
+- Sem alterações executáveis, banco ou acesso nesta confirmação. Produção e pagamentos reais preservados.
