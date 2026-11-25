@@ -180,3 +180,10 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 
 - CI confirmada success no commit 79afc04b450dd6b8872dbf77b906b5540d892500: geral/interface 45618154895, financeiros 45618154958, concorrência 45618155170 e prévia 45618155079.
 - Fonte hospedada c5ed5724721ec4b0992fd68956e906891386228f. Publicação privada solicitada pending/publishing: deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_940228f975a8819199fcdb4e22d2f65a; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_d1240a64eee48191a99a455708497b25. Consultar antes de afirmar disponibilidade.
+
+## Avaliação privada após conclusão — implementação de 25/11/2026
+- Revisão confirmou ausência de avaliações no código, tabelas e migrações da homologação.
+- Implementada nota de 1 a 5, uma por solicitação concluída, registrada pelo cliente e lida apenas pelas partes. Sem comentário livre, reputação pública ou impacto financeiro.
+- Migração gerada pela CLI: supabase/migrations/20261125125859_avaliacoes_servico_homologacao.sql. RLS e grants restritos; autor/data definidos no servidor, sem UPDATE/DELETE ou SECURITY DEFINER.
+- Tela consulta antes de oferecer registro; resposta perdida exige consulta, sem reenvio automático. Autor, solicitação, nota e data são validados antes de exibir.
+- Testes PGlite e regressões locais aprovados. CI de navegador pendente; estrutura ainda não aplicada remotamente e novas telas ainda não publicadas nesta etapa.

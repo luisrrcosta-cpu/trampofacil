@@ -629,6 +629,7 @@ function mostrarPedido(pedido) {
     }));
   }
   adicionarPedidoNotaFiscal(card, pedido, cliente);
+  adicionarAvaliacaoServico(card, pedido, cliente);
   card.dataset.direcao = cliente ? 'enviada' : 'recebida';
   card.dataset.busca = normalizarBuscaPedido(pedido.titulo + ' ' + pedido.descricao);
   card.append(botaoAcao('Ver histórico e mensagens', () => abrirConversa(pedido.id)));
