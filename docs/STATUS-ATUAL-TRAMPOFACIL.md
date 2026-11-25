@@ -1,44 +1,57 @@
 # Estado atual recuperável — TrampoFácil
 
-Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos documentos históricos.
+Atualização: 25/11/2026. Este resumo é o ponto de retomada atual; as entradas posteriores preservam o histórico e podem conter estados intermediários já superados.
 
 - Repositório: luisrrcosta-cpu/trampofacil.
-- Branch de desenvolvimento: codex/v16-seguranca-integracoes.
+- Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
-- Site privado: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site
-- Última alteração de interface validada: `23ae7994cd7c8f52f322baa014bddf624e0def8f` (consulta autenticada da tentativa salva).
-- Publicação privada da consulta confirmada como succeeded/ready. Fonte hospedada: `88d63c6b3b6787f6e7d81e615212a9cf9a3f6815`.
-- CI do commit de interface `878ba44f405b78514903ffe454c8c4301eb787c4`: geral/interface, financeiros, concorrência e prévia com success. Checkout externo ainda incerto.
+- Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
+- Último código de interface validado: `05ff6455cb79cddc6681b6cdfd7ffb8b39aa9363`.
+- Fonte hospedada atual: `ef6af1a2ba18f8eb9d728fd68c4bf5bf24d2634c`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_45a5a68d178081919b0f04ce52e5a979`.
+- CI dessa implementação: geral/interface 45626595596 (256 testes aprovados, zero falhas), financeiro 45626597535, concorrência 45626595548, prévia 45626595591 e cadastro inclusivo 45626595686, todos success.
+- Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
-## Concluído
-1. Cadastro e edição de profissionais CPF, MEI e empresa, atividade regular ou ocasional; sem coletar números de documentos em campos públicos.
-2. Autenticação normal, RLS, isolamento entre contas, proteção contra autoaprovação e exposição do catálogo apenas para perfis publicados e disponíveis.
-3. Pausa/retomada de novos pedidos; alterações relevantes retiram a publicação para nova análise. Contratos existentes preservados.
-4. Contratação, orçamento, aceite, início, entrega e conclusão, histórico e mensagens.
-5. Pedido de nota fiscal pelo cliente e confirmação de atendimento pelo profissional. O aplicativo não emite nem verifica notas fiscais.
-6. Revisor ativo autorizado, fila privada, aprovação com versão exata, orientações de ajuste e recusa administrativa com motivo e auditoria privada. Recusa de publicação permite correção e reconsideração; não bloqueia a conta.
-7. Concorrência administrativa em PostgreSQL descartável: onze disputas reais por lock, incluindo revogação, edição, repetição idempotente, motivos sucessivos e aprovação/recusa.
-8. Preparação de pagamentos de teste, sem cobrança real.
+## Entregas atuais na homologação
+1. Cadastro de clientes e profissionais CPF, MEI e empresa, atividade regular ou ocasional, sem coletar números de documentos em campos públicos.
+2. Autenticação normal, RLS, isolamento entre contas e catálogo restrito a perfis publicados e disponíveis.
+3. Pausa/retomada de novos pedidos; alterações relevantes exigem nova análise. Contratos existentes preservados.
+4. Contratação, orçamento, aceite, início, entrega, conclusão, histórico e mensagens.
+5. Pedido fiscal, confirmação de atendimento, declaração de entrega e confirmação de recebimento. Não emite ou verifica notas fiscais.
+6. Fila administrativa privada, aprovação por versão, orientações, recusa com motivo e auditoria; concorrência validada sem aprovar perfis existentes só para teste.
+7. Nota privada de 1 a 5 após conclusão, registrada pelo cliente e visível às partes, com data em Brasília; sem comentário livre ou reputação pública.
+8. Busca/filtros/resumo dos pedidos carregados e retorno do histórico ao pedido.
+9. Confirmação antes de descartar cadastro preenchido e edição de perfil ao atualizar/trocar tipo; logout limpa os dados privados.
+10. Aviso de perda/retorno de conexão, sem reenvio automático. Não há persistência offline nem garantia de recuperação após fechar/recarregar a página.
+11. Preparação financeira de teste e consulta autenticada da tentativa salva, sem cobrança ou repasse real.
 
-## Evidências já concluídas — não pedir repetição manual
-- Duas contas: solicitação “Teste”, aceite, serviço em andamento, pedido de nota e atendimento confirmado. Captura do proprietário às 18h de 23/11/2026 e consulta do banco.
-- Conta revisora: painel e fila vazia exibidos às 19h02 de 23/11/2026. Não comprova aprovação HTTP; não aprovar um perfil existente somente para testar.
-- Fluxos do banco validados com identidades fictícias e ROLLBACK, sem persistir testes.
-- Recusa aplicada somente na homologação; verificação posterior: zero recusas e aprovações, um profissional e um revisor ativo. Esses números são evidência da entrega de 24/11, não contagem permanentemente atualizada.
+## Bloqueios reais e próxima ação
 
-## Próximas etapas concretas
-1. Pedido fiscal: atendimento, declaração de entrega e confirmação de recebimento implementados. Não presumir recebimento quando o cliente não confirmou; eventual divergência deve ser tratada separadamente, sem apagar os registros.
-2. Validar integração real de checkout/notificações exclusivamente de sandbox e cenários de falha. Respostas simuladas não comprovam integração com o provedor.
-3. Planejar verificação privada de documentos e habilitações antes de apresentar perfis como verificados. Não iniciar coleta de documentos sensíveis sem apresentar o escopo.
-4. Revisar pendências de lançamento com evidências atuais. Não reabrir tarefas concluídas sem mudança ou falha relevante.
+| Área | Estado comprovado | Próxima ação necessária |
+| --- | --- | --- |
+| Checkout sandbox | Tentativa de R$ 1,00 com resultado incerto, sem CHEC_id recuperado | Obter CHEC_id ou evidência da rejeição no provedor antes de qualquer novo POST |
+| Suporte PagBank | Formulário acionado uma vez; envio não confirmado, sem protocolo observado | Conferir se chegou confirmação ao contato do proprietário antes de duplicar o chamado |
+| Notificação autêntica | Receptor e proteção testados, mas integração externa completa não demonstrada | Confirmar contrato de assinatura/payload e validar evento autêntico no sandbox |
+| Documentos/habilitações | Escopo privado planejado | Definir e validar procedimento antes de coletar documentos ou exibir selo de verificação |
+| Lançamento/financeiro real | Não autorizado | Entregar evidências e definir operação antes de solicitar ativação específica |
+
+- Tentativa preservada: preparação `88cecf6d-cf3b-4112-a8ca-9a33d767a58e`; referência `tf-sandbox-89934739-87f9-4c53-b8ca-8b757dd81f53`.
+- Não reenviar o checkout, apagar o claim, reabrir o pedido ou criar outra preparação para contornar a incerteza.
+- Relato técnico: docs/RASCUNHO-SUPORTE-PAGBANK-CHECKOUT-INCERTO.md. Não copiar CPF, senha, OTP ou token para o repositório.
+- Novos testes internos ou refinamentos de tela não resolvem o bloqueio externo. Revisão de lançamento em docs/REVISAO-PRONTIDAO-TRAMPOFACIL.md.
+
+## Evidências concluídas — preservar
+- Contratação, nota e consulta da tentativa já tiveram verificações autenticadas registradas; não pedir repetição manual sem falha ou alteração relevante.
+- Avaliações: RLS/grants verificados, ensaio com identidades fictícias e ROLLBACK concluído; nenhuma avaliação criada em nome das contas existentes.
+- Os números de registros em entradas históricas são fotografias datadas, não contagens permanentemente atualizadas.
+- Última consulta de advisors em 25/11 manteve os avisos preexistentes: INFO RLS sem políticas em tabelas privadas intencionalmente bloqueadas e WARN de proteção contra senhas vazadas. Nenhuma política reduzida.
 
 ## Limites obrigatórios
-- Não alterar produção nem a branch principal; não excluir dados nem reduzir RLS/grants.
-- Não habilitar pagamento, cobrança ou repasse real. Produção e ativação financeira exigem autorização separada.
-- Não pedir senha, OTP ou token. Não gerar sessão administrativa para contornar login.
-- Antes de DDL, inspecionar o banco e as migrações; não reaplicar estruturas concluídas.
-- Os nove INFO de RLS sem políticas referem-se a tabelas privadas de bloqueio intencional. O WARN de proteção contra senhas vazadas é preexistente; não foi alterado nesta entrega.
-- Migrações e testes transacionais: supabase/homologacao/. O teste integrado principal é validar_painel_revisao_rollback.sql.
+- Não alterar produção/main, excluir dados ou reduzir RLS/grants.
+- Não habilitar cobrança, pagamento ou repasse real.
+- Não pedir senha, OTP ou token nem gerar sessão administrativa para contornar login.
+- Antes de DDL, inspecionar tabelas/migrações; não reaplicar estruturas concluídas.
+- Manter acesso privado da prévia e dados sensíveis fora do repositório.
 
 ## Evidências detalhadas
 - docs/RETOMADA-VALIDACAO-INTEGRADA-2026-11-23.md

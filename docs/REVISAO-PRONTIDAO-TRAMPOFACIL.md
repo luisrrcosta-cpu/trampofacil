@@ -8,6 +8,7 @@ Atualizada em 25/11/2026. Ambiente examinado: homologação asdszqtpydiowgerxwee
 | Revisão administrativa | Fila privada, aprovação por versão, ajustes, recusa e concorrência já validados | Publicação de perfil não comprova documentos ou habilitação |
 | Nota fiscal | Pedido, declaração de entrega e confirmação de recebimento implementados | Não equivale à emissão ou validação fiscal |
 | Avaliação do serviço | Nota privada de 1 a 5 após conclusão; banco e interface publicados na homologação; testes de acesso e resposta perdida aprovados | Uma nota pelo cliente, visível apenas às partes. Não representa reputação pública ou verificação documental |
+| Uso em celular e falhas de conexão | Confirmação de descarte no cadastro/perfil, aviso offline/online e recuperação sem reenvio; publicação privada confirmada | Preserva campos na página aberta; não promete persistência após recarga/fechamento nem funcionamento offline |
 | Consulta de tentativa | Tela publicada e validada com sessão real do cliente, retornando incerto | Consulta apenas o banco local, não resolve o estado externo |
 | Checkout do PagBank | Um ensaio de R$ 1,00, com claim preservado em estado incerto | Recuperar CHEC_id ou evidência de rejeição junto ao provedor; não reenviar |
 | Notificações | Autenticação, limites e unicidade testados; receptor sandbox implantado | Zero notificações recebidas; ainda sem exemplo autêntico deste checkout e confirmação do método aplicável |
@@ -23,7 +24,7 @@ Atualizada em 25/11/2026. Ambiente examinado: homologação asdszqtpydiowgerxwee
 São contagens do ambiente de homologação no momento da consulta. Não demonstram ausência de registro no provedor e não autorizam reenvio.
 
 ## Segurança
-Consulta atual dos advisors reproduziu nove INFO de tabelas privadas com RLS e sem políticas, bloqueio intencional já documentado. Mantido o WARN preexistente de proteção contra senhas vazadas desabilitada. Nenhuma configuração de Auth, grant ou política foi reduzida nesta revisão.
+Última consulta de advisors em 25/11/2026 reproduziu nove INFO de tabelas privadas com RLS e sem políticas, bloqueio intencional já documentado. Mantido o WARN preexistente de proteção contra senhas vazadas desabilitada. Nenhuma configuração de Auth, grant ou política foi reduzida nesta revisão.
 
 Referências dos avisos:
 - https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy
@@ -45,3 +46,9 @@ As proteções e a consulta local estão entregues; a integração externa de pa
 - Interface privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário preservado.
 - CI da implementação e do ajuste de empacotamento aprovada; fluxo remoto com dados fictícios e ROLLBACK concluído, sem avaliação persistida em nome de usuários existentes.
 - As pendências externas acima permanecem. Avaliações não demonstram integração financeira, não liberam pagamento e não autorizam lançamento em produção.
+
+## Interface atual — publicação confirmada em 25/11/2026
+- Código validado: 05ff6455cb79cddc6681b6cdfd7ffb8b39aa9363; CI geral 45626595596 com 256 testes aprovados e zero falhas. Financeiro, concorrência, prévia e cadastro inclusivo também aprovados.
+- Fonte hospedada ef6af1a2ba18f8eb9d728fd68c4bf5bf24d2634c; deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_45a5a68d178081919b0f04ce52e5a979 confirmado succeeded/ready.
+- Cadastro/perfil pedem confirmação antes de descartar alterações. Reconexão não repete envios; o sinal de rede não confirma disponibilidade do servidor ou resultado de gravação.
+- Consolidação documental não representa autorização de lançamento ou resolução do PagBank. Nenhum fluxo manual repetido ou nova operação financeira foi executada nesta atualização.
