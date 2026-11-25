@@ -158,3 +158,6 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Busca e tipo são apagados ao trocar de sessão; pesquisa não cria requisições ao servidor e não é persistida. Aviso de escopo explica a paginação para pedidos anteriores.
 - Sete testes locais de segurança/duplicidade e regressões de finanças, valores, sessão, estados, contratação, rascunhos e interface aprovados. Chromium local ausente; aguardar teste de navegador no CI antes de publicar.
 - Teste de navegador ampliado para busca, filtros combinados, limpeza, ausência de novas chamadas e troca de conta.
+
+- CI aprovada no commit 583e295c43f690171dbf1d4c14767f7daad4c0c9: geral/interface 45606175322, financeiros 45606175133 e concorrência 45606175189. Correção do seletor de teste após falha inicial; não houve publicação com CI falhando.
+- Fonte hospedada f7cc8f75fdbac1704c50b2cfafba17a851ae291e. Atualização privada solicitada e ainda pending/publishing: deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_4b81dfeb75e8819183aeae92d9f9e314; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_4bfb12b433248191be719cb4d1aeaba8. Consultar status antes de afirmar disponibilidade. Acesso restrito ao proprietário preservado.
