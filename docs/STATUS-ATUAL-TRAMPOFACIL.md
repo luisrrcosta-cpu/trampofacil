@@ -168,3 +168,6 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Cada pedido mostra a última atualização com elemento time e horário de Brasília. Não representa agendamento ou início do serviço.
 - Contagens são limpas na troca de sessão. Sem consulta adicional, alteração de banco ou efeito financeiro.
 - Sete testes locais e regressões aprovados; aguardando CI de navegador antes de publicar novas telas.
+
+- CI confirmada success no commit 33c551b6ddfed609fc0e80988b8163bf948c18d6: geral/interface 45617330934, financeiros 45617330968, concorrência 45617331245 e prévia 45617330959.
+- Fonte hospedada dfc1d088c8cd799da87b5f036892d2164a58e13e; publicação privada solicitada pending/publishing. Deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_4574e30c8a88819189f8ff34869c34bd; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_9ed9fedc7c5481918703ec04025fb3e2. Consultar antes de afirmar conclusão.
