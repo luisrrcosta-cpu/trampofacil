@@ -244,12 +244,12 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   assert.equal(await cardsPedidos.count(),1,'busca ignora acento e maiúsculas');
   await page.getByLabel('Buscar nas solicitações carregadas',{exact:true}).fill('parede');
   assert.equal(await cardsPedidos.count(),1,'busca também encontra descrição');
-  await page.getByLabel('Tipo de solicitação',{exact:true}).selectOption('recebida');
+  await page.getByLabel('Tipo de solicitação').selectOption('recebida');
   assert.equal(await cardsPedidos.count(),0,'cliente não vê enviada como recebida');
-  await page.getByLabel('Tipo de solicitação',{exact:true}).selectOption('enviada');
-  await page.getByLabel('Filtrar por situação',{exact:true}).selectOption('concluida');
+  await page.getByLabel('Tipo de solicitação').selectOption('enviada');
+  await page.getByLabel('Filtrar por situação').selectOption('concluida');
   assert.equal(await cardsPedidos.count(),0,'combina tipo, busca e situação');
-  await page.getByLabel('Filtrar por situação',{exact:true}).selectOption('todas');
+  await page.getByLabel('Filtrar por situação').selectOption('todas');
   await page.getByLabel('Buscar nas solicitações carregadas',{exact:true}).fill('serviço inexistente');
   assert.equal(await cardsPedidos.count(),0);
   await page.locator('#solicitacoes').getByRole('button',{name:'Limpar filtros',exact:true}).click();
@@ -276,8 +276,8 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await entrar('profissional@example.com');
   await page.getByText('Recebida · Solicitada').waitFor();
   assert.equal(await page.getByLabel('Buscar nas solicitações carregadas',{exact:true}).inputValue(),'');
-  assert.equal(await page.getByLabel('Tipo de solicitação',{exact:true}).inputValue(),'todas');
-  await page.getByLabel('Tipo de solicitação',{exact:true}).selectOption('recebida');
+  assert.equal(await page.getByLabel('Tipo de solicitação').inputValue(),'todas');
+  await page.getByLabel('Tipo de solicitação').selectOption('recebida');
   assert.equal(await page.locator('#lista-solicitacoes article:visible').count(),1);
   await page.locator('#solicitacoes').getByRole('button',{name:'Limpar filtros',exact:true}).click();
 
