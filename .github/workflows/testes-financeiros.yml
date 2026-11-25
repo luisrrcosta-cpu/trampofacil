@@ -18,6 +18,6 @@ jobs:
           node-version: '22'
       - run: npm ci --ignore-scripts
       - name: Testar checkout e recepção de notificações sandbox
-        run: node --test tests/checkout-sandbox.test.js tests/chave-pagbank-sandbox.test.js tests/webhook-assinatura-sandbox.test.js tests/webhook-chave-sandbox.test.js tests/webhook-receptor-sandbox.test.js
+        run: node --test tests/consultar-checkout-sandbox.test.js tests/checkout-sandbox.test.js tests/chave-pagbank-sandbox.test.js tests/webhook-assinatura-sandbox.test.js tests/webhook-chave-sandbox.test.js tests/webhook-receptor-sandbox.test.js
       - name: Testar tentativas financeiras inertes
         run: node --test tests/seguranca-http-preparacao.test.js tests/fluxo-preparacao-ficticia.test.js tests/contrato-edge-homologacao.test.js tests/configuracao-checkout-sandbox.test.js tests/registrar-tentativa-inerte.test.js tests/isolamento-homologacao-financeira.test.js tests/migracao-financeira-homologacao.test.js tests/seguranca-cenarios-homologacao.test.js tests/verificar-assinatura-webhook.test.js tests/pagbank-sandbox.test.js tests/conferencia-pagbank.test.js tests/conferir-notificacao-sandbox.test.js tests/verificar-autenticidade-legada.test.js

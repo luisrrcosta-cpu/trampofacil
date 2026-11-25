@@ -96,3 +96,11 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Não reenviar a operação, apagar o claim ou gerar outra preparação para contornar a incerteza. Antes de novo POST, conferir a tentativa no provedor por referência usando acesso autorizado; ainda não há checkout nem pagamento autenticado confirmado.
 - Logs anteriores mostraram apenas inicialização/encerramento. Acrescentado diagnóstico interno mínimo: TRANSPORTE, HTTP com status 400–599, ou RESPOSTA_INVALIDA. Nunca registrar corpo da resposta, token ou dados do comprador. Erro público e bloqueio de repetição preservados.
 - Onze testes locais de checkout/pacote Edge aprovados. Adaptador e entrada atualizados somente em criar-checkout-sandbox da homologação, versão 2 ACTIVE; demais dependências implantadas preservadas.
+
+## Recuperação somente leitura de checkout — 24/11/2026
+- Login no painel PagBank Sandbox retornou à tela inicial sem causa explícita. Não insistir em novas tentativas automáticas, não presumir senha incorreta nem contornar controles.
+- Novo adaptador interno server/consultar-checkout-sandbox.js usa somente GET no host fixo sandbox.api.pagseguro.com/checkouts/CHEC_id, com TLS, timeout, sem redirecionamentos ou retries.
+- Exige contexto confiável do servidor: checkoutId, UUID interno, referência tf-sandbox-UUID e valor. Confere identidade, item, quantidade, valor e ausência de acréscimos/descontos/frete/recorrência.
+- Retorno mínimo: estado ACTIVE/INACTIVE/EXPIRED, valor e flags pagamentoConfirmado=false/liberarRepasse=false. Não retorna dados do comprador, links, pagamentos associados ou corpo bruto; não escreve no banco.
+- Quatro testes locais aprovados e incluídos no workflow financeiro. Consulta não implantada como endpoint público e não executada com credencial real.
+- Continua pendente recuperar CHEC_id da tentativa incerta, referência tf-sandbox-89934739-87f9-4c53-b8ca-8b757dd81f53. O endpoint oficial exige o ID: https://developer.pagbank.com.br/reference/consultar-checkout . Não há consulta por referência comprovada para este produto. 404 não prova que uma criação anterior falhou; não reabrir o claim nem reenviar POST.
