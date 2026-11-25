@@ -209,3 +209,6 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Avaliação confirmada agora exibe data/hora em Brasília com elemento time e datetime ISO. Falha ou nova consulta oculta a data anterior; sem alteração do contrato ou do registro no banco.
 - Teste da aplicação completa com API simulada cobre persistência visual após recarga sem POST, consulta tardia após logout e retorno ao login após 401. Usa os scripts reais do index.html, além do ensaio isolado anterior.
 - Sintaxe e três testes locais de acesso/segurança aprovados. Teste de navegador aguardando CI; ainda não publicada esta alteração de tela.
+
+- CI aprovada no commit 49e3b6fd8a7f71c3d784f14d2951fcf06f054807: suíte geral 45621476099 (253 testes, zero falhas), financeiro 45621476135, concorrência 45621476003 e prévia 45621476193. O novo teste da aplicação completa passou.
+- Fonte hospedada eff5d05865074ae26529621b1009d6e95994264c. Publicação privada solicitada pending/publishing; deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_58cf280a15948191b717e5f527c81dc0; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_5d7ee60474d48191853ce85bdaf83447. Conferir status no próximo turno antes de afirmar conclusão. Acesso continua somente do proprietário; banco e pagamentos não alterados nesta etapa.
