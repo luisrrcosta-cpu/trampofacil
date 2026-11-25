@@ -6,10 +6,10 @@ Atualização: 25/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `05ff6455cb79cddc6681b6cdfd7ffb8b39aa9363`.
-- Fonte hospedada atual: `ef6af1a2ba18f8eb9d728fd68c4bf5bf24d2634c`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_45a5a68d178081919b0f04ce52e5a979`.
-- CI dessa implementação: geral/interface 45626595596 (256 testes aprovados, zero falhas), financeiro 45626597535, concorrência 45626595548, prévia 45626595591 e cadastro inclusivo 45626595686, todos success.
+- Último código de interface validado: `2b2e0c589f96e7613ca581e24f8af30bf0ba2c44`.
+- Fonte hospedada atual: `9d1c466fa58400f2fa1670b53999f32b6bb815ef`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_f902ffe516988191878a1788a4f10800`.
+- CI dessa implementação: geral/interface 45627923791, financeiro 45627923745, concorrência 45627923735 e prévia 45627923862, todos success. Cadastro inclusivo 45626595686 aprovado na implementação anterior, sem alteração nesta entrega.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
 ## Entregas atuais na homologação
@@ -265,3 +265,9 @@ Atualização: 25/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - CI confirmada success no commit 2b2e0c589f96e7613ca581e24f8af30bf0ba2c44: geral/interface 45627923791, financeiro 45627923745, concorrência 45627923735 e prévia 45627923862. Conferência na página Actions; nenhum teste manual repetido.
 - Arquivo dist/servicos.js da prévia comparado integralmente ao servicos.js desse commit, com igualdade confirmada e sintaxe aprovada. Fonte hospedada 9d1c466fa58400f2fa1670b53999f32b6bb815ef.
 - Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_f902ffe516988191878a1788a4f10800; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_ce3eb28b0044819184a6ce0f32df817e. Confirmar status no próximo turno antes de afirmar disponibilidade. Acesso somente ao proprietário preservado; nenhuma alteração de banco, produção ou pagamentos.
+
+
+## Confirmações publicadas e dependência externa — 25/11/2026
+- Deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_f902ffe516988191878a1788a4f10800 confirmado succeeded/ready; fonte 9d1c466fa58400f2fa1670b53999f32b6bb815ef. As anotações pending anteriores são históricas.
+- Revisão de prontidão consultada: a próxima ação do checkout depende de confirmação do suporte/provedor, sem novo CHEC_id ou evidência de rejeição disponível nesta conversa. Necessário obter do proprietário eventual confirmação/protocolo recebido antes de duplicar o chamado.
+- Nenhum novo ensaio, repetição de login, coleta documental ou POST de checkout executado. Sem nova funcionalidade ou resolução financeira nesta conferência.
