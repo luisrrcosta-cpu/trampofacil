@@ -125,3 +125,6 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Interface inclui Consultar tentativa de checkout. Estado salvo existente bloqueia novo envio; resposta inválida não autoriza reenvio. Não presume que estado criado comprova pagamento.
 - 19 testes locais aprovados (checkout, duplicidade e estado). SQL da homologação em read only/ROLLBACK confirmou incerto e flags falsas; chamada HTTP sem sessão retornou 401. Fluxo HTTP autenticado testado com API de Auth simulada e PGlite, não com a sessão real do navegador.
 - Aguardar CI da interface antes de publicar as novas telas. A tentativa incerta anterior não foi reenviada nem resolvida.
+
+- CI confirmada success: geral/interface 45527910268, financeiros 45527910213, concorrência 45527910279 e prévia 45527910321 no commit 23ae7994cd7c8f52f322baa014bddf624e0def8f.
+- Telas preparadas da fonte hospedada 88d63c6b3b6787f6e7d81e615212a9cf9a3f6815. Publicação privada solicitada, pending/publishing. Deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5d7294fd3ca881919b39512d70659832; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_def216c744fc8191861286498bb38a34. Consultar status antes de afirmar disponibilidade.
