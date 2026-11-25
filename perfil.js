@@ -55,8 +55,23 @@ function apiPerfil(tipo, usuario, dados) {
     token, dados ? 'return=representation' : undefined, dados ? 'PATCH' : 'GET'));
 }
 
+function camposPerfilEmEdicao(tipo) {
+  const campos = tipo === 'profissional'
+    ? ['nome','telefone','cidade','servico','descricao','tipo_prestador','tipo_atividade']
+    : ['nome','telefone','cidade'];
+  return campos.map(campo => formPerfil.elements[campo].value);
+}
+function perfilTemAlteracoes() {
+  return perfilEmTela?.campos && perfilEmTela.usuario === sessaoServicos?.usuario &&
+    JSON.stringify(camposPerfilEmEdicao(perfilEmTela.tipo)) !== JSON.stringify(perfilEmTela.campos);
+}
+
 async function carregarPerfil() {
   if (ocupado || carregandoPerfil || !sessaoServicos) return;
+  if (perfilTemAlteracoes() && !window.confirm('Descartar as alterações não salvas e carregar o cadastro novamente?')) {
+    tipoPerfil.value = perfilEmTela.tipo;
+    return;
+  }
   const versao = ++versaoPerfil;
   const usuario = sessaoServicos.usuario;
   const tipo = tipoPerfil.value;
@@ -94,7 +109,7 @@ async function carregarPerfil() {
     elemento('visibilidade-perfil').textContent = tipo === 'profissional'
       ? registro.publicado ? 'Seu perfil está visível na busca. Alterações em nome, cidade, serviço, descrição ou modalidade exigirão nova análise antes de voltar à busca.' : 'Seu perfil ainda não está publicado na busca. A publicação depende de análise.' : '';
     if (tipo === 'profissional') atualizarDisponibilidade(registro);
-    perfilEmTela = {usuario, tipo, publicado:registro.publicado === true, pausado:registro.pausado}; formPerfil.hidden = false;
+    perfilEmTela = {usuario, tipo, publicado:registro.publicado === true, pausado:registro.pausado, campos:camposPerfilEmEdicao(tipo)}; formPerfil.hidden = false;
     areaAnaliseProfissional.hidden = tipo !== 'profissional' || registro.publicado === true;
     statusPerfil.textContent = 'Edite seus dados e salve. O e-mail de acesso não é alterado nesta tela.';
   } catch {
@@ -133,6 +148,7 @@ formPerfil.addEventListener('submit', async evento => {
         : 'Seu perfil ainda não está publicado na busca. A publicação depende de análise.';
       atualizarDisponibilidade(registros[0]);
     }
+    perfilEmTela = {...perfilEmTela, campos:camposPerfilEmEdicao(atual.tipo)};
     statusPerfil.textContent = atual.tipo === 'profissional' && atual.publicado && !registros[0].publicado
       ? 'Cadastro salvo. Seu perfil saiu da busca e precisa de nova análise antes de ser publicado novamente.'
       : 'Seu cadastro foi atualizado.';

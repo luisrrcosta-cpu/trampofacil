@@ -221,3 +221,10 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 
 - Após ajustar o seletor do teste, CI geral aprovada no commit 46e96624c775bb49870399c6c9c4676b21b7e9f7: run 45623671597, 254 testes aprovados e zero falhas, incluindo confirmação/cancelamento em tela de celular. Financeiro 45623671587 e concorrência 45623671428 também success; prévia e cadastro inclusivo já haviam passado no commit de implementação 29025513b5abf9f062eaf5d7e12f10104f68f7d9.
 - Fonte hospedada e0ab99652648a84ab2cc541dfe945cd61439086a. Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_08857e694fb081918c045300f53b326b; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_55be58f6edd08191a318da1e41398a92. Conferir no próximo turno antes de afirmar conclusão. Somente comportamento do botão Voltar do cadastro; não garante preservação após recarga/fechamento do navegador. Sem armazenamento de novos dados, alteração de banco ou efeito financeiro.
+
+
+## Proteção de alterações no perfil — 25/11/2026
+- Saída do cadastro publicada e confirmada succeeded/ready: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_08857e694fb081918c045300f53b326b.
+- Atualizar cadastro/trocar tipo agora pede confirmação se houver alterações não salvas no perfil. Cancelar conserva campos e restaura o seletor para o tipo em edição. Perfil sem mudanças recarrega normalmente.
+- Referência em memória atualizada somente após carga/gravação confirmada. Falha de gravação mantém proteção; logout continua limpando dados sem confirmação. Disponibilidade preserva o rascunho.
+- Teste da aplicação com API simulada cobre cancelamento, troca cliente/profissional, gravação confirmada e falha, modalidade e logout. Aguardando CI antes de publicar.
