@@ -145,3 +145,10 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Documento docs/REVISAO-PRONTIDAO-TRAMPOFACIL.md separa evidências internas, pendências externas e condições para propor lançamento.
 - Consulta atual: um checkout registrado, zero flags reais ativas, zero notificações recebidas e zero notificações financeiras. Advisors sem mudança em relação aos avisos já registrados.
 - Não foram criados novos testes, alterado código executável, reenviado checkout ou modificada produção nesta revisão. Não confundir consolidação de evidências com conclusão da integração PagBank.
+
+## Solicitação ao suporte — resultado não confirmado
+- Proprietário autorizou explicitamente encaminhar nome, contato, documento e relato ao suporte PagBank pelo formulário Pipefy. Dados pessoais ficaram no formulário externo; não copiar para este repositório.
+- Formulário oficial preparado e botão Abrir Chamado acionado uma única vez. O hCaptcha exigiu arrastar uma letra; proprietário relatou dificuldade e recebeu controle manual.
+- Após retorno de controle, desafio não estava mais visível; botão Abrir Chamado permaneceu desativado. Não houve tela de sucesso ou número de protocolo observado.
+- Situação do chamado: ENVIO NÃO CONFIRMADO. Não registrar como aberto e não duplicar o envio sem conferir confirmação no canal de contato/suporte. Rascunho técnico continua em docs/RASCUNHO-SUPORTE-PAGBANK-CHECKOUT-INCERTO.md.
+- Login no sandbox e envio do suporte são bloqueios distintos. Não há checkout ou pagamento confirmado e nenhum novo POST de checkout foi feito.
