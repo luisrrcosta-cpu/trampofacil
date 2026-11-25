@@ -28,6 +28,7 @@ test('pedido de nota: somente cliente registra; partes leem; sem emissão ou alt
   for(let n=1;n<=estados.length;n++) await db.query('insert into solicitacoes values($1,$2,$3,$4,10000)',[id(n),cliente,profissional,estados[n-1]]);
   await db.exec(await readFile(new URL('../supabase/homologacao/pedidos_nota_fiscal.sql',import.meta.url),'utf8'));
   await db.exec(await readFile(new URL('../supabase/homologacao/atendimento_pedido_nota.sql',import.meta.url),'utf8'));
+  await db.exec(await readFile(new URL('../supabase/homologacao/entrega_pedido_nota.sql',import.meta.url),'utf8'));
   const entrar=async(usuario,anonimo=false)=>{
     await db.exec('reset role');
     await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:usuario,is_anonymous:anonimo})]);
@@ -57,17 +58,32 @@ test('pedido de nota: somente cliente registra; partes leem; sem emissão ou alt
   assert.equal((await db.query('select * from atendimentos_pedido_nota')).rows.length,1);
   assert.equal((await db.query('select * from pedidos_nota_fiscal')).rows.length,4);
   await assert.rejects(db.query('insert into pedidos_nota_fiscal(solicitacao_id) values($1)',[id(5)]),/row-level security/);
+
+  await assert.rejects(db.query('insert into entregas_pedido_nota(solicitacao_id) values($1)',[id(2)]),/row-level security/,'exige atendimento anterior');
+  await db.query('insert into entregas_pedido_nota(solicitacao_id) values($1)',[id(1)]);
+  await assert.rejects(db.query('insert into entregas_pedido_nota(solicitacao_id) values($1)',[id(1)]),/unique constraint/);
+  await assert.rejects(db.query('insert into entregas_pedido_nota(solicitacao_id,profissional_usuario_id) values($1,$2)',[id(2),cliente]),/permission denied/);
+  await assert.rejects(db.query('insert into entregas_pedido_nota(solicitacao_id,criado_em) values($1,now())',[id(2)]),/permission denied/);
+  await assert.rejects(db.exec('update entregas_pedido_nota set criado_em=now()'),/permission denied/);
+  await assert.rejects(db.exec('delete from entregas_pedido_nota'),/permission denied/);
+  assert.equal((await db.query('select * from entregas_pedido_nota')).rows.length,1);
   await entrar(cliente);
+  assert.equal((await db.query('select * from entregas_pedido_nota')).rows.length,1);
+  await assert.rejects(db.query('insert into entregas_pedido_nota(solicitacao_id) values($1)',[id(2)]),/row-level security/);
   assert.equal((await db.query('select * from atendimentos_pedido_nota')).rows.length,1);
   await entrar(terceiro);
+  assert.equal((await db.query('select * from entregas_pedido_nota')).rows.length,0);
+  await assert.rejects(db.query('insert into entregas_pedido_nota(solicitacao_id) values($1)',[id(2)]),/row-level security/);
   assert.equal((await db.query('select * from atendimentos_pedido_nota')).rows.length,0);
   assert.equal((await db.query('select * from pedidos_nota_fiscal')).rows.length,0);
   await assert.rejects(db.query('insert into pedidos_nota_fiscal(solicitacao_id) values($1)',[id(5)]),/row-level security/);
   await entrar(cliente,true);
+  assert.equal((await db.query('select * from entregas_pedido_nota')).rows.length,0);
   assert.equal((await db.query('select * from atendimentos_pedido_nota')).rows.length,0);
   assert.equal((await db.query('select * from pedidos_nota_fiscal')).rows.length,0);
   await assert.rejects(db.query('insert into pedidos_nota_fiscal(solicitacao_id) values($1)',[id(5)]),/row-level security/);
   await db.exec('reset role; set role anon');
+  await assert.rejects(db.exec('select * from entregas_pedido_nota'),/permission denied/);
   await assert.rejects(db.exec('select * from atendimentos_pedido_nota'),/permission denied/);
   await assert.rejects(db.exec('select * from pedidos_nota_fiscal'),/permission denied/);
   await db.exec('reset role');

@@ -776,19 +776,25 @@ function adicionarPedidoNotaFiscal(card, pedido, cliente) {
     executar(false, true);
   });
   atender.hidden = true;
+  const entregar = botaoAcao('Informar entrega da nota ao cliente', () => {
+    if (ocupado || !window.confirm(`Você declara que entregou a nota de “${pedido.titulo}” pelo canal combinado com o cliente? O aplicativo não emite nem verifica o documento. Registre somente depois de entregá-lo.`)) return;
+    executar(false, false, true);
+  });
+  entregar.hidden = true;
   const consultar = botaoAcao('Consultar pedido de nota fiscal', () => executar(false));
-  area.append(texto('h4', `Nota fiscal — ${pedido.titulo}`), consultar, confirmar, atender, estado);
+  area.append(texto('h4', `Nota fiscal — ${pedido.titulo}`), consultar, confirmar, atender, entregar, estado);
   card.append(area);
 
-  async function executar(criar, confirmarAtendimento = false) {
+  async function executar(criar, confirmarAtendimento = false, declararEntrega = false) {
     if (ocupado || !sessaoServicos) return;
     const sessaoOriginal = sessaoServicos;
     const versaoOriginal = versaoPedidos;
     if (criar && (!podePedirNota || !cliente || sessaoOriginal.usuario !== pedido.cliente_usuario_id)) return;
-    if (confirmarAtendimento && (cliente || sessaoOriginal.usuario !== pedido.profissional_usuario_id)) return;
+    if ((confirmarAtendimento || declararEntrega) && (cliente || sessaoOriginal.usuario !== pedido.profissional_usuario_id)) return;
     bloquear(elemento('solicitacoes'), true);
-    estado.textContent = confirmarAtendimento ? 'Confirmando atendimento…' : criar ? 'Registrando pedido de nota…' : 'Consultando pedido de nota…';
+    estado.textContent = declararEntrega ? 'Registrando declaração de entrega…' : confirmarAtendimento ? 'Confirmando atendimento…' : criar ? 'Registrando pedido de nota…' : 'Consultando pedido de nota…';
     atender.hidden = true;
+    entregar.hidden = true;
     confirmar.hidden = true;
     const atual = () => sessaoServicos === sessaoOriginal && versaoPedidos === versaoOriginal;
     const ler = () => controleSessao.requisitar(token => enviar(
@@ -842,23 +848,53 @@ function adicionarPedidoNotaFiscal(card, pedido, cliente) {
         if (atendimento) {
           if (atendimento.solicitacao_id !== pedido.id || atendimento.profissional_usuario_id !== pedido.profissional_usuario_id ||
               typeof atendimento.criado_em !== 'string' || !Number.isFinite(Date.parse(atendimento.criado_em))) throw new Error();
+          if (declararEntrega) {
+            const gravacao = await controleSessao.requisitar(token => enviar(
+              '/rest/v1/entregas_pedido_nota',{solicitacao_id:pedido.id},token,'return=minimal'));
+            if (!atual()) return;
+            if (gravacao.status === 401) {exigirNovoLogin('solicitacoes');return;}
+            if (!gravacao.ok && gravacao.status !== 409) throw new Error();
+          }
+          const respostaEntrega = await controleSessao.requisitar(token => enviar(
+            '/rest/v1/entregas_pedido_nota?' + new URLSearchParams({
+              solicitacao_id:'eq.'+pedido.id,select:'solicitacao_id,profissional_usuario_id,criado_em',limit:'1',
+            }),undefined,token,undefined,'GET'));
+          if (!atual()) return;
+          if (respostaEntrega.status === 401) {exigirNovoLogin('solicitacoes');return;}
+          if (!respostaEntrega.ok) throw new Error();
+          const entregas = await respostaEntrega.json();
+          if (!atual()) return;
+          if (!Array.isArray(entregas) || entregas.length > 1) throw new Error();
+          const entrega = entregas[0];
+          if (entrega) {
+            if (entrega.solicitacao_id !== pedido.id || entrega.profissional_usuario_id !== pedido.profissional_usuario_id ||
+                typeof entrega.criado_em !== 'string' || !Number.isFinite(Date.parse(entrega.criado_em))) throw new Error();
+            estado.textContent = cliente
+              ? 'O profissional declarou que entregou a nota pelo canal combinado. Confira o documento recebido; o aplicativo não verificou a emissão nem a validade fiscal.'
+              : 'Você declarou a entrega da nota pelo canal combinado com o cliente. O aplicativo não verificou a emissão nem a validade fiscal.';
+            return;
+          }
+          if (declararEntrega) throw new Error();
+          entregar.hidden = cliente;
           estado.textContent = cliente
             ? 'O profissional confirmou que está cuidando do pedido de nota fiscal. Esta confirmação não é uma nota emitida.'
             : 'Você confirmou o atendimento do pedido de nota. Combine a emissão e a entrega com o cliente; esta confirmação não é uma nota emitida.';
         } else {
-          if (confirmarAtendimento) throw new Error();
+          if (confirmarAtendimento || declararEntrega) throw new Error();
         estado.textContent = cliente
           ? 'Nota fiscal solicitada ao profissional. O registro não é uma nota emitida. A emissão e a entrega ainda precisam ser combinadas com o prestador.'
           : 'O cliente solicitou nota fiscal para esta contratação. Este registro não confirma emissão. Combine a disponibilidade e a entrega com o cliente.';
           atender.hidden = cliente;
         }
       } else {
-        if (criar || confirmarAtendimento) throw new Error();
+        if (criar || confirmarAtendimento || declararEntrega) throw new Error();
         estado.textContent = 'Nenhum pedido de nota fiscal registrado para esta contratação.';
         confirmar.hidden = !cliente || !podePedirNota;
       }
     } catch {
-      if (atual()) estado.textContent = confirmarAtendimento
+      if (atual()) estado.textContent = declararEntrega
+        ? 'Não foi possível confirmar a declaração de entrega. Consulte novamente antes de repetir.'
+        : confirmarAtendimento
         ? 'Não foi possível confirmar o atendimento. Consulte novamente antes de repetir.'
         : criar
         ? 'Não foi possível confirmar o pedido. Consulte novamente antes de repetir.'

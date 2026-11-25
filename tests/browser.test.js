@@ -958,10 +958,20 @@ test('profissional confirma atendimento fiscal com recuperação segura e client
   const cliente='11111111-1111-4111-8111-111111111111';
   const profissional='22222222-2222-4222-8222-222222222222';
   const pedido={id:'77777777-7777-4777-8777-777777777777',cliente_usuario_id:cliente,profissional_usuario_id:profissional,titulo:'Costura de teste',descricao:'Reparo fictício',status:'concluida',valor_centavos:10000};
-  let atendimento,escritas=0;
+  let atendimento,entrega,escritas=0,entregasEscritas=0;
   await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
     const req=route.request(),url=new URL(req.url());
     if(url.pathname==='/rest/v1/pedidos_nota_fiscal')return route.fulfill({json:[{solicitacao_id:pedido.id,solicitante_usuario_id:cliente,estado:'solicitada',criado_em:'2026-11-23T13:00:00Z'}]});
+    if(url.pathname==='/rest/v1/entregas_pedido_nota'){
+      if(req.method()==='POST'){
+        assert.equal(req.headers().authorization,'Bearer profissional');
+        assert.deepEqual(req.postDataJSON(),{solicitacao_id:pedido.id});
+        entregasEscritas++;
+        entrega={solicitacao_id:pedido.id,profissional_usuario_id:profissional,criado_em:'2026-11-24T21:00:00Z'};
+        return route.abort('failed');
+      }
+      return route.fulfill({json:entrega?[entrega]:[]});
+    }
     assert.equal(url.pathname,'/rest/v1/atendimentos_pedido_nota');
     if(req.method()==='POST'){
       assert.equal(req.headers().authorization,'Bearer profissional');
@@ -988,6 +998,24 @@ test('profissional confirma atendimento fiscal com recuperação segura e client
   await page.getByRole('button',{name:'Consultar pedido de nota fiscal',exact:true}).click();
   await page.getByText('O profissional confirmou que está cuidando do pedido de nota fiscal. Esta confirmação não é uma nota emitida.',{exact:true}).waitFor();
   assert.equal(await page.getByRole('button',{name:'Confirmar atendimento do pedido de nota',exact:true}).isVisible(),false);
+  assert.equal(await page.getByRole('button',{name:'Informar entrega da nota ao cliente',exact:true}).isVisible(),false);
+  await exibir(profissional,'profissional');
+  await page.getByRole('button',{name:'Consultar pedido de nota fiscal',exact:true}).click();
+  await page.getByRole('button',{name:'Informar entrega da nota ao cliente',exact:true}).click();
+  await page.getByText('Não foi possível confirmar a declaração de entrega.',{exact:false}).waitFor();
+  assert.equal(entregasEscritas,1);
+  await page.getByRole('button',{name:'Consultar pedido de nota fiscal',exact:true}).click();
+  await page.getByText('Você declarou a entrega da nota pelo canal combinado com o cliente.',{exact:false}).waitFor();
+  assert.equal(entregasEscritas,1,'consultar após falha não repete escrita');
+  assert.equal(await page.getByRole('button',{name:'Informar entrega da nota ao cliente',exact:true}).isVisible(),false);
+  await exibir(cliente,'cliente');
+  await page.getByRole('button',{name:'Consultar pedido de nota fiscal',exact:true}).click();
+  await page.getByText('O profissional declarou que entregou a nota pelo canal combinado.',{exact:false}).waitFor();
+  entrega={...entrega,profissional_usuario_id:cliente};
+  await page.getByRole('button',{name:'Consultar pedido de nota fiscal',exact:true}).click();
+  await page.getByText('Não foi possível consultar o pedido de nota. Tente novamente.',{exact:true}).waitFor();
+  assert.equal(entregasEscritas,1);
+  entrega=undefined;
   atendimento={...atendimento,profissional_usuario_id:cliente};
   await page.getByRole('button',{name:'Consultar pedido de nota fiscal',exact:true}).click();
   await page.getByText('Não foi possível consultar o pedido de nota. Tente novamente.',{exact:true}).waitFor();
