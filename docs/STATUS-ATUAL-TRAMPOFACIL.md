@@ -187,3 +187,12 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 - Migração gerada pela CLI: supabase/migrations/20261125125859_avaliacoes_servico_homologacao.sql. RLS e grants restritos; autor/data definidos no servidor, sem UPDATE/DELETE ou SECURITY DEFINER.
 - Tela consulta antes de oferecer registro; resposta perdida exige consulta, sem reenvio automático. Autor, solicitação, nota e data são validados antes de exibir.
 - Testes PGlite e regressões locais aprovados. CI de navegador pendente; estrutura ainda não aplicada remotamente e novas telas ainda não publicadas nesta etapa.
+
+
+## Avaliações privadas — validação e implantação em 25/11/2026
+- Código: 898ca9756b729b2099491eeec3f05d1e4030b773; ajuste da prévia: 5ae299799810a09136ebaf79b1222a7a77839908. As quatro verificações GitHub Actions passaram (interface/browser, financeiro, concorrência e pacote da prévia).
+- Migração avaliacoes_servico_homologacao aplicada somente em asdszqtpydiowgerxwee. RLS ativa, INSERT restrito a solicitação/nota; autor e data definidos pelo banco, sem UPDATE/DELETE e sem leitura anônima.
+- Ensaio remoto validar_avaliacoes_rollback.sql passou com roles reais no fluxo completo até conclusão, inserção única, bloqueio de alteração, terceiros e sessões anônimas. ROLLBACK final; zero avaliações persistidas. Nenhuma avaliação criada em nome das contas existentes.
+- Advisories de segurança antes/depois iguais: INFO rls_enabled_no_policy e WARN auth_leaked_password_protection já existentes.
+- Publicação privada solicitada: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5f256e4ca5588191826ee1c075631ed2; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_b1a1597c83dc81919364c837929e2ee7; fonte f91221b37c4a8c24858db554c2fc34c73d49301c. Retorno pending/publishing; confirmar no próximo turno, sem afirmar publicação concluída.
+- Pagamentos reais/repasse continuam desabilitados; tentativa PagBank incerta segue bloqueada e depende de conferência externa.
