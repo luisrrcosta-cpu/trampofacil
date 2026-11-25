@@ -220,6 +220,14 @@ for (const botao of document.querySelectorAll('[data-pagina]')) {
     if (ocupado) return;
     const secao = botao.closest('section');
     const formulario = secao.querySelector('[data-cadastro]');
+    const preenchido = formulario && Array.from(formulario.querySelectorAll('input,textarea,select')).some(campo => {
+      if (campo.tagName === 'SELECT') {
+        const padrao = Array.from(campo.options).findIndex(opcao => opcao.defaultSelected);
+        return campo.selectedIndex !== (padrao < 0 ? 0 : padrao);
+      }
+      return campo.value !== campo.defaultValue;
+    });
+    if (preenchido && !window.confirm('Sair do cadastro e descartar os dados preenchidos?')) return;
     formulario?.reset();
     atualizarContadorPerfilProfissional();
     formulario?.querySelector('[role="alert"]').replaceChildren();

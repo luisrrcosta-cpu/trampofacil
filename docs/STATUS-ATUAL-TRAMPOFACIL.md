@@ -212,3 +212,9 @@ Atualização: 24/11/2026. Este resumo substitui os estados intermediários dos 
 
 - CI aprovada no commit 49e3b6fd8a7f71c3d784f14d2951fcf06f054807: suíte geral 45621476099 (253 testes, zero falhas), financeiro 45621476135, concorrência 45621476003 e prévia 45621476193. O novo teste da aplicação completa passou.
 - Fonte hospedada eff5d05865074ae26529621b1009d6e95994264c. Publicação privada solicitada pending/publishing; deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_58cf280a15948191b717e5f527c81dc0; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_5d7ee60474d48191853ce85bdaf83447. Conferir status no próximo turno antes de afirmar conclusão. Acesso continua somente do proprietário; banco e pagamentos não alterados nesta etapa.
+
+
+## Saída do cadastro sem perda acidental — 25/11/2026
+- Publicação anterior da data da avaliação confirmada succeeded/ready: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_58cf280a15948191b717e5f527c81dc0.
+- Corrigido Voltar nos cadastros de cliente e profissional: se houver campo alterado, confirmar antes de descartar. Cancelar mantém campos, modalidade e contador; aceitar limpa antes de voltar. Formulário vazio segue sem confirmação.
+- Teste de navegador em largura de celular cobre cliente, modalidade, descrição, recusa/aceite e ausência de chamadas externas. Sintaxe validada; CI pendente antes de publicação.
