@@ -45,3 +45,17 @@ Status inicial derivado: aguardando_analise. Transições: iniciar em_analise; a
 Migração: supabase/migrations/20261126220117_acompanhamento_reclamacoes_homologacao.sql, aplicada somente à homologação. Privilegios diretos de INSERT/UPDATE/DELETE revogados, duas políticas RLS, RPCs públicas invoker e internas definer com search_path vazio. Nenhum dado existente removido, nenhum evento real criado nos testes, nenhum efeito financeiro.
 
 Testes PGlite: transições, reabertura, idempotência, revisão antiga, acesso de cliente/profissional/terceiro/anônimo, revogação, proteção contra decisão no próprio caso e paginação. Teste PostgreSQL com conexões independentes comprovou disputa de lock, mesmo UUID repetido, revisão concorrente e revogação. Teste de navegador usa origem HTTPS simulada para crypto.randomUUID, recupera resposta perdida por consulta, conclui atendimento, percorre 60 eventos em duas páginas, impede execução de HTML e descarta resposta após troca de sessão.
+
+
+## Avisos internos de atendimento — 26/11
+
+Área Meus avisos com respostas iniciais do profissional para o cliente e eventos administrativos para cliente/profissional participantes. Os avisos são derivados dos registros de atendimento existentes: não cria outro texto de reclamação, não altera status do caso e não envia e-mail, WhatsApp ou push. Novos pedidos e conversas ainda não fazem parte desta entrega. Consulta ao abrir a área e pelo botão Atualizar avisos; não há polling ou promessa de alerta em segundo plano.
+
+Marcar como lido é individual por usuário/tipo/evento, com horário do servidor e chave única. Uma leitura não confirma resolução, aceitação de serviço, reembolso ou repasse. Em caso de resposta perdida, a interface consulta por atualização manual, sem repetir o envio automaticamente. A leitura de uma parte não marca a da outra. Terceiros e revisores que não participam do pedido não recebem os avisos das partes.
+
+Paginação por cursor composto (horário original, tipo, UUID), 50 itens mais sentinela, preservando microssegundos no cursor. Resumo de não lidos refere-se somente aos avisos exibidos. Atalho Ver solicitação usa a navegação existente com foco no pedido quando disponível na lista. Conteúdo renderizado com textContent; sessão e versão da consulta descartam respostas antigas após saída/troca de conta. Nenhum documento ou informação bancária novo.
+
+Migração: supabase/migrations/20261126222715_avisos_atendimento_homologacao.sql. Recibos na tabela private.leituras_avisos_atendimento com RLS e sem privilégios diretos para clientes/service_role; RPCs públicas invoker e internas definer com search_path vazio, conferindo destinatário pelo auth.uid(). Nenhum parâmetro permite informar outro usuário ou horário de leitura.
+
+
+Validação: 271 testes aprovados no CI 45905274412; financeiro 45905274351, concorrência 45905274318 e prévia 45905274448 também success. Migration aplicada somente em asdszqtpydiowgerxwee; RLS, privilégios e funções conferidos após aplicação, advisors sem novos achados. Nenhum recibo real criado em testes; nenhum dado existente excluído e nenhum efeito financeiro. Código 45105ee26c01fc89cd9498bbd661e8c2c31de463.
