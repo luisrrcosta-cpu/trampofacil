@@ -555,3 +555,16 @@ Código a024900325d499de65b89a36c2ca6a67e2b2839b. Migração supabase/migrations
 CI geral/interface 45907287567 passou 275 testes e regressões. Financeiro 45907287531, concorrência 45907287511 e prévia 45907287470 success. Testes novos cobrem contraparte, corpo privado não exposto, terceiros excluídos, leituras anteriores preservadas, idempotência, paginação, abrir conversa sem envio e saída/troca de conta. Fonte de interface comparada aos arquivos testados; git diff --check aprovado. Detalhes em docs/RECLAMACOES-REPASSES-HOMOLOGACAO.md.
 
 Fonte privada b9098fc82ef213869764b5fc9718158ada171e54; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_168ec099438c819187260b31d88dbf1b; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_e8fe46df85f08191a3bd18c5e8c0408e: pending/publishing. Ainda publicando; confirmar uma vez na próxima retomada, sem presumir publicada. Owner-only preservado; pagamentos reais desativados.
+
+
+## 26/11 — Revisão móvel: abrir solicitações antigas a partir dos avisos
+
+Publicação anterior de avisos de mensagens confirmada succeeded/ready. Corrigido atalho Ver solicitação: se o pedido não está nos primeiros 50, faz GET pontual por ID com validação completa, participação da conta e limite de um registro. Se filtros esconderem o alvo, limpa busca/situação/direção com aviso explícito. Destaca o cartão e foca o título, respeitando conta, versão e página ainda aberta. Sem foco ou dados tardios após saída/troca de sessão.
+
+Consulta extra habilitada somente pelos avisos; retorno normal da conversa preservado. Cursor da lista permanece intacto e páginas seguintes deduplicam o alvo. Pedido pontual é integrado à ordenação por horário com precisão de microssegundos e UUID, respeitando a ordenação selecionada. Títulos longos do resumo de reclamações quebram linha e foco fica contido no cartão. CSS/CSP por hash mantidos, sem relaxamento. Validação de pedidos compartilhada pela lista e consulta por ID; regressões comportamentais substituem as verificações do texto da implementação refatorada.
+
+Código final 955015592e6a84a68ffec05923077fad749b10e6. CI geral/interface 45910877371 passou 277 testes e regressões; financeiro 45910877376, concorrência 45910877381 e prévia 45910877401 success. Browser em 320/360/390/768px testa aviso de pedido antigo, filtros, foco, texto longo, sem transbordamento horizontal, paginação/ordem sem duplicação; negativos cobrem conta alheia, ID divergente/ inválido, ausência, 401 e sessão substituída. API simulada, sem escrita nas solicitações; não é teste em aparelho físico ou pagamento real. Arquivos comparados aos testados e git diff --check aprovado. Ver docs/REVISAO-MOBILE-AVISOS.md.
+
+Sem migração ou mudança no banco, autenticação, audiência, pagamentos, repasses ou estornos. PagBank sandbox incerto intocado.
+
+Fonte privada b320d8fc1de12f09e4b1a94ed6702ff477057349; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_4f9c58b1393c8191b802acde392de362; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_526c45f6b4a08191af4b340c9e7dbf65: pending/publishing. Ainda publicando; confirmar uma vez na próxima retomada, sem presumir publicada. Owner-only preservado.
