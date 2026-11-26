@@ -287,6 +287,12 @@ function limparRevisao() {
   proximaRevisao.hidden = true;
   bloquear(secaoRevisao, false);
 }
+function informarAcessoRevisaoNegado() {
+  listaRevisao.replaceChildren();
+  anteriorRevisao.hidden = true;
+  proximaRevisao.hidden = true;
+  statusRevisao.textContent = 'Área reservada à conta revisora autorizada.';
+}
 function apiRevisao(nome, dados) {
   return controleSessao.requisitar(token => enviar('/rest/v1/rpc/' + nome, dados, token));
 }
@@ -317,10 +323,7 @@ async function carregarRevisao(pagina = 0, aviso = '') {
     const resposta = await apiRevisao('listar_perfis_revisao', {pagina});
     if (!atual()) return;
     if (resposta.status === 401) {exigirNovoLogin('revisao');return;}
-    if (resposta.status === 403) {
-      statusRevisao.textContent = 'Área reservada à conta revisora autorizada.';
-      return;
-    }
+    if (resposta.status === 403) {informarAcessoRevisaoNegado();return;}
     if (!resposta.ok) throw new Error();
     const fila = await resposta.json();
     if (!atual()) return;
@@ -397,6 +400,7 @@ async function aprovarPerfilRevisao(item) {
       {alvo:item.usuario_id,esperado:item.perfil});
     if (!atual()) return;
     if (resposta.status === 401) {exigirNovoLogin('revisao');return;}
+    if (resposta.status === 403) {informarAcessoRevisaoNegado();return;}
     if (!resposta.ok) throw new Error();
     const evento = await resposta.json();
     if (!atual()) return;
@@ -440,6 +444,7 @@ async function pedirAjusteRevisao(item,motivo) {
     const resposta = await apiRevisao('pedir_ajuste_perfil',{alvo:item.usuario_id,esperado:item.perfil,motivo_ajuste:motivo});
     if (!atual()) return;
     if (resposta.status === 401) {exigirNovoLogin('revisao');return;}
+    if (resposta.status === 403) {informarAcessoRevisaoNegado();return;}
     if (!resposta.ok) throw new Error();
     const evento = await resposta.json();
     if (!atual()) return;
@@ -515,6 +520,7 @@ async function recusarPublicacao(item,motivo) {
     const resposta=await apiRevisao('recusar_publicacao_perfil',{alvo:item.usuario_id,esperado:item.perfil,motivo_recusa:motivo});
     if(!atual())return;
     if(resposta.status===401){exigirNovoLogin('revisao');return;}
+    if(resposta.status===403){informarAcessoRevisaoNegado();return;}
     if(!resposta.ok)throw new Error();
     const evento=await resposta.json();
     if(!atual())return;
