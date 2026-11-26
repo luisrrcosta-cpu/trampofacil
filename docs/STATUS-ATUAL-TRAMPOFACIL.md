@@ -456,4 +456,11 @@ Revisão somente de leitura de clientes, profissionais, solicitações, mensagen
 
 ## 26/11 — Paginação da busca limitada também no banco
 
-Aplicada somente na homologação a função buscar_profissionais com página máxima 10000 e OFFSET limitado, preservando páginas negativas/nulas como primeira página, retorno de 20 campos públicos por página e permissões existentes. Correção: retorno continua de até 20 registros com os mesmos cinco campos públicos. Código 2bd0d4dc72e0d9f32f5fec17ec95f49714a60845; testes 2e957e83dee3cdc196e14a7eb64e37e0ba09285d. CI geral 45873994148, financeiro 45873995111 e concorrência 45873994052 aprovados. Verificação READ ONLY sob anon após aplicação aprovada; invoker/search_path/grants preservados. Evidência: docs/LIMITE-PAGINACAO-HOMOLOGACAO-2026-11-26.md. Nenhum dado, acesso do site ou pagamento alterado.
+Aplicada somente na homologação a função buscar_profissionais com página máxima 10000 e OFFSET limitado, preservando páginas negativas/nulas como primeira página, retorno de até 20 registros com os mesmos cinco campos públicos e permissões existentes. Código 2bd0d4dc72e0d9f32f5fec17ec95f49714a60845; testes 2e957e83dee3cdc196e14a7eb64e37e0ba09285d. CI geral 45873994148, financeiro 45873995111 e concorrência 45873994052 aprovados. Verificação READ ONLY sob anon após aplicação aprovada; invoker/search_path/grants preservados. Evidência: docs/LIMITE-PAGINACAO-HOMOLOGACAO-2026-11-26.md. Nenhum dado, acesso do site ou pagamento alterado.
+
+
+## 26/11 — Botão de paginação alinhado ao limite do banco; publicação pendente
+
+Código 60755cce9be14a366bfcea6a2dd381c05213876a: Ver mais fica oculto quando pagina >= 10000, mesmo com página completa. Testes ace86c1651dfed05a07d0c7d22374b951025da22 simulam páginas 0 e 10000 com 20 registros distintos cada, conferem manutenção dos 40 cards, botão oculto e ausência de chamada para 10001. CI geral/interface 45874509075, financeiro 45874507640 e concorrência 45874507587 success.
+
+A alteração da tela ainda NÃO foi publicada: executor indisponível impediu preparar/enviar a fonte Sites. Próxima retomada: sincronizar somente servicos.js a partir do blob 6b4d65a7d818ad38f3f6907a019afa212233bf8e, validar estado remoto e publicar via helper habitual na homologação privada. Fonte hospedada confirmada continua 74d7f208d51520698622601a86bfe346d64a9838. O limite no banco já está aplicado e verificado; pagamentos e audiência não foram alterados.
