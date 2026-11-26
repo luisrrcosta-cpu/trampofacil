@@ -24,11 +24,11 @@ test('ordena solicitações carregadas sem rede, preserva proposta e reinicia ao
     {id:'44444444-4444-4444-8444-444444444444',titulo:'Serviço concluído',status:'concluida',cliente_usuario_id:usuario,profissional_usuario_id:outro,atualizado_em:'2026-11-25T12:00:00Z'},
     {id:'55555555-5555-4555-8555-555555555555',titulo:'Orçamento antigo',status:'proposta',cliente_usuario_id:usuario,profissional_usuario_id:outro,atualizado_em:'2026-11-24T12:00:00Z'},
   ].map(p=>({...p,descricao:'Descrição fictícia de serviço para teste.',valor_centavos:10000}));
-  let chamadas=0;
+  let chamadas=0, falhar=false;
   await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
     chamadas++;assert.equal(route.request().method(),'GET');
     assert.equal(new URL(route.request().url()).pathname,'/rest/v1/solicitacoes');
-    return route.fulfill({json:pedidos});
+    return route.fulfill(falhar ? {status:500,json:{}} : {json:pedidos});
   });
   await page.goto('http://127.0.0.1:'+server.address().port+'/');
   await page.evaluate(usuario=>{iniciarSessao({usuario,token:'ficticio'});proteger('solicitacoes');},usuario);
@@ -48,9 +48,31 @@ test('ordena solicitações carregadas sem rede, preserva proposta e reinicia ao
   await page.getByRole('button',{name:'Limpar filtros',exact:true}).last().click();
   assert.deepEqual(await titulos(),['Serviço recente','Serviço concluído','Orçamento antigo']);
   assert.equal(await page.locator('#ordem-solicitacoes').inputValue(),'recentes');
+  // Atualizar só descarta a proposta depois de confirmação e consulta bem-sucedida.
+  page.once('dialog',dialog=>dialog.dismiss());
+  await page.locator('#recarregar-solicitacoes').click();
+  assert.equal(chamadas,1);assert.equal(await campo.inputValue(),'123');
+  falhar=true;
+  page.once('dialog',dialog=>dialog.accept());
+  await page.locator('#recarregar-solicitacoes').click();
+  await page.getByText('Não foi possível carregar as solicitações. Tente atualizar.',{exact:true}).waitFor();
+  assert.equal(chamadas,2);assert.equal(await campo.inputValue(),'123');
+  falhar=false;
+  page.once('dialog',dialog=>dialog.accept());
+  const respostaAtualizacao=page.waitForResponse(r=>r.url().includes('/rest/v1/solicitacoes')&&r.status()===200);
+  await page.locator('#recarregar-solicitacoes').click();await respostaAtualizacao;
+  await page.waitForFunction(()=>!document.getElementById('recarregar-solicitacoes').disabled);
+  assert.equal(await campo.inputValue(),'');assert.equal(chamadas,3);
+  // Sem edição, atualizar não pede confirmação.
+  const dialogoInesperado=()=>{throw new Error('Não deve confirmar proposta vazia');};
+  page.on('dialog',dialogoInesperado);
+  const respostaSemEdicao=page.waitForResponse(r=>r.url().includes('/rest/v1/solicitacoes'));
+  await page.locator('#recarregar-solicitacoes').click();await respostaSemEdicao;
+  await page.waitForFunction(()=>!document.getElementById('recarregar-solicitacoes').disabled);
+  page.removeListener('dialog',dialogoInesperado);
   await page.locator('#ordem-solicitacoes').selectOption('antigas');
   await page.evaluate(()=>iniciarSessao(undefined));
   assert.equal(await page.locator('#ordem-solicitacoes').inputValue(),'recentes');
   assert.equal(await page.locator('#lista-solicitacoes > article').count(),0);
-  assert.equal(chamadas,1);
+  assert.equal(chamadas,4);
 });
