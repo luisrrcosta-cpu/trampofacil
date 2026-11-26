@@ -235,6 +235,7 @@ for (const botao of document.querySelectorAll('[data-pagina]')) {
   botao.addEventListener('click', () => {
     if (ocupado) return;
     const secao = botao.closest('section');
+    if (secao.id === 'solicitacoes' && typeof confirmarSaidaPropostas === 'function' && !confirmarSaidaPropostas()) return;
     const formulario = secao.querySelector('[data-cadastro], #form-solicitacao');
     const preenchido = formulario && Array.from(formulario.querySelectorAll('input,textarea,select')).some(campo => {
       if (campo.tagName === 'SELECT') {
