@@ -58,9 +58,23 @@ const resumoPedidos = elemento('resumo-solicitacoes');
 const ordemPedidos = elemento('ordem-solicitacoes');
 const dataAtualizacaoPedido = new Intl.DateTimeFormat('pt-BR', {dateStyle:'short',timeStyle:'short',timeZone:'America/Sao_Paulo'});
 const normalizarBuscaPedido = valor => String(valor ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/\s+/g, ' ');
+function chaveTemporalPedido(valor) {
+  const micros = (valor.match(/\.(\d+)/)?.[1] || '').slice(0,6).padEnd(6,'0');
+  return BigInt(Math.floor(Date.parse(valor)/1000))*1000000n + BigInt(micros);
+}
 function ordenarPedidos() {
   const atuais = Array.from(listaPedidos.children);
   const ordem = ordemPedidos.value;
+  if (atuais.some(card => card.dataset.pedidoPontual === 'sim')) {
+    // Integra o pedido localizado na ordem do servidor sem mudar o cursor de paginação.
+    const porData = [...atuais].sort((a,b) => {
+      const ta = chaveTemporalPedido(a.dataset.propostaVersao), tb = chaveTemporalPedido(b.dataset.propostaVersao);
+      if (ta !== tb) return ta < tb ? 1 : -1;
+      const ia = a.dataset.solicitacaoId.toLowerCase(), ib = b.dataset.solicitacaoId.toLowerCase();
+      return ia === ib ? 0 : ia < ib ? 1 : -1;
+    });
+    porData.forEach((card,indice) => {card.dataset.ordemCarregamento = String(indice);});
+  }
   const ordenados = [...atuais].sort((a, b) => {
     if (ordem === 'minha_acao') {
       const prioridade = Number(b.dataset.minhaAcao === 'sim') - Number(a.dataset.minhaAcao === 'sim');
@@ -378,7 +392,7 @@ async function retornarParaSolicitacoes(id, localizarAusente = false) {
       if (!atual()) return;
       if (!Array.isArray(pedidos) || pedidos.length > 1 || !pedidos.every(p => p.id === id && pedidoValidoParaConta(p,sessaoOrigem.usuario))) throw new Error();
       if (!pedidos.length) {estado.textContent = 'Esta solicitação não está disponível para sua conta. Atualize os avisos para continuar.';return;}
-      card = mostrarPedido(pedidos[0]);card.dataset.solicitacaoId = id;
+      card = mostrarPedido(pedidos[0]);card.dataset.solicitacaoId = id;card.dataset.pedidoPontual = 'sim';
       card.dataset.ordemCarregamento = String(listaPedidos.childElementCount);
       listaPedidos.append(card);localizadoPorId = true;
       // A consulta pontual não muda o cursor da lista; páginas seguintes continuam sem duplicar cards.

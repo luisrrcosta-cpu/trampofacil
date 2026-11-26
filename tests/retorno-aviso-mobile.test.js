@@ -55,11 +55,12 @@ test('atalho de aviso encontra pedido antigo no celular, limpa filtros e preserv
   assert.equal(await card.locator('h3').evaluate(n=>document.activeElement===n),true);
   assert.equal(await card.evaluate(n=>n.classList.contains('solicitacao-destacada')),true);
   assert.equal(await page.locator('#filtro-solicitacoes').inputValue(),'todas');assert.equal(await page.locator('#direcao-solicitacoes').inputValue(),'todas');assert.equal(await page.locator('#busca-solicitacoes').inputValue(),'');
-  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1));
-  assert.ok(await card.evaluate(n=>n.scrollWidth<=n.clientWidth+1));
+  assert.ok(await page.evaluate(width=>document.documentElement.scrollWidth<=width+1,width));
+  const medidas=await card.evaluate(n=>({largura:n.clientWidth,conteudo:n.scrollWidth,excedentes:[n,...n.querySelectorAll('*')].filter(x=>x.clientWidth>0&&x.scrollWidth>x.clientWidth+1).slice(0,8).map(x=>({tag:x.tagName,classe:x.className,largura:x.clientWidth,conteudo:x.scrollWidth,quebra:getComputedStyle(x).overflowWrap}))}));assert.ok(medidas.conteudo<=medidas.largura+1,JSON.stringify(medidas));
   await page.getByRole('button',{name:'Ver solicitações anteriores',exact:true}).click();
   await page.getByText('52 solicitação(ões) exibida(s) neste filtro.',{exact:true}).waitFor();
   assert.equal(await page.locator('[data-solicitacao-id="'+c.alvo.id+'"]').count(),1);
+  const ordem=await page.locator('#lista-solicitacoes > article').evaluateAll(ns=>ns.map(n=>n.dataset.solicitacaoId));assert.equal(ordem.at(-1),c.alvo.id);assert.equal(ordem.at(-2),c.recentes[50].id);
  }
  assert.deepEqual(c.contagens(),{pontuais:4,paginacoes:4,escritas:0});assert.deepEqual(c.erros,[]);
 });
