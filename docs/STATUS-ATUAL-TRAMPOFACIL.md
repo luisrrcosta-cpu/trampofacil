@@ -6,10 +6,10 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `9fbb95869345146d5ec75ff570d97d106e3ceee1`.
-- Fonte hospedada atual: `cad0f39d7b2536a88b829c7ca42718fab4102e2c`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_7556be11a7748191b1cfc698261d3cf2`.
-- CI da interface publicada: geral/interface 45807921748, financeiro 45807921771, concorrência 45807921744 e prévia 45807921776, todos success.
+- Último código de interface validado: `8efe3a249cb9c16215ed5f7c3ca681027d3c2130`.
+- Fonte hospedada atual: `f7cdd8113ab117d24ec729997c569baa398c73be`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_336c9392e73c81919ac691db9389d163`.
+- CI da interface publicada: geral/interface 45828513461, financeiro 45828513486, concorrência 45828513474 e prévia 45828512991, todos success.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
 ## Entregas atuais na homologação
@@ -313,3 +313,13 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Teste no navegador com API fictícia: cancelamento sem GET adicional; confirmação com erro HTTP 500 conserva proposta; confirmação com consulta bem-sucedida descarta; campo vazio atualiza sem diálogo; encerramento limpa a lista.
 - Fonte hospedada f7cdd8113ab117d24ec729997c569baa398c73be. Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_336c9392e73c81919ac691db9389d163; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_690739d9f1648191a8a91801a4d16c9b. Confirmar status no próximo turno antes de afirmar disponibilidade. Cabeçalho ainda identifica a última publicação confirmada.
 - Nenhuma alteração de banco, acesso, produção ou pagamento. PagBank permanece adiado.
+
+
+## Proteção de proposta ao navegar — 26/11/2026
+- Publicação da confirmação no botão Atualizar confirmada succeeded/ready: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_336c9392e73c81919ac691db9389d163. Cabeçalho atualizado para essa última publicação confirmada.
+- Reutilizada detecção de valores alterados. Abrir histórico/mensagens (inclusive sugestão de negociação) e botão Página inicial da lista agora pedem confirmação antes de descartar proposta não enviada. Cancelar conserva campos e tela; não limpa conversa nem inicia requisições. Confirmar restaura os valores iniciais e permite navegar.
+- Botão Atualizar conserva comportamento anterior: confirmar não limpa antes da consulta; falha mantém edição. Logout continua limpando sem confirmação. Sem persistência após fechar/recarregar navegador; recarga causada por outras ações concluídas ainda não preserva propostas de outros cards.
+- Código final de aplicação f0950ff70de0a0ef16958fee68c2a95a8f82d873; teste final 50cfdecd64d8c3d8b9f579b9b0b453b7aa299c33. CI geral/interface/regressões 45829502830, financeiro 45829502640 e concorrência 45829502628 success; pacote 45829198052 success na implementação final. Ajustes nos seletores do teste feitos antes de publicar.
+- Teste móvel cobre cancelamento de histórico e saída sem consulta/sem perder valor, saída confirmada com descarte, além dos cenários de atualização anteriores.
+- Fonte hospedada c901b840a226f08576aed724081f6229a274d1c2. Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_ac0ed81dd0d881919426a94a7e9cfa2a; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_6899381ade488191863393f579838e35. Conferir status no próximo turno antes de afirmar disponibilidade.
+- Nenhuma alteração de banco, RLS, produção ou pagamentos; PagBank segue adiado.
