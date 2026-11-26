@@ -33,3 +33,7 @@ jobs:
       - run: node scripts/testar-concorrencia-revisao-pg.mjs
         env:
           TRAMPOFACIL_PG_CONCURRENCY_URL: postgres://postgres:senha-descartavel-job@127.0.0.1:5432/trampofacil_concorrencia_test
+
+      - run: node scripts/testar-concorrencia-reclamacoes-pg.mjs
+        env:
+          TRAMPOFACIL_PG_CONCURRENCY_URL: postgres://postgres:senha-descartavel-job@127.0.0.1:5432/trampofacil_concorrencia_test
