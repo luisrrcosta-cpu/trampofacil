@@ -54,9 +54,25 @@ const filtroPedidos = elemento('filtro-solicitacoes');
 const buscaPedidos = elemento('busca-solicitacoes');
 const direcaoPedidos = elemento('direcao-solicitacoes');
 const resumoPedidos = elemento('resumo-solicitacoes');
+const ordemPedidos = elemento('ordem-solicitacoes');
 const dataAtualizacaoPedido = new Intl.DateTimeFormat('pt-BR', {dateStyle:'short',timeStyle:'short',timeZone:'America/Sao_Paulo'});
 const normalizarBuscaPedido = valor => String(valor ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/\s+/g, ' ');
+function ordenarPedidos() {
+  const atuais = Array.from(listaPedidos.children);
+  const ordem = ordemPedidos.value;
+  const ordenados = [...atuais].sort((a, b) => {
+    if (ordem === 'minha_acao') {
+      const prioridade = Number(b.dataset.minhaAcao === 'sim') - Number(a.dataset.minhaAcao === 'sim');
+      if (prioridade) return prioridade;
+    }
+    const diferenca = Number(a.dataset.ordemCarregamento) - Number(b.dataset.ordemCarregamento);
+    return ordem === 'antigas' ? -diferenca : diferenca;
+  });
+  // Move os mesmos cards, preservando campos e handlers, sem refazer consultas.
+  if (ordenados.some((card, indice) => card !== atuais[indice])) listaPedidos.append(...ordenados);
+}
 function aplicarFiltroPedidos() {
+  ordenarPedidos();
   const filtro = filtroPedidos.value;
   const termos = normalizarBuscaPedido(buscaPedidos.value).split(' ').filter(Boolean);
   const direcao = direcaoPedidos.value;
@@ -92,8 +108,9 @@ function aplicarFiltroPedidos() {
 filtroPedidos.addEventListener('change', aplicarFiltroPedidos);
 buscaPedidos.addEventListener('input', aplicarFiltroPedidos);
 direcaoPedidos.addEventListener('change', aplicarFiltroPedidos);
+ordemPedidos.addEventListener('change', aplicarFiltroPedidos);
 elemento('limpar-filtros-solicitacoes').addEventListener('click', () => {
-  buscaPedidos.value = ''; direcaoPedidos.value = 'todas'; filtroPedidos.value = 'todas';
+  buscaPedidos.value = ''; direcaoPedidos.value = 'todas'; filtroPedidos.value = 'todas'; ordemPedidos.value = 'recentes';
   aplicarFiltroPedidos(); buscaPedidos.focus();
 });
 
@@ -118,7 +135,7 @@ function iniciarSessao(sessao) {
   versaoPedidos++;
   filtroPedidos.value = 'todas';
   resumoPedidos.textContent = '';
-  buscaPedidos.value = ''; direcaoPedidos.value = 'todas';
+  buscaPedidos.value = ''; direcaoPedidos.value = 'todas'; ordemPedidos.value = 'recentes';
   elemento('status-solicitacoes').textContent = '';
   bloquear(elemento('solicitacoes'), false);
   listaPedidos.replaceChildren();
@@ -701,7 +718,10 @@ async function carregarPedidos(aviso = '', anexar = false) {
       return true;
     });
     const cards = novosPedidos.map(mostrarPedido);
-    cards.forEach((card, i) => { card.dataset.solicitacaoId = novosPedidos[i].id; });
+    cards.forEach((card, i) => {
+      card.dataset.solicitacaoId = novosPedidos[i].id;
+      card.dataset.ordemCarregamento = String((anexar ? listaPedidos.childElementCount : 0) + i);
+    });
     if (anexar) listaPedidos.append(...cards);
     else listaPedidos.replaceChildren(...cards);
     cursorPedidos = pagina.at(-1);
