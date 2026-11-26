@@ -247,7 +247,7 @@ async function procurar(filtros, pagina) {
     filtrosBusca = filtrosAtuais;
     paginaBusca = pagina;
     // Evita um botão infinito se o servidor repetir uma página inteira.
-    maisProfissionais.hidden = profissionais.length !== 20 || novosProfissionais === 0;
+    maisProfissionais.hidden = profissionais.length !== 20 || novosProfissionais === 0 || pagina >= 10000;
     status.textContent = novosProfissionais === 0 && pagina > 0
       ? 'Não há novos profissionais nesta página. Tente outra busca.'
       : listaBusca.childElementCount
