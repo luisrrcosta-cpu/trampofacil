@@ -6,6 +6,7 @@ let emailLogin;
 let versaoLogin = 0;
 let profissionalEscolhido;
 let tentativa;
+let titularPedido;
 let filtrosBusca;
 let paginaBusca = 0;
 let versaoBusca = 0;
@@ -117,6 +118,14 @@ elemento('limpar-filtros-solicitacoes').addEventListener('click', () => {
 elemento('menu-servicos').hidden = !integrado;
 
 function iniciarSessao(sessao) {
+  // Uma expiração conserva o preenchimento só para a conta que o iniciou.
+  if (sessao && titularPedido && titularPedido !== sessao.usuario) {
+    formularioPedido.reset();
+    atualizarContadorDescricaoPedido();
+    elemento('status-envio').textContent = '';
+    tentativa = undefined;
+  }
+  if (sessao && profissionalEscolhido) titularPedido = sessao.usuario;
   limparRevisao();
   limparPreparacao();
   limparPerfil();
@@ -224,6 +233,7 @@ async function procurar(filtros, pagina) {
       card.append(botaoAcao('Solicitar serviço', () => {
         if (ocupado) return;
         profissionalEscolhido = profissional;
+        titularPedido = sessaoServicos?.usuario;
         tentativa = undefined;
         formularioPedido.reset();
         atualizarContadorDescricaoPedido();
@@ -349,6 +359,7 @@ elemento('sair').addEventListener('click', () => {
   iniciarSessao(undefined);
   tentativa = undefined;
   profissionalEscolhido = undefined;
+  titularPedido = undefined;
   formularioPedido.reset();
         atualizarContadorDescricaoPedido();
   reiniciarLogin();
