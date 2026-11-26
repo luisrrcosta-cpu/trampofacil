@@ -6,9 +6,9 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `670457fd3dcb588dac3a156f69c5f0520fff2028`.
-- Fonte hospedada atual: `74d7f208d51520698622601a86bfe346d64a9838`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3600bc2a2a3081919469a62a20d41c45`.
+- Último código de interface validado: `c3d894f8fdf577f787c439a571a18b265ed79f31`.
+- Fonte hospedada atual: `8c4497fa2ad0d25e5cad3731e2f8714a7d89e91b`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_953a2bb3e398819195fadc48ed2847b4`.
 - CI da interface publicada: geral/interface 45863359047, financeiro 45863359051 e concorrência 45863359054, todos success. Verificações móveis anteriores: geral 45862641623 e prévia 45862641479 success.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
@@ -473,3 +473,12 @@ Paleta em index.html, commit c3d894f8fdf577f787c439a571a18b265ed79f31: cabeçalh
 CI geral/interface 45885674266, financeiro 45885674089, concorrência 45885674054 e prévia 45885674031 success. git diff --check aprovado. Publicação também inclui servicos.js blob 6b4d65a7d818ad38f3f6907a019afa212233bf8e (limite do botão Ver mais), já validado anteriormente e pendente do executor.
 
 Fonte privada enviada 8c4497fa2ad0d25e5cad3731e2f8714a7d89e91b. Versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_7ed76b46aab881918de986198b908c26; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_953a2bb3e398819195fadc48ed2847b4: pending/publishing. Confirmar na próxima retomada; não marcar como publicada antes de succeeded. Não houve alteração de dados, produção, audiência ou pagamentos.
+
+
+## 26/11 — Modelo escolhido: azul-marinho, letras brancas e detalhes laranja
+
+Primeira paleta confirmada succeeded/ready na publicação 953a2bb3e398819195fadc48ed2847b4 (identificador completo no cabeçalho), incluindo ajuste pendente do botão Ver mais. Proprietário preferiu a sugestão 1 após avaliar o laranja predominante.
+
+Nova alteração CSS em 825a491e5fdab3216f0692928eee017a614c66d2: botões #12345b com texto branco e bordas de 2px #ff7900; Voltar preserva fundo claro/texto azul e borda discreta. Cabeçalho azul e acentos laranja preservados. Hash CSP atualizado sem relaxamento. Contraste branco/azul já calculado em 12,59:1. Inspeção visual da prévia confirmou o modelo. CI geral/interface 45886474111, financeiro 45886474195, concorrência 45886474168 e prévia 45886474286 success; git diff --check aprovado.
+
+Fonte privada nova 4bfc4b983adc3d77d39bd21901f048b5a858a493. Versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_d0d902754e5c819192357c251be7a14c; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_79a8bf9f5cec8191b7bf2e0873714494: pending/publishing. Confirmar na próxima retomada; cabeçalho permanece com última publicação confirmada até succeeded. Sem alterações funcionais, dados, acesso ou pagamentos.
