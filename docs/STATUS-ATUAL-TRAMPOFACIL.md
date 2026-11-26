@@ -381,3 +381,12 @@ Fonte privada enviada: 0342e21c7db4480104ca738acb09cb9559f6820c. Versão appgprj
 ## 26/11 — Publicação das melhorias confirmada
 
 Consulta posterior confirmou succeeded/ready da publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_2f6d2b938f78819189acc918ba8c601b, versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_b7dfb6fd84d08191ac5315e7a7f02a2d. Busca na página de revisão, datas, tratamento de acesso negado e preservação de propostas nas atualizações automáticas estão incluídos na fonte privada 0342e21c7db4480104ca738acb09cb9559f6820c. Estado pending anterior superado. Não foi realizado novo teste manual autenticado de ponta a ponta nesta confirmação.
+
+
+## 26/11 — Aviso antes de perder proposta ao fechar a aba
+
+Implementação 408f01e7787f6ff9a4e8b7efbf07ee887c242a4c; testes 9bb5e675b3bb7cb6b7ea9a0c7f3107730f520680. beforeunload solicita aviso nativo se uma conta conectada está na lista com valor de proposta alterado e não enviado. Valor inicial/restaurado e proposta confirmada não geram aviso. O navegador determina a exibição; fechamento abrupto, especialmente em celular, pode não disparar o evento. Nenhum rascunho foi persistido e nenhuma proposta é enviada automaticamente.
+
+CI success: geral/interface 45859041441, financeiro 45859041476, concorrência 45859041404. Teste de interface verifica cancelamento do evento para edição e remoção da proteção ao restaurar/confirmar. Sintaxe JavaScript e git diff --check aprovados.
+
+Fonte privada 42e981d22339d1efdde99968e0a3a734f53bca5b, versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_d2013d438af081918018516cc5c48a2c, publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_2baacf6f68588191a14589fa65c7d651: pending/publishing. Confirmar na próxima retomada; a fonte confirmada no cabeçalho permanece a anterior até confirmação. Sem alterações no banco, produção ou pagamentos.
