@@ -352,21 +352,49 @@ function proteger(destino) {
 
 async function retornarParaSolicitacoes(id) {
   if (!sessaoServicos || !integrado || !autenticacaoPronta || ocupado) {proteger('solicitacoes');return;}
+  if (typeof id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
+    elemento('status-solicitacoes').textContent = 'Solicitação inválida. Atualize os avisos antes de tentar novamente.';
+    return;
+  }
   const sessaoOrigem = sessaoServicos;
-  const secao = elemento('solicitacoes');
+  const secao = elemento('solicitacoes'), estado = elemento('status-solicitacoes');
   mostrar('solicitacoes');
   const carregamento = carregarPedidos();
   const buscaRetorno = versaoPedidos;
-  await carregamento;
-  // Não roubar foco após outra navegação, atualização ou troca de conta.
-  if (sessaoServicos !== sessaoOrigem || secao.hidden || versaoPedidos !== buscaRetorno) return;
-  const card = Array.from(listaPedidos.children).find(item => item.dataset.solicitacaoId === id && !item.hidden);
-  const titulo = card?.querySelector('h3');
-  if (titulo) {
-    titulo.tabIndex = -1;
-    titulo.focus({preventScroll:true});
-    titulo.scrollIntoView({block:'center'});
+  const atual = () => sessaoServicos === sessaoOrigem && !secao.hidden && versaoPedidos === buscaRetorno;
+  const carregou = await carregamento;
+  if (!atual() || !carregou) return;
+  let card = Array.from(listaPedidos.children).find(item => item.dataset.solicitacaoId === id);
+  let localizadoPorId = false;
+  if (!card) {
+    bloquear(secao, true);estado.textContent = 'Localizando a solicitação indicada…';
+    try {
+      const resposta = await apiPedidos({select:camposConsultaPedidos,id:'eq.'+id,limit:'1'});
+      if (!atual()) return;
+      if (resposta.status === 401) {exigirNovoLogin('solicitacoes');return;}
+      if (!resposta.ok) throw new Error();
+      const pedidos = await resposta.json();
+      if (!atual()) return;
+      if (!Array.isArray(pedidos) || pedidos.length > 1 || !pedidos.every(p => p.id === id && pedidoValidoParaConta(p,sessaoOrigem.usuario))) throw new Error();
+      if (!pedidos.length) {estado.textContent = 'Esta solicitação não está disponível para sua conta. Atualize os avisos para continuar.';return;}
+      card = mostrarPedido(pedidos[0]);card.dataset.solicitacaoId = id;
+      card.dataset.ordemCarregamento = String(listaPedidos.childElementCount);
+      listaPedidos.append(card);localizadoPorId = true;
+      // A consulta pontual não muda o cursor da lista; páginas seguintes continuam sem duplicar cards.
+      aplicarFiltroPedidos();
+    } catch {
+      if (atual()) estado.textContent = 'Não foi possível abrir a solicitação indicada. Atualize os avisos e tente novamente.';
+      return;
+    } finally {if (atual()) bloquear(secao,false);}
   }
+  if (!atual()) return;
+  if (card.hidden) {
+    filtroPedidos.value = 'todas';direcaoPedidos.value = 'todas';buscaPedidos.value = '';
+    aplicarFiltroPedidos();estado.textContent = 'Solicitação localizada. Os filtros foram limpos para exibir este pedido.';
+  } else if (localizadoPorId) estado.textContent = 'Solicitação indicada localizada e destacada na lista.';
+  card.classList.add('solicitacao-destacada');
+  const titulo = card.querySelector('h3');
+  if (titulo) {titulo.tabIndex = -1;titulo.focus({preventScroll:true});titulo.scrollIntoView({block:'center'});}
 }
 
 elemento('abrir-solicitacoes').addEventListener('click', () => proteger('solicitacoes'));
@@ -706,6 +734,17 @@ function restaurarEdicoesProposta(cards) {
   }
 }
 
+const camposConsultaPedidos = 'id,cliente_usuario_id,profissional_usuario_id,titulo,descricao,status,valor_centavos,atualizado_em';
+function pedidoValidoParaConta(p,usuario) {
+  const uuid = v => typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
+  return p && uuid(p.id) && uuid(p.cliente_usuario_id) && uuid(p.profissional_usuario_id) &&
+    typeof p.atualizado_em === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(p.atualizado_em) && Number.isFinite(Date.parse(p.atualizado_em)) &&
+    papelNaContratacao(p,usuario) && typeof p.titulo === 'string' && p.titulo.trim().length >= 3 && p.titulo.length <= 120 &&
+    typeof p.descricao === 'string' && p.descricao.trim().length >= 10 && p.descricao.length <= 3000 &&
+    Object.prototype.hasOwnProperty.call(nomesStatus,p.status) &&
+    (p.valor_centavos == null || (Number.isSafeInteger(p.valor_centavos) && p.valor_centavos >= 100 && p.valor_centavos <= 100000000));
+}
+
 async function carregarPedidos(aviso = '', anexar = false, preservarEdicoes = true) {
   if (ocupado || !sessaoServicos || (anexar && !cursorPedidos)) return;
   const secao = elemento('solicitacoes');
@@ -716,7 +755,7 @@ async function carregarPedidos(aviso = '', anexar = false, preservarEdicoes = tr
   status.textContent = 'Carregando…';
   try {
     const filtros = {
-      select: 'id,cliente_usuario_id,profissional_usuario_id,titulo,descricao,status,valor_centavos,atualizado_em',
+      select: camposConsultaPedidos,
       order: 'atualizado_em.desc,id.desc', limit: tamanhoPaginaPedidos + 1,
     };
     if (anexar) {
@@ -739,21 +778,7 @@ async function carregarPedidos(aviso = '', anexar = false, preservarEdicoes = tr
     if (!resposta.ok) throw new Error();
     const pedidos = await resposta.json();
     if (!Array.isArray(pedidos) || pedidos.length > tamanhoPaginaPedidos + 1 ||
-      !pedidos.every(p => p && typeof p.id === 'string' &&
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.id) &&
-        typeof p.atualizado_em === 'string' &&
-        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(p.atualizado_em) &&
-        Number.isFinite(Date.parse(p.atualizado_em)) &&
-        typeof p.cliente_usuario_id === 'string' &&
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.cliente_usuario_id) &&
-        typeof p.profissional_usuario_id === 'string' &&
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.profissional_usuario_id) &&
-        papelNaContratacao(p, sessaoDaBusca.usuario) &&
-        typeof p.titulo === 'string' && p.titulo.trim().length >= 3 && p.titulo.length <= 120 &&
-        typeof p.descricao === 'string' && p.descricao.trim().length >= 10 && p.descricao.length <= 3000 &&
-        Object.prototype.hasOwnProperty.call(nomesStatus, p.status) &&
-        (p.valor_centavos == null || (Number.isSafeInteger(p.valor_centavos) &&
-          p.valor_centavos >= 100 && p.valor_centavos <= 100000000)))) {
+      !pedidos.every(p => pedidoValidoParaConta(p,sessaoDaBusca.usuario))) {
       throw new Error('Resposta de solicitações inválida');
     }
     // Nunca renderizar dados de uma requisição iniciada em outra sessão ou busca.
@@ -786,6 +811,7 @@ async function carregarPedidos(aviso = '', anexar = false, preservarEdicoes = tr
     aplicarFiltroPedidos();
     // A confirmação de uma alteração não deve ser apagada pela contagem do filtro.
     if (aviso) status.textContent = aviso;
+    return true;
   } catch {
     if (sessaoServicos === sessaoDaBusca && pedidosAtuais === versaoPedidos) {
       status.textContent = anexar
