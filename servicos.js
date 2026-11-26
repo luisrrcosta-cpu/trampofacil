@@ -133,6 +133,7 @@ function iniciarSessao(sessao) {
   trocarSessaoConversa(sessao, sessaoServicos?.usuario);
   sessaoServicos = sessao;
   controleSessao.alterar(sessao);
+  bloquear(elemento('nova-solicitacao'), false);
   elemento('sair').hidden = !sessao;
   versaoBusca++;
   bloquear(elemento('catalogo'), false);
