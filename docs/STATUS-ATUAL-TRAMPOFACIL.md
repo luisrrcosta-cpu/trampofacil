@@ -464,3 +464,12 @@ Aplicada somente na homologação a função buscar_profissionais com página m�
 Código 60755cce9be14a366bfcea6a2dd381c05213876a: Ver mais fica oculto quando pagina >= 10000, mesmo com página completa. Testes ace86c1651dfed05a07d0c7d22374b951025da22 simulam páginas 0 e 10000 com 20 registros distintos cada, conferem manutenção dos 40 cards, botão oculto e ausência de chamada para 10001. CI geral/interface 45874509075, financeiro 45874507640 e concorrência 45874507587 success.
 
 A alteração da tela ainda NÃO foi publicada: executor indisponível impediu preparar/enviar a fonte Sites. Próxima retomada: sincronizar somente servicos.js a partir do blob 6b4d65a7d818ad38f3f6907a019afa212233bf8e, validar estado remoto e publicar via helper habitual na homologação privada. Fonte hospedada confirmada continua 74d7f208d51520698622601a86bfe346d64a9838. O limite no banco já está aplicado e verificado; pagamentos e audiência não foram alterados.
+
+
+## 26/11 — Azul escuro e laranja forte solicitados pelo proprietário
+
+Paleta em index.html, commit c3d894f8fdf577f787c439a571a18b265ed79f31: cabeçalho azul-marinho #0b1f3a / #173f70, títulos/ações secundárias #12345b, botões e acentos laranja #ff7900 com texto #102b50. Cartões brancos preservados, voltar em azul claro, buscas populares em laranja suave. Hash CSP atualizado sem relaxar política. Prévia local inspecionada visualmente no navegador; contraste calculado de texto azul sobre laranja 5,38:1, branco sobre azul 12,59:1 e azul sobre laranja claro 11,29:1.
+
+CI geral/interface 45885674266, financeiro 45885674089, concorrência 45885674054 e prévia 45885674031 success. git diff --check aprovado. Publicação também inclui servicos.js blob 6b4d65a7d818ad38f3f6907a019afa212233bf8e (limite do botão Ver mais), já validado anteriormente e pendente do executor.
+
+Fonte privada enviada 8c4497fa2ad0d25e5cad3731e2f8714a7d89e91b. Versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_7ed76b46aab881918de986198b908c26; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_953a2bb3e398819195fadc48ed2847b4: pending/publishing. Confirmar na próxima retomada; não marcar como publicada antes de succeeded. Não houve alteração de dados, produção, audiência ou pagamentos.
