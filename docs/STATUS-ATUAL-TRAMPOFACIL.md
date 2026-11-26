@@ -6,9 +6,9 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `02b9aa082c7de58ba67d78b0c733069d8638df41`.
-- Fonte hospedada atual: `0342e21c7db4480104ca738acb09cb9559f6820c`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_2f6d2b938f78819189acc918ba8c601b`.
+- Último código de interface validado: `9bb5e675b3bb7cb6b7ea9a0c7f3107730f520680`.
+- Fonte hospedada atual: `42e981d22339d1efdde99968e0a3a734f53bca5b`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_2baacf6f68588191a14589fa65c7d651`.
 - CI da interface publicada: geral/interface 45835566499, financeiro 45835566317, concorrência 45835566367 e prévia 45835420641, todos success. Preservação de propostas validada também em 45832183670, 45832183722, 45832183567 e 45832181764.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
@@ -390,3 +390,8 @@ Implementação 408f01e7787f6ff9a4e8b7efbf07ee887c242a4c; testes 9bb5e675b3bb7cb
 CI success: geral/interface 45859041441, financeiro 45859041476, concorrência 45859041404. Teste de interface verifica cancelamento do evento para edição e remoção da proteção ao restaurar/confirmar. Sintaxe JavaScript e git diff --check aprovados.
 
 Fonte privada 42e981d22339d1efdde99968e0a3a734f53bca5b, versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_d2013d438af081918018516cc5c48a2c, publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_2baacf6f68588191a14589fa65c7d651: pending/publishing. Confirmar na próxima retomada; a fonte confirmada no cabeçalho permanece a anterior até confirmação. Sem alterações no banco, produção ou pagamentos.
+
+
+## 26/11 — Aviso de saída confirmado na homologação
+
+Publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_2baacf6f68588191a14589fa65c7d651 confirmada succeeded/ready. Fonte 42e981d22339d1efdde99968e0a3a734f53bca5b. CI geral/interface 45859041441, financeiro 45859041476 e concorrência 45859041404 success. O estado pending anterior está superado. Sem novo teste manual autenticado nesta confirmação.
