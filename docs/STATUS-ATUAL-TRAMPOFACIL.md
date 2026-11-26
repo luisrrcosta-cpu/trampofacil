@@ -6,9 +6,9 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `9bb5e675b3bb7cb6b7ea9a0c7f3107730f520680`.
-- Fonte hospedada atual: `42e981d22339d1efdde99968e0a3a734f53bca5b`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_2baacf6f68588191a14589fa65c7d651`.
+- Último código de interface validado: `dd111bb6f9b2c0378332d1dc03100e8d9e9ce82c`.
+- Fonte hospedada atual: `4af74b7956611d21ac24e8b789bc57c33db3cb15`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_e9333b5fc4c0819189e4ef1fc16a09fd`.
 - CI da interface publicada: geral/interface 45835566499, financeiro 45835566317, concorrência 45835566367 e prévia 45835420641, todos success. Preservação de propostas validada também em 45832183670, 45832183722, 45832183567 e 45832181764.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
@@ -406,3 +406,8 @@ Corrigido também formulário que permanecia desativado após 401: a troca de se
 Código final 825e38d1862fef3b6e10f535895526328e3c98cb; testes dd111bb6f9b2c0378332d1dc03100e8d9e9ce82c. CI success: geral/interface 45860446844, financeiro 45860446935, concorrência 45860446808. Sintaxe JavaScript e git diff --check aprovadas. Sem alteração de banco, RLS, produção ou pagamentos.
 
 Fonte privada 4af74b7956611d21ac24e8b789bc57c33db3cb15. Versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_6c0acdc670e8819184e446ff45e811e9; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_e9333b5fc4c0819189e4ef1fc16a09fd: pending/publishing. Confirmar na próxima retomada; não presumir publicada nem criar nova publicação para conferir estado.
+
+
+## 26/11 — Correção de sessão e privacidade publicada
+
+Confirmado succeeded/ready para appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_e9333b5fc4c0819189e4ef1fc16a09fd, fonte 4af74b7956611d21ac24e8b789bc57c33db3cb15. Preservação do texto para o titular, limpeza ao trocar de conta e desbloqueio do formulário após sessão expirada incluídos. CI geral/interface 45860446844, financeiro 45860446935 e concorrência 45860446808 success. Estado pending anterior superado. Sem novo teste manual autenticado nesta confirmação.
