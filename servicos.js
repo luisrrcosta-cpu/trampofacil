@@ -855,6 +855,13 @@ function camposPropostaAlterados() {
     .filter(campo => campo.value !== campo.dataset.valorInicialProposta || campo.validity.badInput);
 }
 
+// O navegador decide se mostra o aviso; nenhum rascunho é persistido.
+window.addEventListener('beforeunload', evento => {
+  if (!sessaoServicos || elemento('solicitacoes').hidden || !camposPropostaAlterados().length) return;
+  evento.preventDefault();
+  evento.returnValue = '';
+});
+
 function confirmarSaidaPropostas() {
   if (elemento('solicitacoes').hidden) return true;
   const campos = camposPropostaAlterados();
