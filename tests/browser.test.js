@@ -1193,7 +1193,8 @@ test('painel de revisão nega acesso comum, não repete aprovação incerta e li
     aprovado=false;negado=false;
     await page.getByRole('button',{name:'Atualizar fila de análise',exact:true}).click();
     await page.getByRole('heading',{name:perfil.nome,exact:true}).waitFor();
-    if(decisao.rotulo)await page.getByLabel(decisao.rotulo,{exact:true}).selectOption(decisao.motivo);
+    const cardAlvo=page.locator('#lista-revisao article').filter({has:page.getByRole('heading',{name:perfil.nome,exact:true})});
+    if(decisao.rotulo)await cardAlvo.getByLabel(decisao.rotulo,{exact:true}).selectOption(decisao.motivo);
     negado=true;
     await page.getByRole('button',{name:decisao.botao+perfil.nome,exact:true}).click();
     await page.getByText('Área reservada à conta revisora autorizada.',{exact:true}).waitFor();
