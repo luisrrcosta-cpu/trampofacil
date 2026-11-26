@@ -359,3 +359,11 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Evidência atualizada: docs/REVISAO-PAINEL-ADMINISTRATIVO-2026-11-26.md.
 - NÃO PUBLICADO: ambiente local indisponível. A sincronização futura deve incluir servicos.js (preservação de propostas) e perfil.js atual (datas mais tratamento de 403). A prévia continua na fonte c901b840a226f08576aed724081f6229a274d1c2; cabeçalho identifica a publicação confirmada.
 - Sem alteração de banco, RLS, produção ou pagamentos. PagBank adiado.
+
+
+## Busca na página de revisão administrativa — 26/11/2026
+- Campo de busca por nome, serviço e cidade entre os até 50 cards carregados. Normalização de acentos/maiúsculas e combinação de termos; oculta os mesmos cards sem reconstruir formulários nem executar RPC adicional. Resultado vazio e contagem se referem expressamente à página atual, não à fila inteira.
+- Busca e resultado apagados em nova carga/paginação, troca de sessão, negativa de acesso ou falha de decisão que limpa os cards. Controles aparecem apenas após uma fila autorizada com perfis. Limpar busca restaura cards e devolve foco ao campo.
+- index.html 0f13b433a54b053e2645e823ccf57cfc22ed6daf; perfil.js final e0f360ca9163ef1efb93965e6bf09c38a74a6ea1; testes finais 02b9aa082c7de58ba67d78b0c733069d8638df41. CI geral/interface/regressões 45835566499, financeiro 45835566317 e concorrência 45835566367 success. Pacote 45835420641 success na implementação final. Teste com dois perfis valida busca combinada/acento, resultado vazio, limpeza sem nova consulta e tratamento de 403 de cada decisão sem estado de busca residual.
+- NÃO PUBLICADO: correção salva e validada no GitHub. Sincronização futura deve incluir index.html, perfil.js e servicos.js atuais da branch, preservando os rótulos, datas, negativa de acesso e rascunhos já validados. Prévia mantém fonte c901b840a226f08576aed724081f6229a274d1c2 até nova publicação confirmada.
+- Sem consulta ou mudança do banco remoto, permissões, produção ou pagamentos. PagBank permanece adiado.
