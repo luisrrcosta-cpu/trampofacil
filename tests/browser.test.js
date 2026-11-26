@@ -1434,15 +1434,23 @@ test('telas e catálogo permanecem utilizáveis em celulares com nomes longos',a
   const page=await browser.newPage({viewport:{width:360,height:800},isMobile:true,hasTouch:true});
   page.setDefaultTimeout(5000);
   const erros=[];page.on('pageerror',e=>erros.push(e.message));
+  let consultas=0;
   await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',route=>{
+    consultas++;
     assert.ok(route.request().url().includes('/rpc/buscar_profissionais'));
     return route.fulfill({json:[{id:'77777777-7777-4777-8777-777777777777',
       nome:'N'.repeat(120),cidade:'Cidade de teste',servico:'Pintura',descricao:'Descrição fictícia'}]});
   });
   await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  await page.getByRole('button',{name:'Como funciona',exact:true}).click();
+  await page.getByRole('heading',{name:'Como funciona o TrampoFácil',exact:true}).waitFor();
+  assert.equal(await page.locator('#titulo-como-funciona').evaluate(e=>document.activeElement===e),true);
+  await page.locator('#como-funciona').getByRole('button',{name:'Página inicial',exact:true}).click();
+  assert.equal(await page.locator('#inicio').isVisible(),true);
+  assert.equal(consultas,0,'guia disponível sem login e sem chamadas ao banco');
   for(const largura of [320,360,390,768]){
     await page.setViewportSize({width:largura,height:800});
-    for(const secao of ['inicio','cliente','profissional','entrar','nova-solicitacao','solicitacoes','simulacao']){
+    for(const secao of ['inicio','como-funciona','cliente','profissional','entrar','nova-solicitacao','solicitacoes','simulacao']){
       await page.evaluate(id=>mostrar(id),secao);
       const medidas=await page.evaluate(()=>({
         largura:document.documentElement.clientWidth,
