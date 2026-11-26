@@ -452,3 +452,8 @@ Roteiro salvo em docs/ROTEIRO-ENSAIO-PRIVADO-SEM-PAGAMENTOS.md, cobrindo cliente
 ## 26/11 — Permissões do fluxo principal conferidas
 
 Revisão somente de leitura de clientes, profissionais, solicitações, mensagens e histórico: RLS ativa; anon sem SELECT direto; authenticated sem DELETE. Predicados de titularidade/participação e políticas restritivas de autenticação conferidos. Catálogo ativo separado e busca invoker limitada a campos públicos. Evidência em docs/PERMISSOES-FLUXO-PRINCIPAL-2026-11-26.md. Não é teste autenticado completo nem auditoria de produção. Nenhum dado, grant, política, convite ou pagamento alterado.
+
+
+## 26/11 — Paginação da busca limitada também no banco
+
+Aplicada somente na homologação a função buscar_profissionais com página máxima 10000 e OFFSET limitado, preservando páginas negativas/nulas como primeira página, retorno de 20 campos públicos por página e permissões existentes. Correção: retorno continua de até 20 registros com os mesmos cinco campos públicos. Código 2bd0d4dc72e0d9f32f5fec17ec95f49714a60845; testes 2e957e83dee3cdc196e14a7eb64e37e0ba09285d. CI geral 45873994148, financeiro 45873995111 e concorrência 45873994052 aprovados. Verificação READ ONLY sob anon após aplicação aprovada; invoker/search_path/grants preservados. Evidência: docs/LIMITE-PAGINACAO-HOMOLOGACAO-2026-11-26.md. Nenhum dado, acesso do site ou pagamento alterado.
