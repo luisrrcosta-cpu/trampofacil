@@ -425,3 +425,12 @@ Fonte privada 333965503c027496e20c25c8a3864f068370316c; versão appgprj_6afeee18
 ## 26/11 — Ajuste para celular publicado
 
 Publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5600da86293c8191ae3f88f227b8111f confirmada succeeded/ready. Fonte 333965503c027496e20c25c8a3864f068370316c. Estado pending anterior superado. Testes móveis automatizados e regressões aprovados conforme evidência anterior; sem novo teste em aparelho físico nesta confirmação.
+
+
+## 26/11 — Guia Como funciona
+
+Tela acessível na página inicial, sem login ou consultas ao banco. Explica contratação pelo cliente, cadastro e análise do profissional, orçamento, acompanhamento e conclusão; esclarece indisponibilidade de pagamentos online e o papel limitado do acompanhamento fiscal. Sem novas operações ou permissões. Código 4f7c9b63a63f5dd9556d0646b1468daaf4601598; testes 670457fd3dcb588dac3a156f69c5f0520fff2028.
+
+Testes verificam abertura, foco no título, retorno à página inicial e zero chamadas API; guia incluído nas verificações de largura 320/360/390/768px. CI success: geral/interface 45863359047, financeiro 45863359051, concorrência 45863359054. git diff --check aprovado; CSS e CSP preservados.
+
+Fonte privada 74d7f208d51520698622601a86bfe346d64a9838. Versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_6dee5b17655881918bf1f6f8c1e411c9; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3600bc2a2a3081919469a62a20d41c45: pending/publishing. Confirmar na próxima retomada; não afirmar publicada antes de succeeded. Produção e pagamentos inalterados.
