@@ -6,10 +6,10 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `106b12e90245ef646cc1ef36e7e78e566a5a3c1e`.
-- Fonte hospedada atual: `6db09b549bd002fb97cff8ebfdcd750ddfc46af2`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_7298bffaa5d481918330219eac14e745`.
-- CI da interface publicada: geral/interface 45805601078, financeiro 45805601112, concorrência 45805601314 e prévia 45805582596, todos success. Cadastro inclusivo 45805582511 aprovado.
+- Último código de interface validado: `74bd53ac52e36f9fbb98097cbc18604bad19f0bc`.
+- Fonte hospedada atual: `30ca5c4b001f62f2b6fd06105dc314bd86376343`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3994119fb5fc8191bc852027359ddcbf`.
+- CI da interface publicada: geral/interface 45807229647, financeiro 45807229830, concorrência 45807229651 e prévia 45806728660, todos success.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
 ## Entregas atuais na homologação
@@ -289,3 +289,11 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - CI final geral/interface/regressões 45807229647, financeiro 45807229830 e concorrência 45807229651 concluídos success. Prévia 45806728660 success na implementação final. Teste de navegador cobre três ordens, proposta digitada, busca, limpeza, ausência de novas consultas e encerramento da sessão fictícia.
 - Fonte hospedada 30ca5c4b001f62f2b6fd06105dc314bd86376343. Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3994119fb5fc8191bc852027359ddcbf; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_78044ae7741881919973c9991c4d65cb. Confirmar status no próximo turno antes de afirmar disponibilidade. Acesso continua somente ao proprietário.
 - PagBank adiado a pedido do proprietário. Nenhuma ligação, formulário externo ou novo checkout solicitado/executado.
+
+
+## Rótulos explícitos dos seletores — 26/11/2026
+- Ordenação anterior confirmada publicada succeeded/ready: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3994119fb5fc8191bc852027359ddcbf. O filtro Aguardando minha ação já existia; não foi duplicado.
+- Corrigidos 12 rótulos de select no cadastro profissional, edição de perfil, modelo de pedido, filtros, preparação de teste e simulador. Associação label for/id evita incluir opções no nome do campo. IDs preexistentes e nomes de formulário preservados; regras, valores e requisições inalterados.
+- Conferência HTML: 13 seletores com rótulos explícitos únicos, sem IDs duplicados. Suíte existente de interface/regressões 45807921748, financeiro 45807921771, concorrência 45807921744 e pacote 45807921776 aprovados no commit 9fbb95869345146d5ec75ff570d97d106e3ceee1.
+- Fonte hospedada cad0f39d7b2536a88b829c7ca42718fab4102e2c. Publicação privada em processamento: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_7556be11a7748191b1cfc698261d3cf2; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_c9425ed6f87c81918df8a9cd3c3829fd. Confirmar status no próximo turno. Cabeçalho identifica a última publicação já confirmada.
+- Nenhum banco, permissão, produção, checkout ou pagamento alterado. PagBank permanece adiado.
