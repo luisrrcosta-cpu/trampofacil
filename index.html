@@ -164,17 +164,17 @@ label input,label select,label textarea{font-weight:400}
 <section id="profissional" class="card" hidden>
 <h2>Cadastro de Profissional</h2>
 <form data-cadastro="profissional" method="post">
-<label>Como você oferece seus serviços?<select name="tipo_prestador" required>
+<label for="cadastro-tipo-prestador">Como você oferece seus serviços?</label><select name="tipo_prestador" required id="cadastro-tipo-prestador">
 <option value="">Selecione</option>
 <option value="pessoa_fisica">Pessoa física (CPF)</option>
 <option value="mei">MEI</option>
 <option value="empresa">Empresa (CNPJ)</option>
-</select></label>
-<label>Frequência da atividade<select name="tipo_atividade" required>
+</select>
+<label for="cadastro-tipo-atividade">Frequência da atividade</label><select name="tipo_atividade" required id="cadastro-tipo-atividade">
 <option value="">Selecione</option>
 <option value="regular">Regular — trabalho com frequência</option>
 <option value="ocasional">Ocasional — faço serviços extras</option>
-</select></label>
+</select>
 <p>Você pode oferecer serviços com CPF, MEI ou CNPJ, inclusive de forma ocasional. Esta escolha é uma declaração e não comprova documentos nem habilita emissão de nota fiscal. Não informe números de documentos nesta tela.</p>
 <label>Nome completo<input name="nome" autocomplete="name" minlength="2" maxlength="120" required></label>
 <label>E-mail<input name="email" type="email" autocomplete="email" maxlength="254" required></label>
@@ -249,7 +249,7 @@ label input,label select,label textarea{font-weight:400}
 <h2>Solicitar serviço</h2>
 <p id="profissional-escolhido"></p>
 <form id="form-solicitacao" method="post">
-<label>Modelo de pedido (opcional)<select id="modelo-solicitacao"><option value="">Escrever do zero</option><option value="reparo">Reparo ou manutenção</option><option value="instalacao">Instalação</option><option value="reforma">Obra ou reforma</option><option value="limpeza">Limpeza ou organização</option><option value="outro">Outro serviço</option></select></label>
+<label for="modelo-solicitacao">Modelo de pedido (opcional)</label><select id="modelo-solicitacao"><option value="">Escrever do zero</option><option value="reparo">Reparo ou manutenção</option><option value="instalacao">Instalação</option><option value="reforma">Obra ou reforma</option><option value="limpeza">Limpeza ou organização</option><option value="outro">Outro serviço</option></select>
 <label>Título<input name="titulo" minlength="3" maxlength="120" required></label>
 <label>Descrição<textarea name="descricao" minlength="10" maxlength="3000" aria-describedby="ajuda-descricao" required></textarea></label>
 <p id="ajuda-descricao">Explique o serviço, o local aproximado e quando precisa. Não informe endereço completo nem dados pessoais. <span id="contador-descricao">0/3000 caracteres</span></p>
@@ -264,8 +264,8 @@ label input,label select,label textarea{font-weight:400}
 <h2>Minhas solicitações</h2>
 <p id="resumo-solicitacoes" aria-label="Resumo das solicitações carregadas"></p>
 <label>Buscar nas solicitações carregadas<input id="busca-solicitacoes" type="search" maxlength="120" placeholder="Título ou descrição" aria-describedby="escopo-busca-solicitacoes"></label>
-<label>Tipo de solicitação<select id="direcao-solicitacoes"><option value="todas">Enviadas e recebidas</option><option value="enviada">Enviadas por mim</option><option value="recebida">Recebidas por mim</option></select></label>
-<label>Filtrar por situação<select id="filtro-solicitacoes"><option value="todas">Todas</option><option value="ativas">Em aberto</option><option value="minha_acao">Aguardando minha ação</option><option value="concluida">Concluídas</option><option value="cancelada">Canceladas</option></select></label>
+<label for="direcao-solicitacoes">Tipo de solicitação</label><select id="direcao-solicitacoes"><option value="todas">Enviadas e recebidas</option><option value="enviada">Enviadas por mim</option><option value="recebida">Recebidas por mim</option></select>
+<label for="filtro-solicitacoes">Filtrar por situação</label><select id="filtro-solicitacoes"><option value="todas">Todas</option><option value="ativas">Em aberto</option><option value="minha_acao">Aguardando minha ação</option><option value="concluida">Concluídas</option><option value="cancelada">Canceladas</option></select>
 <label for="ordem-solicitacoes">Ordenar solicitações carregadas</label><select id="ordem-solicitacoes"><option value="recentes">Atualização mais recente</option><option value="antigas">Atualização mais antiga</option><option value="minha_acao">Aguardando minha ação primeiro</option></select>
 <p id="escopo-busca-solicitacoes">A busca, os filtros e a ordenação consideram apenas as solicitações carregadas. Para buscar pedidos mais antigos, use “Ver solicitações anteriores”.</p>
 <button type="button" id="limpar-filtros-solicitacoes">Limpar filtros</button>
@@ -310,7 +310,7 @@ label input,label select,label textarea{font-weight:400}
 </section>
 <section id="perfil" class="card" hidden>
 <h2>Meu cadastro</h2>
-<label>Tipo de cadastro<select id="tipo-perfil"><option value="cliente">Cliente</option><option value="profissional">Profissional</option></select></label>
+<label for="tipo-perfil">Tipo de cadastro</label><select id="tipo-perfil"><option value="cliente">Cliente</option><option value="profissional">Profissional</option></select>
 <p id="status-perfil" role="status"></p>
 <p id="visibilidade-perfil"></p>
 <form id="form-perfil" hidden>
@@ -319,17 +319,17 @@ label input,label select,label textarea{font-weight:400}
 <label>WhatsApp<input name="telefone" type="tel" autocomplete="tel" maxlength="25" required></label>
 <label>Cidade<input name="cidade" autocomplete="address-level2" minlength="2" maxlength="120" required></label>
 <div id="campos-profissional" hidden>
-<label>Como você oferece seus serviços?<select name="tipo_prestador">
+<label for="perfil-tipo-prestador">Como você oferece seus serviços?</label><select name="tipo_prestador" id="perfil-tipo-prestador">
 <option value="">Selecione</option>
 <option value="pessoa_fisica">Pessoa física (CPF)</option>
 <option value="mei">MEI</option>
 <option value="empresa">Empresa (CNPJ)</option>
-</select></label>
-<label>Frequência da atividade<select name="tipo_atividade">
+</select>
+<label for="perfil-tipo-atividade">Frequência da atividade</label><select name="tipo_atividade" id="perfil-tipo-atividade">
 <option value="">Selecione</option>
 <option value="regular">Regular — trabalho com frequência</option>
 <option value="ocasional">Ocasional — faço serviços extras</option>
-</select></label>
+</select>
 <p>Você pode oferecer serviços com CPF, MEI ou CNPJ, inclusive de forma ocasional. Esta escolha é uma declaração e não comprova documentos nem habilita emissão de nota fiscal. Não informe números de documentos nesta tela.</p>
 <label>Serviço oferecido<input name="servico" minlength="2" maxlength="120"></label>
 <label>Descrição profissional<textarea name="descricao" maxlength="1000"></textarea></label>
@@ -360,8 +360,8 @@ label input,label select,label textarea{font-weight:400}
 <p>Esta ação registra uma preparação no ambiente de testes. Nenhum valor será cobrado.</p>
 <p id="pedido-preparacao"></p>
 <form id="form-preparacao">
-<label>Forma de pagamento de teste<select name="forma"><option value="credito_avista">Crédito à vista</option><option value="credito_parcelado">Crédito parcelado</option></select></label>
-<label>Parcelas de teste<select name="parcelas" disabled><option value="1">1 vez</option><option value="2">2 vezes</option><option value="3">3 vezes</option><option value="4">4 vezes</option><option value="5">5 vezes</option><option value="6">6 vezes</option><option value="7">7 vezes</option><option value="8">8 vezes</option><option value="9">9 vezes</option><option value="10">10 vezes</option></select></label>
+<label for="pagamento-forma">Forma de pagamento de teste</label><select name="forma" id="pagamento-forma"><option value="credito_avista">Crédito à vista</option><option value="credito_parcelado">Crédito parcelado</option></select>
+<label for="pagamento-parcelas">Parcelas de teste</label><select name="parcelas" disabled id="pagamento-parcelas"><option value="1">1 vez</option><option value="2">2 vezes</option><option value="3">3 vezes</option><option value="4">4 vezes</option><option value="5">5 vezes</option><option value="6">6 vezes</option><option value="7">7 vezes</option><option value="8">8 vezes</option><option value="9">9 vezes</option><option value="10">10 vezes</option></select>
 <button type="submit">Registrar preparação de teste</button>
 </form>
 <p id="status-preparacao" role="status"></p>
@@ -374,8 +374,8 @@ label input,label select,label textarea{font-weight:400}
 <p>Referências da maquininha: 4% à vista e 12% no total em até 10 vezes. Estas condições ainda não foram confirmadas para pagamentos online.</p>
 <form id="form-simulacao">
 <label>Orçamento do serviço (R$)<input name="valor" inputmode="decimal" placeholder="Ex.: 100,00" maxlength="12" required></label>
-<label>Forma de pagamento<select name="forma"><option value="credito_avista">Crédito à vista — referência de 4%</option><option value="credito_parcelado">Crédito parcelado — referência total de 12%</option></select></label>
-<label>Quantidade de parcelas<select name="parcelas" disabled><option value="1">1 vez</option><option value="2">2 vezes</option><option value="3">3 vezes</option><option value="4">4 vezes</option><option value="5">5 vezes</option><option value="6">6 vezes</option><option value="7">7 vezes</option><option value="8">8 vezes</option><option value="9">9 vezes</option><option value="10">10 vezes</option></select></label>
+<label for="simulacao-forma">Forma de pagamento</label><select name="forma" id="simulacao-forma"><option value="credito_avista">Crédito à vista — referência de 4%</option><option value="credito_parcelado">Crédito parcelado — referência total de 12%</option></select>
+<label for="simulacao-parcelas">Quantidade de parcelas</label><select name="parcelas" disabled id="simulacao-parcelas"><option value="1">1 vez</option><option value="2">2 vezes</option><option value="3">3 vezes</option><option value="4">4 vezes</option><option value="5">5 vezes</option><option value="6">6 vezes</option><option value="7">7 vezes</option><option value="8">8 vezes</option><option value="9">9 vezes</option><option value="10">10 vezes</option></select>
 <button type="submit">Calcular simulação</button>
 </form>
 <p id="erro-simulacao" role="alert"></p>
