@@ -66,3 +66,10 @@ As proteções e a consulta local estão entregues; a integração externa de pa
 - CI da última implementação: geral/interface 45859041441, financeiro 45859041476 e concorrência 45859041404, todos success. Não foi repetido ensaio manual autenticado apenas para confirmar publicação.
 - Auditoria de revisão somente de leitura: cinco tabelas privadas examinadas com RLS e sem acesso direto para authenticated; 13 corpos de funções comparados aos SQL versionados com correspondência após normalização de comentários/espaços. Nenhuma decisão real executada. Advisors de 26/11 mantêm avisos preexistentes descritos acima.
 - Cadastro, contratação, mensagens, revisão, acompanhamento fiscal e avaliação privada têm evidências registradas. A integração externa de pagamento permanece incompleta e não é requisito para continuar desenvolvimento independente em homologação. Não confundir a prévia privada disponível com lançamento comercial autorizado.
+
+
+## Consolidação da entrega privada — 26/11
+
+A referência corrente é a fonte 74d7f208d51520698622601a86bfe346d64a9838, publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3600bc2a2a3081919469a62a20d41c45 confirmada succeeded/ready. Supera as fontes anteriores desta revisão. Inclui guia de uso, isolamento do pedido entre contas após login expirado e adaptação de nomes longos no celular. CI atual geral/interface 45863359047, financeiro 45863359051 e concorrência 45863359054 success.
+
+As entregas descritas estão disponíveis para teste privado. Não há publicação pendente neste ponto. As pendências de lançamento permanecem: resultado externo do checkout e notificação autêntica, condições de operação financeira e definição do procedimento documental caso seja oferecida verificação. Melhorias de interface não eliminam esses requisitos. O suporte PagBank segue adiado a pedido do proprietário. Esta consolidação altera apenas documentação; não representa funcionalidade adicional nem teste novo.
