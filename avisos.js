@@ -36,7 +36,7 @@ async function carregarAvisosAtendimento(anteriores=false){
    const leitura=texto('p',item.lido_em?'Lido':'Não lido');
    const marcar=botaoAcao('Marcar como lido',()=>marcarLido(item,card,leitura,marcar));marcar.hidden=Boolean(item.lido_em);
    const mensagem=texto('p',item.mensagem);mensagem.className='texto-mensagem';
-   card.append(texto('h3',titulo+' — '+item.titulo),horarioAviso(item.criado_em),mensagem,leitura,marcar,botaoAcao(item.tipo==='mensagem'?'Abrir conversa':'Ver solicitação',()=>item.tipo==='mensagem'?abrirConversa(item.solicitacao_id):retornarParaSolicitacoes(item.solicitacao_id)));lista.append(card);
+   card.append(texto('h3',titulo+' — '+item.titulo),horarioAviso(item.criado_em),mensagem,leitura,marcar,botaoAcao(item.tipo==='mensagem'?'Abrir conversa':'Ver solicitação',()=>item.tipo==='mensagem'?abrirConversa(item.solicitacao_id):retornarParaSolicitacoes(item.solicitacao_id,true)));lista.append(card);
   }
   const ultimo=itens[Math.min(itens.length,50)-1];cursorAvisosAtendimento=ultimo?{antes_em:ultimo.criado_em,antes_tipo:ultimo.tipo,antes_id:ultimo.evento_id}:null;
   mais.hidden=itens.length<=50;estado.textContent=lista.children.length?'Avisos consultados. Use Atualizar avisos para buscar novidades.':'Você ainda não tem avisos de atendimento.';atualizarResumoAvisos();

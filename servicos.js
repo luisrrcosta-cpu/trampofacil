@@ -350,7 +350,7 @@ function proteger(destino) {
   if (destino === 'avisos-atendimento') carregarAvisosAtendimento();
 }
 
-async function retornarParaSolicitacoes(id) {
+async function retornarParaSolicitacoes(id, localizarAusente = false) {
   if (!sessaoServicos || !integrado || !autenticacaoPronta || ocupado) {proteger('solicitacoes');return;}
   if (typeof id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
     elemento('status-solicitacoes').textContent = 'Solicitação inválida. Atualize os avisos antes de tentar novamente.';
@@ -367,6 +367,7 @@ async function retornarParaSolicitacoes(id) {
   let card = Array.from(listaPedidos.children).find(item => item.dataset.solicitacaoId === id);
   let localizadoPorId = false;
   if (!card) {
+    if (!localizarAusente) return;
     bloquear(secao, true);estado.textContent = 'Localizando a solicitação indicada…';
     try {
       const resposta = await apiPedidos({select:camposConsultaPedidos,id:'eq.'+id,limit:'1'});
@@ -389,6 +390,7 @@ async function retornarParaSolicitacoes(id) {
   }
   if (!atual()) return;
   if (card.hidden) {
+    if (!localizarAusente) return;
     filtroPedidos.value = 'todas';direcaoPedidos.value = 'todas';buscaPedidos.value = '';
     aplicarFiltroPedidos();estado.textContent = 'Solicitação localizada. Os filtros foram limpos para exibir este pedido.';
   } else if (localizadoPorId) estado.textContent = 'Solicitação indicada localizada e destacada na lista.';
