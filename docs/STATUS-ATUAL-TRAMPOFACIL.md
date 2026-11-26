@@ -395,3 +395,14 @@ Fonte privada 42e981d22339d1efdde99968e0a3a734f53bca5b, versão appgprj_6afeee18
 ## 26/11 — Aviso de saída confirmado na homologação
 
 Publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_2baacf6f68588191a14589fa65c7d651 confirmada succeeded/ready. Fonte 42e981d22339d1efdde99968e0a3a734f53bca5b. CI geral/interface 45859041441, financeiro 45859041476 e concorrência 45859041404 success. O estado pending anterior está superado. Sem novo teste manual autenticado nesta confirmação.
+
+
+## 26/11 — Privacidade do pedido após sessão expirada
+
+Corrigido vazamento potencial de preenchimento entre contas: o formulário mantém titular em memória; após expiração, o novo login do mesmo usuário preserva título/descrição e tentativa idempotente. Login de outro usuário limpa formulário, contador, status e tentativa anterior antes de mostrar a tela. Logout explícito limpa também o titular. A seleção pública do profissional pode permanecer, mas nenhum texto privado da conta anterior é reapresentado. Nenhum armazenamento persistente adicionado.
+
+Corrigido também formulário que permanecia desativado após 401: a troca de sessão libera os controles da nova solicitação, mantendo guardas contra respostas atrasadas. Teste com API simulada verifica POST 401, retorno do titular com texto e controles habilitados, troca para outra conta com campos vazios e chave anterior removida; somente um POST, sem reenvio automático.
+
+Código final 825e38d1862fef3b6e10f535895526328e3c98cb; testes dd111bb6f9b2c0378332d1dc03100e8d9e9ce82c. CI success: geral/interface 45860446844, financeiro 45860446935, concorrência 45860446808. Sintaxe JavaScript e git diff --check aprovadas. Sem alteração de banco, RLS, produção ou pagamentos.
+
+Fonte privada 4af74b7956611d21ac24e8b789bc57c33db3cb15. Versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_6c0acdc670e8819184e446ff45e811e9; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_e9333b5fc4c0819189e4ef1fc16a09fd: pending/publishing. Confirmar na próxima retomada; não presumir publicada nem criar nova publicação para conferir estado.
