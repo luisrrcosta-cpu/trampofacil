@@ -33,6 +33,12 @@ test('busca normaliza acentos e espaços sem vazar perfis ocultos ou expandir cu
   assert.equal((await buscar('','outra cidade')).rows.length,0);
   assert.equal((await buscar(null,'')).rows.length,0);
   assert.equal((await buscar('','',-1)).rows.length,20);
+  assert.equal((await buscar('','',null)).rows.length,20);
+  for(const pagina of [10000,10001,2147483647]) {
+    assert.equal((await buscar('','',pagina)).rows.length,0);
+  }
+  const plano=await db.query('explain (format json) select * from buscar_profissionais($1,$2,$3)',['','',2147483647]);
+  assert.ok(plano.rows.length>0,'página extrema mantém plano executável sem overflow');
   await db.exec('reset role');
   assert.equal((await db.query('select count(*)::int as n from catalogo_profissionais')).rows[0].n,25);
   assert.equal((await db.query("select prosecdef from pg_proc where proname='buscar_profissionais'")).rows[0].prosecdef,false);
