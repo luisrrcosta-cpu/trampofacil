@@ -330,3 +330,14 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Nesta retomada foi concluída a conferência de publicação. Sem nova implementação, reexecução manual de testes ou operação financeira.
 - Próxima lacuna conhecida de propostas: recarga automática após concluir uma ação pode substituir edições não enviadas de outros cards. Antes de corrigir, definir preservação em memória condicionada ao mesmo titular, pedido, estado e versão do orçamento; nunca restaurar sobre estado atualizado de outra parte, nem manter dados após logout. Validar resposta tardia e falha sem alterar regras financeiras.
 - Ambiente de execução informado indisponível nesta retomada. Não presumir nova alteração ou teste local concluído.
+
+
+## Preservação de propostas em recargas automáticas — 26/11/2026
+- Implementação salva na branch autorizada em 224a2ba2b6518b79be9e835c877d369a5690897d; testes finais em 0452d8f68a360a1814aad6daafaa31087e2d331c.
+- Recargas automáticas recuperam apenas o valor do campo, em memória, para o mesmo ID, estado, timestamp exato e valor inicial do orçamento. Novos handlers e dados vêm da resposta atual; não transportar permissões ou closures antigas. Recuperação ocorre somente após validação de resposta e conferência da mesma sessão/versão da consulta.
+- Mudança de versão/estado/valor inicial impede restauração. Entradas numéricas incompletas com badInput não são recuperadas. Pedido ausente não cria card nem rascunho persistido. Não há armazenamento local/offline.
+- Atualizar manual continua com descarte explícito quando confirmado, sem restaurar a edição após sucesso; falha conserva o card. Navegação e logout mantêm as proteções/limpeza anteriores.
+- CI completa: geral/interface/regressões 45832183670, financeiro 45832183722 e concorrência 45832183567 success. Prévia 45832181764 success no commit de implementação. Teste móvel verifica recarga automática da mesma versão preservando valor, timestamp novo descartando e estado aceito removendo campo; testes anteriores de confirmação e sessão permanecem aprovados.
+- NÃO PUBLICADO: ambiente local indisponível, exec_command retornou No usable execution environment is available. Alteração validada e salva no GitHub, mas ainda não sincronizada com a fonte Sites. Prévia privada permanece na fonte c901b840a226f08576aed724081f6229a274d1c2, deployment ac0ed81dd0d881919426a94a7e9cfa2a já confirmado no cabeçalho.
+- Próxima ação concreta quando o ambiente voltar: abrir fonte Sites pelo helper, comparar e copiar servicos.js do commit 0452d8f68a360a1814aad6daafaa31087e2d331c para dist/servicos.js; empacotar/push e publicar mantendo proprietário como único público. Não refazer testes manuais nem reenviar checkout.
+- Sem alterações de banco, produção, permissões ou pagamentos. PagBank continua adiado.
