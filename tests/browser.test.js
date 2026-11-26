@@ -307,6 +307,16 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await page.getByRole('button',{name:'Minhas solicitações',exact:true}).click();
   await page.getByText('Recebida · Solicitada').waitFor();
 
+  const saidaBloqueada = () => page.evaluate(() => {
+    const evento = new Event('beforeunload', {cancelable:true});
+    window.dispatchEvent(evento);
+    return evento.defaultPrevented;
+  });
+  assert.equal(await saidaBloqueada(), false, 'valor inicial não bloqueia saída');
+  await page.getByLabel('Valor da proposta (R$)').fill('175');
+  assert.equal(await saidaBloqueada(), true, 'proposta editada avisa antes de fechar/recarregar');
+  await page.getByLabel('Valor da proposta (R$)').fill('');
+  assert.equal(await saidaBloqueada(), false, 'restaurar o valor inicial remove o aviso');
   await page.getByLabel('Valor da proposta (R$)').fill('150');
   await page.getByRole('button', { name: 'Enviar proposta' }).click();
   await page.getByText('A solicitação mudou.', { exact: false }).waitFor();
@@ -314,6 +324,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
   await page.getByRole('button', { name: 'Enviar proposta' }).click();
   await page.getByText('Recebida · Proposta enviada').waitFor();
   assert.equal(pedido.valor_centavos, 15000);
+  assert.equal(await saidaBloqueada(), false, 'proposta confirmada não deixa aviso pendente');
   await page.getByRole('button', { name: 'Ver histórico e mensagens' }).click();
   await page.getByText(textoFicticio, { exact: true }).waitFor();
   assert.equal(await page.locator('#mensagens-conversa li').first().locator('strong').textContent(), 'Outra parte');
