@@ -1419,3 +1419,49 @@ test('pedido não enviado conserva texto após novo login do titular e limpa na 
   assert.equal(await page.evaluate(()=>tentativa===undefined),true,'chave da conta anterior removida');
   assert.equal(escritas,1,'somente envio inicial expirado; novo login e troca não repetem o pedido');
 });
+
+test('telas e catálogo permanecem utilizáveis em celulares com nomes longos',async t=>{
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const server=createServer(async(req,res)=>{
+    const arquivo=req.url==='/'?'index.html':req.url.slice(1);
+    if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',arquivo.endsWith('.js')?'application/javascript':'text/html; charset=utf-8');
+    res.end(await readFile(new URL('../'+arquivo,import.meta.url)));
+  }).listen(0,'127.0.0.1');
+  await once(server,'listening');t.after(()=>server.close());
+  const browser=await chromium.launch({executablePath:process.env.TRAMPOFACIL_CHROMIUM||'/usr/bin/chromium'});
+  t.after(()=>browser.close());
+  const page=await browser.newPage({viewport:{width:360,height:800},isMobile:true,hasTouch:true});
+  page.setDefaultTimeout(5000);
+  const erros=[];page.on('pageerror',e=>erros.push(e.message));
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',route=>{
+    assert.ok(route.request().url().includes('/rpc/buscar_profissionais'));
+    return route.fulfill({json:[{id:'77777777-7777-4777-8777-777777777777',
+      nome:'N'.repeat(120),cidade:'Cidade de teste',servico:'Pintura',descricao:'Descrição fictícia'}]});
+  });
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  for(const largura of [320,360,390,768]){
+    await page.setViewportSize({width:largura,height:800});
+    for(const secao of ['inicio','cliente','profissional','entrar','nova-solicitacao','solicitacoes','simulacao']){
+      await page.evaluate(id=>mostrar(id),secao);
+      const medidas=await page.evaluate(()=>({
+        largura:document.documentElement.clientWidth,
+        conteudo:document.documentElement.scrollWidth,
+        botoes:[...document.querySelectorAll('main section:not([hidden]) button')].filter(b=>!b.hidden).map(b=>{
+          const r=b.getBoundingClientRect();return {esquerda:r.left,direita:r.right,altura:r.height};
+        })
+      }));
+      assert.ok(medidas.conteudo<=medidas.largura+1,`${secao} com ${largura}px não deve rolar lateralmente`);
+      for(const b of medidas.botoes){
+        assert.ok(b.esquerda>=0 && b.direita<=largura+1,'botões dentro da tela');
+        assert.ok(b.altura>=40,'botões com área de toque utilizável');
+      }
+    }
+    await page.evaluate(()=>{mostrar('catalogo');return procurar({termo_servico:'Pintura',termo_cidade:''},0);});
+    await page.getByRole('heading',{name:'N'.repeat(120),exact:true}).waitFor();
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1),true,
+      'nome longo não deve alargar o catálogo');
+    assert.equal(await page.getByRole('button',{name:'Solicitar serviço',exact:true}).isVisible(),true);
+  }
+  assert.deepEqual(erros,[]);
+});
