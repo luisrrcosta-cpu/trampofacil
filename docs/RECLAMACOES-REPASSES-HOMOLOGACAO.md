@@ -14,7 +14,7 @@ Atualizado em 26/11/2026. Esta é uma entrega de atendimento em testes; não é 
 
 ## Limites operacionais
 
-O módulo ainda não atribui responsável, envia notificações, define SLA, resolve o caso, aprova ressarcimento ou executa movimentação bancária. A conta administrativa precisa consultar a fila. O aviso de registro para análise não é confirmação de trabalho iniciado por uma equipe.
+A administração autorizada agora registra início de análise, respostas, conclusão do atendimento e reabertura, mantendo histórico imutável visível às partes. Conclusão é administrativa: não executa ressarcimento, não declara quitação financeira nem elimina direitos legais. O módulo ainda não atribui responsável, envia notificações ou define SLA. A conta administrativa precisa consultar a fila; as partes consultam o acompanhamento manualmente.
 
 Não foram habilitados pagamentos reais, repasses, reembolsos, custódia, prazo de liberação ou promessa de reserva. A tentativa sandbox PagBank incerta permanece intocada. Nenhuma chamada financeira foi repetida.
 
@@ -36,3 +36,12 @@ Perguntas para confirmação escrita do provedor, sem envio automático: nossa c
 Migration criada com CLI Supabase: supabase/migrations/20261126214707_reclamacoes_servico_homologacao.sql. Aplicada somente em asdszqtpydiowgerxwee. Metadados confirmaram duas tabelas com RLS, seis políticas, autoria protegida e ausência de UPDATE/SELECT anônimo. Advisors sem novos achados; os avisos anteriores permanecem.
 
 Testes isolados PostgreSQL/PGlite e navegador com API simulada cobrem titularidade, privacidade, perda de resposta, unicidade, resposta profissional, texto não executável e acesso administrativo revogado. A suíte de CI do commit d1f91ace8515ae0c368ea6bb58fe57e8921f11c1 passou 267 testes mais regressões. O empacotamento precisou acrescentar reclamacoes.js à lista exata de scripts; corrigido em 25ab0359d953e3687e5eec7ee995f9256281722b. Sem dados reais de reclamações criados nos testes.
+
+
+## Acompanhamento — continuação em 26/11
+
+Status inicial derivado: aguardando_analise. Transições: iniciar em_analise; acrescentar resposta ou concluir a partir de em_analise; reabrir concluida para em_analise. Sem exclusão/edição do histórico. Cada evento possui versão sequencial e UUID de operação; bloqueio de linha, versão esperada e idempotência evitam perda de alterações e duplicação. Revogação de revisor é conferida sob lock; administrador participante não decide o próprio caso. Consulta paginada por versão, 50 itens mais sentinela, sem expor autoria administrativa na resposta da RPC.
+
+Migração: supabase/migrations/20261126220117_acompanhamento_reclamacoes_homologacao.sql, aplicada somente à homologação. Privilegios diretos de INSERT/UPDATE/DELETE revogados, duas políticas RLS, RPCs públicas invoker e internas definer com search_path vazio. Nenhum dado existente removido, nenhum evento real criado nos testes, nenhum efeito financeiro.
+
+Testes PGlite: transições, reabertura, idempotência, revisão antiga, acesso de cliente/profissional/terceiro/anônimo, revogação, proteção contra decisão no próprio caso e paginação. Teste PostgreSQL com conexões independentes comprovou disputa de lock, mesmo UUID repetido, revisão concorrente e revogação. Teste de navegador usa origem HTTPS simulada para crypto.randomUUID, recupera resposta perdida por consulta, conclui atendimento, percorre 60 eventos em duas páginas, impede execução de HTML e descarta resposta após troca de sessão.
