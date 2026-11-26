@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'sha256-Izdcn5p6tg74yoxWczvJfHnEZmt8+hTHbJ0jdssO0kk='; connect-src https://asdszqtpydiowgerxwee.supabase.co; img-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'sha256-P5nSbxco9FTMvc2E6/FEzTpIW/iwPxwZvt3SetgnBfk='; connect-src https://asdszqtpydiowgerxwee.supabase.co; img-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <title>TrampoFácil</title>
@@ -47,6 +47,8 @@ input,select,textarea{background:#fff;color:#17243b;max-width:100%}
 label{display:block;font-weight:600;margin-top:10px}
 label input,label select,label textarea{font-weight:400}
 #inicio{text-align:center}
+#inicio .nome-destaque{color:#c45100}
+#inicio h2::after{content:"";display:block;width:56px;height:4px;background:#ff7900;border-radius:2px;margin:14px auto 0}
 #inicio>p{color:#475569}
 #inicio button{margin:9px 0}
 #aviso-homologacao{background:#fff8f1;border-left:4px solid #ff7900}
@@ -79,7 +81,7 @@ label input,label select,label textarea{font-weight:400}
 <p id="aviso-autenticacao" hidden>O acesso por e-mail está em preparação. Você já pode consultar a busca e usar o simulador.</p>
 </aside>
 <section id="inicio" class="card">
-<h2>Bem-vindo ao TrampoFácil!</h2>
+<h2>Bem-vindo ao <span class="nome-destaque">TrampoFácil!</span></h2>
 <p>Encontre profissionais ou ofereça seus serviços de maneira simples e rápida.</p>
 <p id="aviso-demo" hidden>Modo de demonstração. Use dados fictícios. Os formulários não enviam dados.</p>
 <div id="menu-servicos" hidden>
