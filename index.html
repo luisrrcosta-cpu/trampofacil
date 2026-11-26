@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'sha256-P5nSbxco9FTMvc2E6/FEzTpIW/iwPxwZvt3SetgnBfk='; connect-src https://asdszqtpydiowgerxwee.supabase.co; img-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'sha256-Z76uBSBgqOFgXNFRST6BTkcRwKqWHs7+rglWYjBdHfE='; connect-src https://asdszqtpydiowgerxwee.supabase.co; img-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <title>TrampoFácil</title>
@@ -66,6 +66,17 @@ label input,label select,label textarea{font-weight:400}
 #resultados-busca .profissional-servico{font-weight:700;color:#12345b}
 #resultados-busca .profissional-local{font-size:14px}
 
+
+/* Apresentação pública do profissional: somente dados já disponíveis no catálogo. */
+.profissional-cabecalho{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.profissional-cabecalho h3{min-width:0;flex:1;color:#12345b}
+.profissional-iniciais{display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;border-radius:14px;background:#12345b;color:#fff;font-size:18px;font-weight:700;border-bottom:3px solid #ff7900}
+#resultados-busca .profissional-servico{display:inline-block;max-width:100%;background:#fff0e3;padding:5px 10px;border-radius:8px;color:#12345b}
+#resultados-busca .profissional-local{font-size:16px}
+.profissional-descricao,.profissional-resumo{white-space:pre-wrap}
+.profissional-detalhes{margin:12px 0}
+.profissional-detalhes summary{cursor:pointer;color:#12345b;font-weight:700;text-decoration:underline;text-decoration-color:#ff7900;text-underline-offset:4px;padding:10px 0;overflow-wrap:anywhere}
+.profissional-detalhes summary:focus-visible{outline:3px solid #12345b;outline-offset:3px;border-radius:4px}
 </style>
 </head>
 <body>
