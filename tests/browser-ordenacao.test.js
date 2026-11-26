@@ -87,8 +87,22 @@ test('ordena solicitações carregadas sem rede, preserva proposta e reinicia ao
   await inicio.click();
   assert.equal(await page.locator('#inicio').isVisible(),true);
   assert.equal(await campo.inputValue(),'');assert.equal(chamadas,4);
+  // Recarga automática conserva edição somente na mesma versão do pedido.
+  await page.evaluate(()=>proteger('solicitacoes'));
+  await page.waitForFunction(()=>!document.getElementById('recarregar-solicitacoes').disabled);
+  await campo.fill('456');
+  await page.evaluate(()=>carregarPedidos('Atualização após outra ação.'));
+  assert.equal(await campo.inputValue(),'456');assert.equal(chamadas,6);
+  // Versão alterada pelo servidor descarta o rascunho antigo.
+  pedidos[0].atualizado_em='2026-11-26T12:01:00Z';
+  await page.evaluate(()=>carregarPedidos());
+  assert.equal(await campo.inputValue(),'');assert.equal(chamadas,7);
+  // Transição de estado não deve recuperar um orçamento em tela incompatível.
+  await campo.fill('789');pedidos[0].status='aceita';
+  await page.evaluate(()=>carregarPedidos());
+  assert.equal(await campo.count(),0);assert.equal(chamadas,8);
   await page.evaluate(()=>iniciarSessao(undefined));
   assert.equal(await page.locator('#ordem-solicitacoes').inputValue(),'recentes');
   assert.equal(await page.locator('#lista-solicitacoes > article').count(),0);
-  assert.equal(chamadas,4);
+  assert.equal(chamadas,8);
 });
