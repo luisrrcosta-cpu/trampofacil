@@ -412,6 +412,7 @@ async function carregarRevisao(pagina = 0, aviso = '') {
       : 'Nenhum perfil pendente nesta página.');
   } catch {
     if (atual()) {
+      limparBuscaRevisao();
       listaRevisao.replaceChildren();
       statusRevisao.textContent = 'Não foi possível consultar a fila. Atualize para tentar novamente.';
     }
@@ -442,6 +443,7 @@ async function aprovarPerfilRevisao(item) {
     aprovado = true;
   } catch {
     if (atual()) {
+      limparBuscaRevisao();
       listaRevisao.replaceChildren();
       anteriorRevisao.hidden = true;
       proximaRevisao.hidden = true;
@@ -486,6 +488,7 @@ async function pedirAjusteRevisao(item,motivo) {
     salvo = true;
   } catch {
     if (atual()) {
+      limparBuscaRevisao();
       listaRevisao.replaceChildren(); anteriorRevisao.hidden = true; proximaRevisao.hidden = true;
       statusRevisao.textContent = 'Não foi possível confirmar a orientação. Atualize a fila e revise o cadastro antes de tentar novamente.';
     }
@@ -562,6 +565,7 @@ async function recusarPublicacao(item,motivo) {
     salvo=true;
   }catch{
     if(atual()){
+      limparBuscaRevisao();
       listaRevisao.replaceChildren();anteriorRevisao.hidden=true;proximaRevisao.hidden=true;
       statusRevisao.textContent='Não foi possível confirmar a recusa. Atualize a fila antes de tentar novamente.';
     }
