@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'sha256-1KEWO3X4S7h13/BZThBBY0Wo9dMraV/h/C3bvO/8J1M='; connect-src https://asdszqtpydiowgerxwee.supabase.co; img-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'sha256-GE2ORrj+Fm9ABMFlEF/OS4/LgTzTyq5wCKC1M1jN9uI='; connect-src https://asdszqtpydiowgerxwee.supabase.co; img-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <title>TrampoFácil</title>
@@ -79,6 +79,7 @@ label input,label select,label textarea{font-weight:400}
 .profissional-detalhes summary:focus-visible{outline:3px solid #12345b;outline-offset:3px;border-radius:4px}
 .reclamacao-servico{border:1px solid #d7dfe9;border-left:4px solid #ff7900;border-radius:8px;padding:12px;margin-top:16px}.reclamacao-servico summary{overflow-wrap:anywhere;cursor:pointer;min-height:44px;padding:10px 0;font-weight:bold;color:#12345b}.reclamacao-servico p,#lista-reclamacoes-admin p{white-space:pre-wrap;overflow-wrap:anywhere}
 .solicitacao-destacada{border-left:4px solid #ff7900;padding-left:12px;padding-right:8px}.solicitacao-destacada h3:focus{outline:3px solid #12345b;outline-offset:4px;border-radius:3px}
+.ajuda-duvida{border-top:1px solid #dce5f3;padding:10px 0}.ajuda-duvida summary{cursor:pointer;min-height:48px;padding:12px 0;font-weight:700;color:#12345b;overflow-wrap:anywhere}.ajuda-duvida summary:focus-visible{outline:3px solid #12345b;outline-offset:2px;border-radius:4px}.ajuda-duvida dt{font-weight:700;color:#12345b;margin-top:12px}.ajuda-duvida dd{margin:4px 0 12px;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -133,6 +134,40 @@ label input,label select,label textarea{font-weight:400}
 <p>Use as mensagens do pedido para combinar o que será feito, materiais, local e prazo. Evite colocar documentos e endereço completo na descrição inicial.</p>
 <p>Pagamentos online ainda não estão disponíveis. Aceitar uma proposta registra o orçamento combinado e não realiza cobrança. O simulador mostra uma estimativa, sem movimentar dinheiro.</p>
 <p>O pedido de nota fiscal pode ser acompanhado pelo aplicativo. A emissão e a entrega são combinadas com o profissional; o TrampoFácil não emite nem verifica o documento.</p>
+<h3>Dúvidas durante a contratação</h3>
+<details class="ajuda-duvida">
+<summary>O que significa cada etapa do serviço?</summary>
+<dl>
+<dt>Solicitada</dt><dd>O cliente enviou o pedido. O profissional ainda precisa responder.</dd>
+<dt>Proposta</dt><dd>O profissional enviou ou atualizou um orçamento. O cliente deve conferir o valor e os detalhes antes de aceitar.</dd>
+<dt>Aceita</dt><dd>O cliente aceitou a proposta. Isso não confirma pagamento nem reserva dinheiro.</dd>
+<dt>Em andamento</dt><dd>O profissional registrou o início do serviço.</dd>
+<dt>Entregue</dt><dd>O profissional informou que terminou. O cliente deve conferir o trabalho antes de confirmar a conclusão.</dd>
+<dt>Concluída</dt><dd>O cliente confirmou a conclusão do serviço. Essa confirmação não é um comprovante de pagamento.</dd>
+<dt>Cancelada</dt><dd>A solicitação foi cancelada. O status não confirma devolução de dinheiro.</dd>
+</dl>
+</details>
+<details class="ajuda-duvida">
+<summary>Como vejo respostas e mensagens?</summary>
+<p>Abra “Meus avisos” e use “Atualizar avisos” para consultar novidades. “Ver solicitação” abre o pedido relacionado; “Abrir conversa” leva ao histórico e às mensagens. Para mensagens antigas, pode ser necessário carregar as páginas anteriores da conversa.</p>
+<p>Os avisos ficam dentro do aplicativo. Ainda não são enviados por WhatsApp, e-mail ou notificação no celular. Marcar um aviso como lido é uma organização só da sua conta e não envia confirmação à outra pessoa.</p>
+</details>
+<details class="ajuda-duvida">
+<summary>Como registro um problema com o serviço?</summary>
+<p>Em “Minhas solicitações”, encontre o pedido e abra “Problemas e reclamações”. Toque em “Consultar reclamação”. Se ainda não existir um registro, o cliente pode escolher o motivo e descrever o problema com 10 a 2.000 caracteres.</p>
+<p>O profissional pode consultar o relato e registrar sua resposta inicial. Cliente e profissional podem usar “Consultar acompanhamento” para ler as atualizações da administração. O relato e as respostas ficam disponíveis às partes e ao atendimento autorizado.</p>
+<p>Informe o que foi combinado e o que aconteceu. Evite enviar senhas, documentos ou dados bancários. Registrar uma reclamação não bloqueia dinheiro nem aprova reembolso automaticamente.</p>
+</details>
+<details class="ajuda-duvida">
+<summary>Posso cancelar a solicitação?</summary>
+<p>No aplicativo, a opção de cancelamento fica disponível para cliente e profissional enquanto o pedido está nas etapas solicitada, proposta ou aceita. Se precisar tratar um cancelamento depois do início do serviço, use o registro de problema para pedir análise do que aconteceu.</p>
+<p>Cancelar o pedido não confirma estorno. Confira a situação do atendimento e qualquer confirmação financeira separadamente.</p>
+</details>
+<details class="ajuda-duvida">
+<summary>Atendimento concluído significa dinheiro devolvido?</summary>
+<p>Não. “Atendimento concluído” se refere ao encerramento da análise registrada pela administração. Não é confirmação de estorno, pagamento ou liberação de valores. As atualizações anteriores continuam no histórico, e a administração pode reabrir o atendimento.</p>
+<p>Não confunda a conclusão do atendimento com a conclusão do serviço, que é confirmada pelo cliente na solicitação.</p>
+</details>
 <button class="voltar" type="button" data-pagina="inicio">Página inicial</button>
 </section>
 
@@ -316,6 +351,7 @@ label input,label select,label textarea{font-weight:400}
 <button type="button" id="recarregar-solicitacoes">Atualizar</button>
 <div id="lista-solicitacoes"></div>
 <button type="button" id="mais-solicitacoes" hidden>Ver solicitações anteriores</button>
+<button class="voltar" type="button" data-pagina="como-funciona">Ajuda com solicitações e problemas</button>
 <button class="voltar" type="button" data-pagina="inicio">Página inicial</button>
 </section>
 <section id="conversa" class="card" hidden>
@@ -450,6 +486,7 @@ label input,label select,label textarea{font-weight:400}
 <button type="button" id="atualizar-avisos-atendimento">Atualizar avisos</button>
 <p id="status-avisos-atendimento" role="status"></p>
 <p id="resumo-avisos-atendimento" aria-live="polite"></p>
+<button class="voltar" type="button" data-pagina="como-funciona">Ajuda com solicitações e problemas</button>
 <div id="lista-avisos-atendimento"></div>
 <button type="button" id="mais-avisos-atendimento" hidden>Ver avisos anteriores</button>
 <button type="button" data-pagina="inicio">Página inicial</button>
