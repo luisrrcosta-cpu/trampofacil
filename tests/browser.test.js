@@ -1129,11 +1129,14 @@ test('painel de revisão nega acesso comum, não repete aprovação incerta e li
   const revisor='44444444-4444-4444-8444-444444444444';
   const alvo='22222222-2222-4222-8222-222222222222';
   const perfil={nome:'<img src=x onerror=alert(1)>',cidade:'Cidade',servico:'Costura',descricao:'Perfil de teste',tipo_prestador:'pessoa_fisica',tipo_atividade:'ocasional'};
-  let negado=true,aprovado=false,escritas=0,perderResposta=true;
+  let negado=true,aprovado=false,escritas=0,perderResposta=true,negadas=0;
   await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
     const req=route.request(),url=new URL(req.url());
     assert.equal(req.headers().authorization,'Bearer revisor');
-    if(negado)return route.fulfill({status:403,json:{message:'Área restrita'}});
+    if(negado) {
+      if(url.pathname!=='/rest/v1/rpc/listar_perfis_revisao')negadas++;
+      return route.fulfill({status:403,json:{message:'Área restrita'}});
+    }
     if(url.pathname==='/rest/v1/rpc/listar_perfis_revisao'){
       assert.deepEqual(req.postDataJSON(),{pagina:0});
       return route.fulfill({json:aprovado?[]:[{usuario_id:alvo,solicitado_em:'2026-11-23T18:00:00Z',perfil}]});
@@ -1166,6 +1169,26 @@ test('painel de revisão nega acesso comum, não repete aprovação incerta e li
   await page.getByRole('button',{name:'Aprovar publicação de '+perfil.nome,exact:true}).click();
   await page.getByText('Publicação aprovada.',{exact:false}).waitFor();
   assert.equal(escritas,2);
+  // A autorização pode ser revogada depois de carregar a fila.
+  const decisoes=[
+    {botao:'Aprovar publicação de '},
+    {botao:'Pedir ajuste de ',rotulo:'Orientação para o profissional',motivo:'detalhar_servico'},
+    {botao:'Recusar publicação de ',rotulo:'Motivo da recusa',motivo:'servico_nao_identificavel'},
+  ];
+  for(const [i,decisao] of decisoes.entries()) {
+    aprovado=false;negado=false;
+    await page.getByRole('button',{name:'Atualizar fila de análise',exact:true}).click();
+    await page.getByRole('heading',{name:perfil.nome,exact:true}).waitFor();
+    if(decisao.rotulo)await page.getByLabel(decisao.rotulo,{exact:true}).selectOption(decisao.motivo);
+    negado=true;
+    await page.getByRole('button',{name:decisao.botao+perfil.nome,exact:true}).click();
+    await page.getByText('Área reservada à conta revisora autorizada.',{exact:true}).waitFor();
+    assert.equal(await page.locator('#lista-revisao article').count(),0);
+    assert.equal(await page.locator('#anterior-revisao').isVisible(),false);
+    assert.equal(await page.locator('#proxima-revisao').isVisible(),false);
+    assert.equal(await page.getByRole('button',{name:'Atualizar fila de análise',exact:true}).isEnabled(),true);
+    assert.equal(escritas,2);assert.equal(negadas,i+1,'uma tentativa negada, sem repetição automática');
+  }
   await page.evaluate(()=>iniciarSessao(undefined));
   assert.equal(await page.locator('#lista-revisao article').count(),0);
   assert.equal(await page.locator('#status-revisao').textContent(),'');
