@@ -568,3 +568,14 @@ Código final 955015592e6a84a68ffec05923077fad749b10e6. CI geral/interface 45910
 Sem migração ou mudança no banco, autenticação, audiência, pagamentos, repasses ou estornos. PagBank sandbox incerto intocado.
 
 Fonte privada b320d8fc1de12f09e4b1a94ed6702ff477057349; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_4f9c58b1393c8191b802acde392de362; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_526c45f6b4a08191af4b340c9e7dbf65: pending/publishing. Ainda publicando; confirmar uma vez na próxima retomada, sem presumir publicada. Owner-only preservado.
+
+
+## 26/11 — Ajuda operacional dentro do aplicativo
+
+Publicação anterior da revisão móvel confirmada succeeded/ready. Atualizada a tela Como funciona existente, sem duplicar página: cinco dúvidas expansíveis explicam etapas do serviço, avisos/mensagens, registro/acompanhamento de problemas, opção de cancelamento do aplicativo e diferença entre atendimento concluído e serviço concluído. Mensagens refletem funcionalidades atuais e não criam prazos de garantia, política jurídica ou promessa de reembolso. Preservados os avisos de pagamento indisponível e orientações fiscais existentes.
+
+Atalhos para a ajuda em Minhas solicitações e Meus avisos usam navegação já existente, preservando a confirmação de saída quando há proposta em edição. Details/summary nativos com alvos de toque e foco, quebra de texto e paleta aprovada. CSS/CSP por hash atualizados, sem scripts externos ou novos dados. Alteração somente HTML/CSS: sem novo teste espelhando conteúdo; executadas as verificações existentes, IDs únicos, integridade do hash e git diff --check.
+
+Código fd363a0f15d6da1a8c36a4a18d0bafb64ba5ee9a. CI geral/interface 45911469716 passou 277 testes e regressões; financeiro 45911469918, concorrência 45911469788 e prévia 45911469784 success. Sem mudança no banco, autenticação, transições de contratação, audiência ou pagamentos. PagBank sandbox incerto intocado.
+
+Fonte privada cc2cdaa9ed06fe24879a10384675e22ab50536e4; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_8461787b255c8191b82ee2e3f2b2948b; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_567a082bf174819199b830390287e371: pending/publishing. Ainda publicando; confirmar uma vez na próxima retomada, sem presumir publicada. Owner-only preservado; pagamentos reais desativados.
