@@ -12,7 +12,7 @@ test('reclamações: recupera envios incertos, resposta profissional e fila priv
  await page.route('https://teste.invalid/**',async route=>{
   const req=route.request(),path=new URL(req.url()).pathname;
   assert.match(path,/^\/rest\/v1\/(reclamacoes_servico|respostas_reclamacao|rpc\/listar_reclamacoes_administrativas)$/);
-  if(path.includes('/rpc/'))return negado?route.fulfill({status:403,json:{}}):route.fulfill({json:[{...salvo,titulo:'Pedido fictício',resposta}]});
+  if(path.includes('/rpc/'))return negado?route.fulfill({status:403,json:{}}):route.fulfill({json:[{...salvo,titulo:'Pedido fictício',resposta,status:'aguardando_analise',versao:0}]});
   if(req.method()==='POST'){
    posts++;const dados=req.postDataJSON();assert.equal(dados.solicitacao_id,id);assert.equal(Object.hasOwn(dados,'criado_em'),false);
    if(path.endsWith('/reclamacoes_servico'))salvo={...dados,cliente_usuario_id:cliente,criado_em:'2026-11-26T12:00:00Z'};

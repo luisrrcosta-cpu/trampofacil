@@ -83,6 +83,7 @@ function adicionarReclamacaoServico(card,pedido,cliente) {
       registrada=true;respostaRegistrada=Boolean(resposta);incerto=false;
       registro.append(texto('h4','Relato do cliente'),texto('p','Referência do caso: '+pedido.id),texto('p',motivosReclamacao[item.motivo]),texto('p',item.descricao),dataReclamacao(item.criado_em));
       if(resposta)registro.append(texto('h4','Resposta do profissional'),texto('p',resposta.descricao),dataReclamacao(resposta.criado_em));
+      adicionarHistoricoReclamacao(registro,pedido.id);
       estado.textContent='Registro recebido para análise. Ainda não há decisão de reembolso ou confirmação de bloqueio bancário.';
       if(dados){relato.value='';categoria.value='';}
       form.hidden=cliente||respostaRegistrada;
@@ -92,6 +93,66 @@ function adicionarReclamacaoServico(card,pedido,cliente) {
       carregando=false;if(atual())bloquear(elemento('solicitacoes'),false);
     }
   }
+}
+
+const estadosReclamacao=Object.freeze({aguardando_analise:'Aguardando análise',em_analise:'Em análise',concluida:'Atendimento concluído'});
+function adicionarHistoricoReclamacao(container,pedidoId,contexto='solicitacoes'){
+  const area=document.createElement('section'),lista=document.createElement('div'),estado=texto('p','');estado.setAttribute('role','status');
+  const aviso=texto('p','O andamento se refere ao atendimento. Concluir o caso não executa reembolso, não comprova bloqueio bancário e não encerra os direitos legais do cliente.');
+  let carregando=false,cursor=2147483647;
+  const atualizar=botaoAcao('Consultar acompanhamento',()=>consultar(true));
+  const anteriores=botaoAcao('Ver atualizações anteriores',()=>consultar(false));anteriores.hidden=true;
+  area.append(atualizar,estado,aviso,lista,anteriores);container.append(area);
+  async function consultar(reiniciar){
+    if(carregando||ocupado||!sessaoServicos)return;
+    const sessaoOriginal=sessaoServicos,versao=contexto==='reclamacoes-admin'?versaoReclamacoesAdmin:versaoPedidos;
+    const atual=()=>area.isConnected&&sessaoServicos===sessaoOriginal&&versao===(contexto==='reclamacoes-admin'?versaoReclamacoesAdmin:versaoPedidos);
+    const antes=reiniciar?2147483647:cursor;carregando=true;bloquear(area,true);estado.textContent='Consultando acompanhamento…';
+    if(reiniciar){lista.replaceChildren();anteriores.hidden=true;}
+    try{
+      const r=await controleSessao.requisitar(token=>enviar('/rest/v1/rpc/consultar_acompanhamento_reclamacao',{pedido_id:pedidoId,antes_versao:antes},token));
+      if(!atual())return;
+      if(r.status===401){exigirNovoLogin(contexto);return;}
+      if(!r.ok)throw Error();
+      const itens=await r.json();if(!atual())return;
+      if(!Array.isArray(itens)||itens.length>51||!itens.every((x,i)=>x&&Number.isInteger(x.versao)&&x.versao>0&&x.versao<antes&&(!i||x.versao===itens[i-1].versao-1)&&['em_analise','concluida'].includes(x.status)&&descricaoReclamacaoValida(x.mensagem)&&dataReclamacaoValida(x.criado_em)))throw Error();
+      if(reiniciar)estado.textContent='Situação: '+estadosReclamacao[itens[0]?.status||'aguardando_analise']+'.';
+      else estado.textContent='Atualizações anteriores carregadas.';
+      for(const item of itens.slice(0,50)){
+        const registro=document.createElement('article');registro.append(texto('h4',estadosReclamacao[item.status]),texto('p',item.mensagem),dataReclamacao(item.criado_em));lista.append(registro);
+      }
+      cursor=itens[Math.min(itens.length,50)-1]?.versao||1;anteriores.hidden=itens.length<=50;
+    }catch{if(atual())estado.textContent='Não foi possível consultar o acompanhamento. Tente novamente.';}
+    finally{carregando=false;if(atual())bloquear(area,false);}
+  }
+}
+function adicionarRespostaAdministrativa(card,item){
+  const form=document.createElement('form'),status=document.createElement('select');
+  const labelStatus=texto('label','Próxima situação do atendimento');labelStatus.append(status);
+  for(const valor of item.status==='em_analise'?['em_analise','concluida']:['em_analise']){const o=texto('option',estadosReclamacao[valor]);o.value=valor;status.append(o);}
+  const mensagem=document.createElement('textarea');mensagem.required=true;mensagem.minLength=10;mensagem.maxLength=2000;
+  const labelMensagem=texto('label','Resposta da administração');labelMensagem.append(mensagem);
+  const aviso=texto('p','A resposta ficará visível ao cliente e ao profissional. Não inclua documentos, dados bancários ou informações internas. Esta ação não movimenta dinheiro.');
+  const enviarBotao=texto('button','Registrar atualização');enviarBotao.type='submit';
+  const estado=texto('p','');estado.setAttribute('role','status');form.append(labelStatus,labelMensagem,aviso,enviarBotao,estado);card.append(form);
+  let enviando=false;
+  form.addEventListener('submit',async evento=>{
+    evento.preventDefault();if(enviando||ocupado||!sessaoServicos||!descricaoReclamacaoValida(mensagem.value))return;
+    if(!window.confirm('Registrar esta atualização no histórico do atendimento? Ela ficará visível às partes e não executará reembolso.'))return;
+    const sessaoOriginal=sessaoServicos,versao=versaoReclamacoesAdmin;
+    const atual=()=>form.isConnected&&sessaoServicos===sessaoOriginal&&versaoReclamacoesAdmin===versao;
+    enviando=true;bloquear(form,true);estado.textContent='Registrando atualização…';
+    try{
+      const r=await controleSessao.requisitar(token=>enviar('/rest/v1/rpc/atualizar_acompanhamento_reclamacao',{pedido_id:item.solicitacao_id,operacao_id:crypto.randomUUID(),versao_esperada:item.versao,novo_status:status.value,mensagem:mensagem.value.trim()},token));
+      if(!atual())return;
+      if(r.status===401){exigirNovoLogin('reclamacoes-admin');return;}
+      if(!r.ok)throw Error();
+      const resultado=await r.json();if(!atual())return;
+      if(!resultado||resultado.versao!==item.versao+1||resultado.status!==status.value)throw Error();
+      mensagem.value='';await carregarReclamacoesAdmin(paginaReclamacoesAdmin);
+    }catch{if(atual())estado.textContent='Não foi possível confirmar a atualização. Use Atualizar casos e consulte o histórico antes de tentar novamente. Nenhum envio será repetido automaticamente.';}
+    // Conserva o formulário bloqueado após erro incerto; recarregar a fila obtém a revisão atual.
+  });
 }
 
 let versaoReclamacoesAdmin=0,paginaReclamacoesAdmin=0;
@@ -116,15 +177,18 @@ async function carregarReclamacoesAdmin(pagina=0){
     if(r.status===403){estado.textContent='Área reservada à conta de atendimento autorizada.';return;}
     if(!r.ok)throw Error();
     const linhas=await r.json();if(!atual())return;
-    if(!Array.isArray(linhas)||linhas.length>51||!linhas.every(x=>x&&uuidReclamacao(x.solicitacao_id)&&typeof x.titulo==='string'&&x.titulo.length<=120&&Object.hasOwn(motivosReclamacao,x.motivo)&&descricaoReclamacaoValida(x.descricao)&&dataReclamacaoValida(x.criado_em)&&(!x.resposta||(descricaoReclamacaoValida(x.resposta.descricao)&&dataReclamacaoValida(x.resposta.criado_em)))))throw Error();
+    if(!Array.isArray(linhas)||linhas.length>51||!linhas.every(x=>x&&uuidReclamacao(x.solicitacao_id)&&Object.hasOwn(estadosReclamacao,x.status)&&Number.isInteger(x.versao)&&x.versao>=0&&((x.versao===0)===(x.status==='aguardando_analise'))&&typeof x.titulo==='string'&&x.titulo.length<=120&&Object.hasOwn(motivosReclamacao,x.motivo)&&descricaoReclamacaoValida(x.descricao)&&dataReclamacaoValida(x.criado_em)&&(!x.resposta||(descricaoReclamacaoValida(x.resposta.descricao)&&dataReclamacaoValida(x.resposta.criado_em)))))throw Error();
     for(const item of linhas.slice(0,50)){
       const card=document.createElement('article');card.append(texto('h3',item.titulo),texto('p','Referência: '+item.solicitacao_id),texto('p',motivosReclamacao[item.motivo]),texto('p',item.descricao),dataReclamacao(item.criado_em));
       if(item.resposta)card.append(texto('h4','Resposta do profissional'),texto('p',item.resposta.descricao),dataReclamacao(item.resposta.criado_em));
       else card.append(texto('p','Sem resposta do profissional registrada.'));
+      card.append(texto('p','Situação: '+estadosReclamacao[item.status]+'.'));
+      adicionarHistoricoReclamacao(card,item.solicitacao_id,'reclamacoes-admin');
+      adicionarRespostaAdministrativa(card,item);
       lista.append(card);
     }
     paginaReclamacoesAdmin=pagina;
-    estado.textContent=linhas.length?'Casos registrados para análise. Esta tela não executa decisão, estorno ou liberação de valores.':'Nenhum caso nesta página.';
+    estado.textContent=linhas.length?'Atualizações de atendimento disponíveis. Esta tela não executa estorno ou liberação de valores.':'Nenhum caso nesta página.';
     elemento('anterior-reclamacoes-admin').hidden=pagina===0;
     elemento('proxima-reclamacoes-admin').hidden=linhas.length<=50||pagina>=10000;
   }catch{if(atual())estado.textContent='Não foi possível consultar os casos. Tente novamente.';}
