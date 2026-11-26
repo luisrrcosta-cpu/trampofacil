@@ -42,3 +42,13 @@ Na retomada da publicação, sincronizar servicos.js (preservação de propostas
 Prévia atualmente confirmada: fonte c901b840a226f08576aed724081f6229a274d1c2; deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_ac0ed81dd0d881919426a94a7e9cfa2a.
 
 PagBank adiado. Nenhum checkout reenviado, pagamento real ativado ou alteração de produção.
+
+
+## Negativa de acesso durante uma decisão
+- Lacuna encontrada na interface: HTTP 403 nas decisões usava mensagem genérica de resultado não confirmado. O servidor já negava a operação; não foi encontrada autorização indevida neste cenário.
+- Listagem, aprovação, pedido de ajuste e recusa agora compartilham limpeza da fila e paginação e mensagem de área restrita quando o servidor responde 403. A rotina não modifica papel, token ou permissão e não repete a operação.
+- Falhas de rede/resposta perdida continuam usando a orientação de consulta antes de repetir. Sessão expirada (401) mantém fluxo de novo login. Respostas de sessão superada continuam ignoradas pelas guardas existentes.
+- Teste de navegador carrega fila, simula negativa de autorização antes de cada uma das três decisões, confere lista vazia, paginação oculta, controles liberados e uma única tentativa negada. Nenhuma gravação adicional é realizada pela API fictícia.
+- Código 80297aa5ba9edaed1dcb623cab7c7f553ccec678; testes f5f4278e980f1857e0e7c7ed5425207fec66d090.
+- CI geral/interface/regressões 45834717676, financeiro 45834717900, concorrência 45834717773 e pacote 45834715042: success. As verificações financeiras e de concorrência não demonstram execução financeira real ou alteração do banco remoto.
+- Salvo e validado no GitHub, ainda não publicado. Na sincronização futura usar perfil.js atual da branch para incluir também esta correção, além das datas; servicos.js pendente da preservação automática deve ser incluído. Preservar acesso privado e não modificar produção.
