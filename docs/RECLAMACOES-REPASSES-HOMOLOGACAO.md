@@ -59,3 +59,17 @@ Migração: supabase/migrations/20261126222715_avisos_atendimento_homologacao.sq
 
 
 Validação: 271 testes aprovados no CI 45905274412; financeiro 45905274351, concorrência 45905274318 e prévia 45905274448 também success. Migration aplicada somente em asdszqtpydiowgerxwee; RLS, privilégios e funções conferidos após aplicação, advisors sem novos achados. Nenhum recibo real criado em testes; nenhum dado existente excluído e nenhum efeito financeiro. Código 45105ee26c01fc89cd9498bbd661e8c2c31de463.
+
+
+## Avisos de contratação — continuação em 26/11
+
+Meus avisos passa a incluir registros já existentes de public.historico_solicitacoes: solicitação criada, proposta enviada/atualizada, aceite, início, entrega, conclusão e cancelamento. Destinatário é sempre a outra parte do pedido; só eventos cujo ator registrado corresponde à contraparte são elegíveis. Não mostra ao autor avisos da sua própria ação, nem eventos desconhecidos ou de terceiros. Revisor fora do pedido não recebe estes avisos.
+
+Não são criados novos eventos de contratação ou outro registro de cobrança: o feed é derivado do histórico existente. Registros antigos elegíveis também podem aparecer; o horário exibido é o original. A lista não é push em tempo real e deve ser consultada/atualizada. Mensagens de conversa ainda não incluídas. Aceitação, entrega e conclusão de serviço não confirmam pagamento; cancelamento não confirma estorno.
+
+Recibo individual mantém a chave usuário/tipo/evento; novo tipo contratacao permitido na restrição CHECK existente, preservando tipos anteriores, NOT NULL, chave primária e privilégios. Marca leitura apenas do destinatário autenticado, com horário no servidor e idempotência. RPCs públicas e assinaturas preservadas; somente funções internas de listagem/marcação atualizadas, mantendo search_path vazio e grants restritos. Sem mudanças nos triggers registrar_solicitacao/validar_solicitacao, nos pedidos ou nas regras de transição. Índices existentes do histórico conferidos, sem índice redundante acrescentado.
+
+Migração supabase/migrations/20261126223635_avisos_contratacao_homologacao.sql. Testes isolados cobrem todas as etapas, propostas repetidas, ações próprias não notificadas, eventos de terceiros/desconhecidos ignorados, privacidade das partes e leituras, idempotência, não exposição de ator/valor e paginação com empate de horário. Browser com API simulada verifica rótulos das sete etapas, leitura com resposta perdida, paginação, navegação, conteúdo inerte e troca de conta.
+
+
+Aplicada somente no projeto asdszqtpydiowgerxwee. Verificação pós-migração confirmou restrição dos três tipos, RLS ativo, ausência de INSERT direto e execução por anônimos, triggers das solicitações preservados e funções internas com search_path vazio; advisors sem novos achados. Código a28120d71c545b3ce5808c82f876350b6a22d98a. CI geral/interface 45906109802 passou 273 testes e regressões; financeiro 45906109794, concorrência 45906109829 e prévia 45906109804 success. Sem eventos reais criados em testes, exclusão de dados ou efeito financeiro.
