@@ -82,11 +82,11 @@ test('ordena solicitações carregadas sem rede, preserva proposta e reinicia ao
   await inicio.click();
   assert.equal(await page.locator('#solicitacoes').isVisible(),true);
   assert.equal(await campo.inputValue(),'321');assert.equal(chamadas,4);
+  await page.locator('#ordem-solicitacoes').selectOption('antigas');
   page.once('dialog',dialog=>dialog.accept());
   await inicio.click();
   assert.equal(await page.locator('#inicio').isVisible(),true);
   assert.equal(await campo.inputValue(),'');assert.equal(chamadas,4);
-  await page.locator('#ordem-solicitacoes').selectOption('antigas');
   await page.evaluate(()=>iniciarSessao(undefined));
   assert.equal(await page.locator('#ordem-solicitacoes').inputValue(),'recentes');
   assert.equal(await page.locator('#lista-solicitacoes > article').count(),0);
