@@ -1447,7 +1447,7 @@ test('telas e catálogo permanecem utilizáveis em celulares com nomes longos',a
       const medidas=await page.evaluate(()=>({
         largura:document.documentElement.clientWidth,
         conteudo:document.documentElement.scrollWidth,
-        botoes:[...document.querySelectorAll('main section:not([hidden]) button')].filter(b=>!b.hidden).map(b=>{
+        botoes:[...document.querySelectorAll('main section:not([hidden]) button')].filter(b=>b.getClientRects().length>0).map(b=>{
           const r=b.getBoundingClientRect();return {esquerda:r.left,direita:r.right,altura:r.height};
         })
       }));
