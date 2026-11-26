@@ -1,75 +1,70 @@
 # Revisão de prontidão — TrampoFácil
-Atualizada em 26/11/2026. Ambiente examinado: homologação asdszqtpydiowgerxwee. Não representa aprovação de lançamento ou auditoria de produção.
+
+Atualizada em 26/11/2026, após a entrega da ajuda operacional. Exame da homologação asdszqtpydiowgerxwee; não é aprovação de produção ou lançamento comercial.
+
+## Versão confirmada
+
+- Branch: codex/v16-seguranca-integracoes. Produção/main não alteradas.
+- Último código funcional: fd363a0f15d6da1a8c36a4a18d0bafb64ba5ee9a.
+- Fonte hospedada: cc2cdaa9ed06fe24879a10384675e22ab50536e4.
+- Publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_567a082bf174819199b830390287e371 confirmada succeeded/ready nesta revisão.
+- Prévia: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Somente o proprietário; nenhum convite ou acesso novo concedido.
+- CI 45911469716: 277 testes aprovados e regressões aprovadas. Financeiro 45911469918, concorrência PostgreSQL 45911469788 e prévia 45911469784: success. São verificações do código com ambientes isolados/API simulada, não pagamento completo no provedor.
+
+Referências anteriores deste arquivo foram consolidadas; o histórico detalhado permanece no STATUS-ATUAL-TRAMPOFACIL.md e nos documentos de cada entrega.
 
 ## Evidências e limites
-| Área | Evidência disponível | Situação e próximo requisito |
+
+| Área | Evidência disponível | Limite ou próxima condição |
 | --- | --- | --- |
-| Cadastro, contratação e mensagens | Fluxos já registrados no STATUS e suíte geral de interface aprovada | Preservar os fluxos concluídos; não repetir manualmente sem alteração relevante |
-| Revisão administrativa | Fila privada, aprovação por versão, ajustes, recusa e concorrência já validados | Publicação de perfil não comprova documentos ou habilitação |
-| Nota fiscal | Pedido, declaração de entrega e confirmação de recebimento implementados | Não equivale à emissão ou validação fiscal |
-| Avaliação do serviço | Nota privada de 1 a 5 após conclusão; banco e interface publicados na homologação; testes de acesso e resposta perdida aprovados | Uma nota pelo cliente, visível apenas às partes. Não representa reputação pública ou verificação documental |
-| Uso em celular e falhas de conexão | Confirmação de descarte no cadastro/perfil, aviso offline/online e recuperação sem reenvio; publicação privada confirmada | Preserva campos na página aberta; não promete persistência após recarga/fechamento nem funcionamento offline |
-| Consulta de tentativa | Tela publicada e validada com sessão real do cliente, retornando incerto | Consulta apenas o banco local, não resolve o estado externo |
-| Checkout do PagBank | Um ensaio de R$ 1,00, com claim preservado em estado incerto | Recuperar CHEC_id ou evidência de rejeição junto ao provedor; não reenviar |
-| Notificações | Autenticação, limites e unicidade testados; receptor sandbox implantado | Zero notificações recebidas; ainda sem exemplo autêntico deste checkout e confirmação do método aplicável |
-| Processamento financeiro | Flags de checkout mantidas falsas; zero eventos financeiros processados no receptor | Não ativar pagamento ou repasse real |
-| Conferência documental | Plano privado de escopo salvo | Não coletar documentos reais nem mostrar selo de verificado sem definir e validar o procedimento |
+| Cadastro e acesso | OTP e identidades validados anteriormente em homologação; testes de saída, recuperação e isolamento | Não repetir acesso manual já validado sem objetivo novo. Auth/produção não auditados por esta revisão |
+| Profissionais e catálogo | Cadastro inclusivo, análise por versão, ajustes, recusa, pausa e publicação de perfil | Publicação não comprova documentos, identidade ou habilitação |
+| Contratação e conversa | Pedido, proposta, aceite, início, entrega, conclusão/cancelamento, histórico e mensagens testados | Aceite/conclusão não comprovam pagamento; não há funcionamento offline ou rascunho persistente após fechar a aba |
+| Atendimento de reclamações | Relato inicial, resposta profissional, análise/resposta administrativa, conclusão e reabertura com histórico | Consulta manual; não atribui atendente ou SLA, não decide/reembolsa automaticamente e não bloqueia dinheiro |
+| Avisos dentro do aplicativo | Pedidos/propostas/etapas, mensagens, resposta profissional e atualizações administrativas; leitura individual e paginação | Consultados ao abrir/atualizar; sem e-mail, WhatsApp, push ou alerta em segundo plano. Marcar aviso não confirma leitura à contraparte |
+| Uso móvel | Navegador com viewports 320/360/390/768px, pedidos antigos a partir de avisos, filtros, foco, ordenação e paginação | Não equivale a ensaio em aparelho físico com novos participantes |
+| Ajuda operacional | Como funciona atualizado, dúvidas expansíveis e atalhos em solicitações/avisos | Descreve o sistema atual; não cria termos jurídicos, prazo de garantia ou promessa financeira |
+| Nota fiscal | Solicitação, declaração de entrega e confirmação de recebimento testadas | Não emite nem verifica documento fiscal |
+| Avaliação | Nota privada de 1 a 5 após conclusão | Não é reputação pública ou selo de verificação |
+| Ensaio privado | Roteiro atualizado com todos os fluxos atuais | Ainda não executado com novos participantes; audiência owner-only preservada |
+| Checkout PagBank | Uma tentativa sandbox incerta, sem CHEC_id local | Resultado externo e resposta técnica do provedor ainda pendentes. Não reenviar |
+| Webhook financeiro | Receptor sandbox e testes de autenticação/unicidade já registrados | Nenhuma notificação recebida na fotografia atual. Sem exemplo autêntico ou confirmação final do método aplicável ao produto |
+| Repasse e reembolso | Flags reais bloqueadas; estudo de custódia e riscos registrado | Confirmar produto/conta, condições de custódia, liberação, saldo e tratamento após repasse antes de implementar operação real |
+| Verificação documental | Plano de escopo privado salvo | Não implementada; não coletar documentos reais nem anunciar selo genérico |
 
-## Fotografia do banco em 24/11/2026
-- Checkouts registrados: 1.
-- Registros com flag de cobrança real ou repasse ativa: 0.
-- Notificações recebidas no receptor sandbox: 0.
-- Notificações com processamento financeiro: 0.
+## Conferência de segurança somente de leitura
 
-São contagens do ambiente de homologação no momento da consulta. Não demonstram ausência de registro no provedor e não autorizam reenvio.
+Nesta revisão, nove tabelas públicas essenciais foram conferidas com RLS ativo: clientes, profissionais, solicitacoes, historico_solicitacoes, mensagens_solicitacoes, avaliacoes_servico, reclamacoes_servico, respostas_reclamacao e acompanhamento_reclamacoes. A tabela privada de leitura dos avisos tem RLS e nenhum SELECT/INSERT direto concedido a authenticated.
 
-## Segurança
-Última consulta de advisors em 25/11/2026 reproduziu nove INFO de tabelas privadas com RLS e sem políticas, bloqueio intencional já documentado. Mantido o WARN preexistente de proteção contra senhas vazadas desabilitada. Nenhuma configuração de Auth, grant ou política foi reduzida nesta revisão.
+As cinco RPCs públicas novas de avisos/acompanhamento/listagem administrativa não concedem EXECUTE a anon. Estes metadados não substituem os testes de participação/revogação ou uma auditoria completa de produção; as evidências comportamentais estão nos testes e documentos das implementações.
+
+Advisors mantêm nove INFO de tabelas privadas com RLS sem políticas, bloqueio intencional documentado, e o WARN anterior de proteção contra senhas vazadas desabilitada. Nenhum achado novo ou alteração de Auth/permissões nesta revisão. Avaliar a configuração de Auth antes de produção sem enfraquecer proteções para contornar avisos.
 
 Referências dos avisos:
 - https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy
 - https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
 
-## Integração financeira — etapa adiada pelo proprietário
+## Fotografia financeira local em 26/11/2026
 
-O atendimento PagBank foi adiado pelo proprietário após tentativas sem solução. Não exigir ligação nem repetir formulários nesta etapa. O caso geral 75359297 não foi encaminhado às Integrações. A sequência abaixo é uma referência para uma futura retomada financeira, e não uma tarefa pendente do usuário agora.
+| Contagem | Resultado |
+| --- | ---: |
+| Checkouts registrados | 1 |
+| Checkouts incertos | 1 |
+| Sem identificador externo registrado | 1 |
+| Flags de cobrança real habilitadas | 0 |
+| Flags de repasse habilitadas | 0 |
+| Notificações recebidas no receptor sandbox | 0 |
+| Eventos com processamento financeiro | 0 |
 
-## Ordem de desbloqueio
-1. Conferir com o PagBank a referência tf-sandbox-89934739-87f9-4c53-b8ca-8b757dd81f53. Relato preparado em RASCUNHO-SUPORTE-PAGBANK-CHECKOUT-INCERTO.md. O formulário foi acionado uma vez, mas não houve confirmação nem protocolo após o desafio de verificação; envio do chamado permanece não confirmado. Conferir confirmação antes de duplicar o envio.
-2. Se houver CHEC_id, usar consulta GET autorizada e comparar referência, item e valor. Se houver evidência de rejeição anterior à criação, registrar essa evidência antes de planejar novo ensaio.
-3. Confirmar o contrato de assinatura e payload de notificações para o produto Checkout escolhido. Não acrescentar fallback de autenticação automaticamente.
-4. Demonstrar o fluxo completo no sandbox, incluindo falha, repetição e conferência. Sucesso de testes com respostas simuladas não substitui essa evidência.
-5. Consolidar condições de operação antes de propor ativação financeira: taxas, divisão de valores, estornos/contestação e responsabilidades. Nenhuma condição foi escolhida automaticamente nesta revisão.
-6. Apresentar uma entrega de lançamento com evidências e obter autorização específica antes de alterar produção, habilitar pagamentos reais ou iniciar coleta documental.
+Esses números descrevem somente o banco de homologação. Não demonstram que o provedor rejeitou ou não criou o checkout. Preservar a preparação 88cecf6d-cf3b-4112-a8ca-9a33d767a58e e a referência tf-sandbox-89934739-87f9-4c53-b8ca-8b757dd81f53, sem novo POST, limpeza de claim ou reabertura automática.
 
-## Conclusão operacional
-As proteções e a consulta local estão entregues; a integração externa de pagamento não está concluída. A falta do CHEC_id e da notificação autêntica é um bloqueio externo concreto. Não há base para apresentar novos testes internos ou alterações de documentação como resolução desse bloqueio.
+## Pendências que realmente mudam a prontidão
 
-## Entrega privada de avaliações — 25/11/2026
-- Publicação confirmada succeeded/ready: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5f256e4ca5588191826ee1c075631ed2.
-- Interface privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário preservado.
-- CI da implementação e do ajuste de empacotamento aprovada; fluxo remoto com dados fictícios e ROLLBACK concluído, sem avaliação persistida em nome de usuários existentes.
-- As pendências externas acima permanecem. Avaliações não demonstram integração financeira, não liberam pagamento e não autorizam lançamento em produção.
+1. **Resposta técnica PagBank e sandbox completo.** Proprietário informou envio de e-mail; não há resposta técnica/protocolo novo confirmado. O e-mail Mercado Pago/Fattor mostrado depois foi desconsiderado pelo proprietário e não altera esta pendência. Caso geral 75359297 não representa encaminhamento confirmado às Integrações. Não exigir ligação ou repetir formulários/e-mail automaticamente. Recuperar resultado da tentativa, identificar CHEC_id ou evidência de rejeição e confirmar assinatura/payload do produto antes de novo ensaio financeiro.
+2. **Condições financeiras operacionais.** Confirmar taxas, produto contratado, divisão, custódia/reserva e liberação, reembolso/contestação, saldo insuficiente e responsabilidade após repasse. Registrar uma reclamação no aplicativo não garante que haverá dinheiro disponível. Não escolher prazos, ativar custódia ou repasse por mera continuação do desenvolvimento.
+3. **Ensaio privado do fluxo atual.** Usar ROTEIRO-ENSAIO-PRIVADO-SEM-PAGAMENTOS.md. Selecionar contas e aparelho de teste, sem inventar e-mails nem pedir códigos de terceiros. Sem convites/ampliação da audiência nesta revisão. Resultados de novos participantes e aparelho físico continuam não confirmados.
+4. **Preparação da operação pública.** Consolidar condições de uso/privacidade e atendimento, revisar configuração de Auth, evidências e pendências antes de propor produção. Se houver proposta de conferência documental, definir finalidade, dados mínimos, revisores e retenção antes de pedir arquivos reais. Não há prazo contratual ou jurídico escolhido automaticamente aqui.
 
-## Interface atual — publicação confirmada em 25/11/2026
-- Código validado: 05ff6455cb79cddc6681b6cdfd7ffb8b39aa9363; CI geral 45626595596 com 256 testes aprovados e zero falhas. Financeiro, concorrência, prévia e cadastro inclusivo também aprovados.
-- Fonte hospedada ef6af1a2ba18f8eb9d728fd68c4bf5bf24d2634c; deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_45a5a68d178081919b0f04ce52e5a979 confirmado succeeded/ready.
-- Cadastro/perfil pedem confirmação antes de descartar alterações. Reconexão não repete envios; o sinal de rede não confirma disponibilidade do servidor ou resultado de gravação.
-- Consolidação documental não representa autorização de lançamento ou resolução do PagBank. Nenhum fluxo manual repetido ou nova operação financeira foi executada nesta atualização.
+## Resultado desta revisão
 
-
-## Estado confirmado em 26/11/2026
-
-- Homologação privada atual: fonte 42e981d22339d1efdde99968e0a3a734f53bca5b; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_2baacf6f68588191a14589fa65c7d651, succeeded/ready. As referências de 25/11 acima são históricas.
-- Busca de perfis na página administrativa, datas em Brasília e limpeza de dados quando uma decisão recebe acesso negado publicadas.
-- Propostas editadas preservadas em atualização automática somente quando o mesmo pedido mantém a versão e condições originais. Atualização manual e saída da lista pedem confirmação de descarte. Fechar/recarregar a aba solicita aviso nativo quando há proposta não enviada; o navegador pode não mostrá-lo, sobretudo em encerramento abrupto no celular. Sem armazenamento offline.
-- CI da última implementação: geral/interface 45859041441, financeiro 45859041476 e concorrência 45859041404, todos success. Não foi repetido ensaio manual autenticado apenas para confirmar publicação.
-- Auditoria de revisão somente de leitura: cinco tabelas privadas examinadas com RLS e sem acesso direto para authenticated; 13 corpos de funções comparados aos SQL versionados com correspondência após normalização de comentários/espaços. Nenhuma decisão real executada. Advisors de 26/11 mantêm avisos preexistentes descritos acima.
-- Cadastro, contratação, mensagens, revisão, acompanhamento fiscal e avaliação privada têm evidências registradas. A integração externa de pagamento permanece incompleta e não é requisito para continuar desenvolvimento independente em homologação. Não confundir a prévia privada disponível com lançamento comercial autorizado.
-
-
-## Consolidação da entrega privada — 26/11
-
-A referência corrente é a fonte 74d7f208d51520698622601a86bfe346d64a9838, publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3600bc2a2a3081919469a62a20d41c45 confirmada succeeded/ready. Supera as fontes anteriores desta revisão. Inclui guia de uso, isolamento do pedido entre contas após login expirado e adaptação de nomes longos no celular. CI atual geral/interface 45863359047, financeiro 45863359051 e concorrência 45863359054 success.
-
-As entregas descritas estão disponíveis para teste privado. Não há publicação pendente neste ponto. As pendências de lançamento permanecem: resultado externo do checkout e notificação autêntica, condições de operação financeira e definição do procedimento documental caso seja oferecida verificação. Melhorias de interface não eliminam esses requisitos. O suporte PagBank segue adiado a pedido do proprietário. Esta consolidação altera apenas documentação; não representa funcionalidade adicional nem teste novo.
+Ajuda e melhorias internas estão publicadas na prévia privada. A integração financeira externa ainda não está concluída, e nenhuma cobrança real está autorizada. Esta revisão atualiza o diagnóstico e o roteiro; não representa nova funcionalidade, nova execução dos 277 testes ou resolução do bloqueio externo. As verificações atuais foram consultadas; não houve alteração no app, banco, audiência ou transação financeira.
