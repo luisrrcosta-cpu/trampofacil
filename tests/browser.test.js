@@ -1386,7 +1386,7 @@ test('pedido não enviado conserva texto após novo login do titular e limpa na 
     if(route.request().url().includes('/rpc/buscar_profissionais'))return route.fulfill({json:[{
       id:'77777777-7777-4777-8777-777777777777',nome:'Profissional fictício',cidade:'Cidade',servico:'Pintura',descricao:'Teste'
     }]});
-    escritas++;return route.fulfill({status:400,json:{}});
+    escritas++;return route.fulfill({status:401,json:{}});
   });
   await page.goto(`http://127.0.0.1:${server.address().port}/`);
   await page.evaluate(()=>{
@@ -1398,11 +1398,13 @@ test('pedido não enviado conserva texto após novo login do titular e limpa na 
   const descricao=page.locator('#form-solicitacao textarea[name="descricao"]');
   await titulo.fill('Pedido privado da conta A');
   await descricao.fill('Descrição privada que pertence somente à conta A.');
+  await page.getByRole('button',{name:'Enviar solicitação',exact:true}).click();
+  await page.getByText('Sua sessão expirou. Entre novamente para continuar.',{exact:true}).waitFor();
   await page.evaluate(()=>{
-    exigirNovoLogin('nova-solicitacao');
     iniciarSessao({usuario:'11111111-1111-4111-8111-111111111111',token:'ficticio-a-renovado'});
     proteger('nova-solicitacao');
   });
+  assert.equal(await titulo.isEnabled(),true,'novo login libera formulário após 401');
   assert.equal(await titulo.inputValue(),'Pedido privado da conta A');
   assert.equal(await descricao.inputValue(),'Descrição privada que pertence somente à conta A.');
   await page.evaluate(()=>{
@@ -1415,5 +1417,5 @@ test('pedido não enviado conserva texto após novo login do titular e limpa na 
   assert.equal(await descricao.inputValue(),'');
   assert.equal(await page.locator('#contador-descricao').textContent(),'0/3000 caracteres');
   assert.equal(await page.evaluate(()=>tentativa===undefined),true,'chave da conta anterior removida');
-  assert.equal(escritas,0,'troca de conta não envia pedidos nem autentica automaticamente');
+  assert.equal(escritas,1,'somente envio inicial expirado; novo login e troca não repetem o pedido');
 });
