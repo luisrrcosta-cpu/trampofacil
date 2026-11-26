@@ -6,10 +6,10 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `74bd53ac52e36f9fbb98097cbc18604bad19f0bc`.
-- Fonte hospedada atual: `30ca5c4b001f62f2b6fd06105dc314bd86376343`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3994119fb5fc8191bc852027359ddcbf`.
-- CI da interface publicada: geral/interface 45807229647, financeiro 45807229830, concorrência 45807229651 e prévia 45806728660, todos success.
+- Último código de interface validado: `9fbb95869345146d5ec75ff570d97d106e3ceee1`.
+- Fonte hospedada atual: `cad0f39d7b2536a88b829c7ca42718fab4102e2c`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_7556be11a7748191b1cfc698261d3cf2`.
+- CI da interface publicada: geral/interface 45807921748, financeiro 45807921771, concorrência 45807921744 e prévia 45807921776, todos success.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
 ## Entregas atuais na homologação
@@ -20,7 +20,7 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 5. Pedido fiscal, confirmação de atendimento, declaração de entrega e confirmação de recebimento. Não emite ou verifica notas fiscais.
 6. Fila administrativa privada, aprovação por versão, orientações, recusa com motivo e auditoria; concorrência validada sem aprovar perfis existentes só para teste.
 7. Nota privada de 1 a 5 após conclusão, registrada pelo cliente e visível às partes, com data em Brasília; sem comentário livre ou reputação pública.
-8. Busca/filtros/resumo dos pedidos carregados e retorno do histórico ao pedido.
+8. Busca, filtros, resumo e ordenação dos pedidos carregados; prioridade para ações pendentes e retorno do histórico ao pedido.
 9. Confirmação antes de descartar cadastro preenchido e edição de perfil ao atualizar/trocar tipo; logout limpa os dados privados.
 10. Aviso de perda/retorno de conexão, sem reenvio automático. Não há persistência offline nem garantia de recuperação após fechar/recarregar a página.
 11. Preparação financeira de teste e consulta autenticada da tentativa salva, sem cobrança ou repasse real.
@@ -297,3 +297,9 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Conferência HTML: 13 seletores com rótulos explícitos únicos, sem IDs duplicados. Suíte existente de interface/regressões 45807921748, financeiro 45807921771, concorrência 45807921744 e pacote 45807921776 aprovados no commit 9fbb95869345146d5ec75ff570d97d106e3ceee1.
 - Fonte hospedada cad0f39d7b2536a88b829c7ca42718fab4102e2c. Publicação privada em processamento: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_7556be11a7748191b1cfc698261d3cf2; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_c9425ed6f87c81918df8a9cd3c3829fd. Confirmar status no próximo turno. Cabeçalho identifica a última publicação já confirmada.
 - Nenhum banco, permissão, produção, checkout ou pagamento alterado. PagBank permanece adiado.
+
+
+## Publicação dos seletores confirmada — 26/11/2026
+- Deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_7556be11a7748191b1cfc698261d3cf2 confirmado succeeded/ready. Fonte cad0f39d7b2536a88b829c7ca42718fab4102e2c. Cabeçalho atualizado; anotações pending anteriores são históricas.
+- Nesta retomada apenas foi conferida a publicação e atualizado o ponto de continuidade. Nenhuma nova funcionalidade, teste manual repetido, alteração de banco ou operação financeira.
+- PagBank segue adiado, com tentativa incerta preservada. O aplicativo não está autorizado para pagamentos reais nem lançamento em produção.
