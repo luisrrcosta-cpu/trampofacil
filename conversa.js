@@ -100,6 +100,7 @@ function abrirConversa(id, sugestao = '') {
     elemento('status-solicitacoes').textContent = 'Solicitação inválida. Atualize a lista.';
     return;
   }
+  if (typeof confirmarSaidaPropostas === 'function' && !confirmarSaidaPropostas()) return;
   const rascunho = rascunhoConversa;
   limparConversa();
   pedidoEmConversa = id;
