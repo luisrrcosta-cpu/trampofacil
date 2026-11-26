@@ -1,5 +1,5 @@
 # Revisão de prontidão — TrampoFácil
-Atualizada em 25/11/2026. Ambiente examinado: homologação asdszqtpydiowgerxwee. Não representa aprovação de lançamento ou auditoria de produção.
+Atualizada em 26/11/2026. Ambiente examinado: homologação asdszqtpydiowgerxwee. Não representa aprovação de lançamento ou auditoria de produção.
 
 ## Evidências e limites
 | Área | Evidência disponível | Situação e próximo requisito |
@@ -30,6 +30,10 @@ Referências dos avisos:
 - https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy
 - https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
 
+## Integração financeira — etapa adiada pelo proprietário
+
+O atendimento PagBank foi adiado pelo proprietário após tentativas sem solução. Não exigir ligação nem repetir formulários nesta etapa. O caso geral 75359297 não foi encaminhado às Integrações. A sequência abaixo é uma referência para uma futura retomada financeira, e não uma tarefa pendente do usuário agora.
+
 ## Ordem de desbloqueio
 1. Conferir com o PagBank a referência tf-sandbox-89934739-87f9-4c53-b8ca-8b757dd81f53. Relato preparado em RASCUNHO-SUPORTE-PAGBANK-CHECKOUT-INCERTO.md. O formulário foi acionado uma vez, mas não houve confirmação nem protocolo após o desafio de verificação; envio do chamado permanece não confirmado. Conferir confirmação antes de duplicar o envio.
 2. Se houver CHEC_id, usar consulta GET autorizada e comparar referência, item e valor. Se houver evidência de rejeição anterior à criação, registrar essa evidência antes de planejar novo ensaio.
@@ -52,3 +56,13 @@ As proteções e a consulta local estão entregues; a integração externa de pa
 - Fonte hospedada ef6af1a2ba18f8eb9d728fd68c4bf5bf24d2634c; deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_45a5a68d178081919b0f04ce52e5a979 confirmado succeeded/ready.
 - Cadastro/perfil pedem confirmação antes de descartar alterações. Reconexão não repete envios; o sinal de rede não confirma disponibilidade do servidor ou resultado de gravação.
 - Consolidação documental não representa autorização de lançamento ou resolução do PagBank. Nenhum fluxo manual repetido ou nova operação financeira foi executada nesta atualização.
+
+
+## Estado confirmado em 26/11/2026
+
+- Homologação privada atual: fonte 42e981d22339d1efdde99968e0a3a734f53bca5b; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_2baacf6f68588191a14589fa65c7d651, succeeded/ready. As referências de 25/11 acima são históricas.
+- Busca de perfis na página administrativa, datas em Brasília e limpeza de dados quando uma decisão recebe acesso negado publicadas.
+- Propostas editadas preservadas em atualização automática somente quando o mesmo pedido mantém a versão e condições originais. Atualização manual e saída da lista pedem confirmação de descarte. Fechar/recarregar a aba solicita aviso nativo quando há proposta não enviada; o navegador pode não mostrá-lo, sobretudo em encerramento abrupto no celular. Sem armazenamento offline.
+- CI da última implementação: geral/interface 45859041441, financeiro 45859041476 e concorrência 45859041404, todos success. Não foi repetido ensaio manual autenticado apenas para confirmar publicação.
+- Auditoria de revisão somente de leitura: cinco tabelas privadas examinadas com RLS e sem acesso direto para authenticated; 13 corpos de funções comparados aos SQL versionados com correspondência após normalização de comentários/espaços. Nenhuma decisão real executada. Advisors de 26/11 mantêm avisos preexistentes descritos acima.
+- Cadastro, contratação, mensagens, revisão, acompanhamento fiscal e avaliação privada têm evidências registradas. A integração externa de pagamento permanece incompleta e não é requisito para continuar desenvolvimento independente em homologação. Não confundir a prévia privada disponível com lançamento comercial autorizado.
