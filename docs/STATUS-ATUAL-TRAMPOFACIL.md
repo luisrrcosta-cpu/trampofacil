@@ -6,10 +6,10 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `2b2e0c589f96e7613ca581e24f8af30bf0ba2c44`.
-- Fonte hospedada atual: `9d1c466fa58400f2fa1670b53999f32b6bb815ef`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_f902ffe516988191878a1788a4f10800`.
-- CI dessa implementação: geral/interface 45627923791, financeiro 45627923745, concorrência 45627923735 e prévia 45627923862, todos success. Cadastro inclusivo 45626595686 aprovado na implementação anterior, sem alteração nesta entrega.
+- Último código de interface validado: `106b12e90245ef646cc1ef36e7e78e566a5a3c1e`.
+- Fonte hospedada atual: `6db09b549bd002fb97cff8ebfdcd750ddfc46af2`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_7298bffaa5d481918330219eac14e745`.
+- CI da interface publicada: geral/interface 45805601078, financeiro 45805601112, concorrência 45805601314 e prévia 45805582596, todos success. Cadastro inclusivo 45805582511 aprovado.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
 ## Entregas atuais na homologação
@@ -279,3 +279,13 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Não há persistência após recarga/fechamento. Nenhuma alteração de banco, permissões ou fluxo financeiro.
 - Commits de código 106b12e90245ef646cc1ef36e7e78e566a5a3c1e e testes 361f8605031be3c42ebada58ea881ce83fb785b1. Quatro testes locais passaram; CI geral/interface/regressões 45805601078, financeiro 45805601112 e concorrência 45805601314 concluídos success; prévia 45805582596 e cadastro inclusivo 45805582511 success no commit de implementação.
 - Fonte hospedada 6db09b549bd002fb97cff8ebfdcd750ddfc46af2. Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_7298bffaa5d481918330219eac14e745; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_d15a422f75c88191b5ee1d114f592d06. Confirmar status antes de afirmar disponibilidade. Acesso somente ao proprietário preservado.
+
+
+## Ordenação de solicitações carregadas — 26/11/2026
+- Proteção de saída da nova solicitação confirmada publicada succeeded/ready: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_7298bffaa5d481918330219eac14e745. Cabeçalho acima identifica a última publicação confirmada, não a atualização ainda em processamento.
+- Seletor permite atualização mais recente, mais antiga ou aguardando minha ação primeiro. Usa a sequência original retornada pelo servidor; escopo limitado aos cards carregados, combinado com busca/filtros. Não altera cursor, consultas, banco ou regras financeiras.
+- Move os mesmos cards, preservando campos de proposta e handlers. Limpar filtros e troca/encerramento de sessão restauram recentes. Não promete preservar rascunho após recarregar a lista ou fechar o navegador.
+- Implementação 2731a5b7bac0ed223a04f7de9e7f87d32a60e128; rótulo acessível corrigido em fed577ba17e3c10085025e861c83dfdaf6fd8f68; testes finais 74bd53ac52e36f9fbb98097cbc18604bad19f0bc. Falhas iniciais do ensaio de navegador corrigidas antes de publicar.
+- CI final geral/interface/regressões 45807229647, financeiro 45807229830 e concorrência 45807229651 concluídos success. Prévia 45806728660 success na implementação final. Teste de navegador cobre três ordens, proposta digitada, busca, limpeza, ausência de novas consultas e encerramento da sessão fictícia.
+- Fonte hospedada 30ca5c4b001f62f2b6fd06105dc314bd86376343. Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3994119fb5fc8191bc852027359ddcbf; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_78044ae7741881919973c9991c4d65cb. Confirmar status no próximo turno antes de afirmar disponibilidade. Acesso continua somente ao proprietário.
+- PagBank adiado a pedido do proprietário. Nenhuma ligação, formulário externo ou novo checkout solicitado/executado.
