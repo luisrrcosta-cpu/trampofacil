@@ -6,9 +6,9 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `825a491e5fdab3216f0692928eee017a614c66d2`.
-- Fonte hospedada atual: `4bfc4b983adc3d77d39bd21901f048b5a858a493`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_79a8bf9f5cec8191b7bf2e0873714494`.
+- Último código de interface validado: `ac73b16377917222fb0b8c170c2d6f7f967e77a6`.
+- Fonte hospedada atual: `aa7b8e231434e9ccf91adf62416a58f66ae769fb`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_f0cf740c31d08191b6aa55974e8bad53`.
 - CI da interface publicada: geral/interface 45863359047, financeiro 45863359051 e concorrência 45863359054, todos success. Verificações móveis anteriores: geral 45862641623 e prévia 45862641479 success.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
@@ -489,3 +489,14 @@ Fonte privada nova 4bfc4b983adc3d77d39bd21901f048b5a858a493. Versão appgprj_6af
 Modelo de botões azul/branco confirmado succeeded/ready antes desta edição. A pedido do proprietário, título inicial mantém Bem-vindo ao em azul e destaca TrampoFácil! em #c45100, com faixa decorativa #ff7900 abaixo. Texto acessível do heading preservado; alteração somente visual. CSS/CSP conferidos, git diff --check aprovado. Código ac73b16377917222fb0b8c170c2d6f7f967e77a6; CI geral/interface 45886924354, financeiro 45886924175, concorrência 45886924201 e prévia 45886924405 success.
 
 Fonte nova aa7b8e231434e9ccf91adf62416a58f66ae769fb, versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_941e7e704f4c8191bc0886e101f05409, publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_f0cf740c31d08191b6aa55974e8bad53: pending/publishing. Confirmar na próxima retomada; ainda não presumir publicada. Sem mudanças de dados, permissões, funcionalidade ou pagamentos.
+
+
+## 26/11 — Apresentação dos profissionais e suporte por e-mail
+
+Proprietário aprovou visual azul-marinho/branco com detalhes laranja e título destacado. Publicação anterior do título confirmada succeeded/ready. Proprietário informou ter enviado e-mail ao suporte PagBank; não há resposta/protocolo técnico confirmado nesta conversa. Manter tentativa sandbox incerta sem reenvio.
+
+Melhoria autorizada do catálogo: iniciais decorativas sem foto inventada; nome, serviço e cidade destacados; descrição longa com resumo e details nativo para texto completo. Somente mesmos dados públicos, renderizados com textContent, sem avaliações públicas, selo de verificação ou informações pessoais adicionais. CSS/CSP atualizados. Commits HTML 1ac27e19afd5592d468fd5fd87a1648471b4cf1e e JS a8c79441847f9790d92c3008346da713f6871d09; testes finais 411f4c5bba7056a0f7d9087efeb00910a4b031f3. CI geral/interface 45896838367, financeiro 45896838374 e concorrência 45896838364 success. Testes móveis incluem abrir/fechar descrição completa, preservar quebras e evitar overflow nas quatro larguras. Sintaxe JS e git diff --check aprovados.
+
+Fonte nova 057b11c1c8ef0f15e31ee173fb949e5a7fa5bdb4. Versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_6fd76a28df0481919147dc2ace788e07; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_b314f55a4c688191a625eaa32bb19978: pending/publishing. Confirmar na próxima retomada. Sem mudança de banco, audiência ou pagamentos.
+
+Durante esta entrega, proprietário perguntou sobre garantia/reclamação/reembolso. Foi consultado CDC arts.20/24/26/49 e orientação Procon-SP. Nenhuma política de disputa, retenção, repasse ou estorno implementada automaticamente; isso depende de definição operacional e revisão jurídica aplicável. Prazo legal de reclamar não equivale a reembolso automático ou prazo de repasse.
