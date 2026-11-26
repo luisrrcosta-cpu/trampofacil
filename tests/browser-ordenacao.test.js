@@ -49,7 +49,7 @@ test('ordena solicitações carregadas sem rede, preserva proposta e reinicia ao
   assert.deepEqual(await titulos(),['Serviço recente','Serviço concluído','Orçamento antigo']);
   assert.equal(await page.locator('#ordem-solicitacoes').inputValue(),'recentes');
   await page.locator('#ordem-solicitacoes').selectOption('antigas');
-  await page.getByRole('button',{name:'Sair',exact:true}).click();
+  await page.getByRole('button',{name:'Sair da conta',exact:true}).click();
   assert.equal(await page.locator('#ordem-solicitacoes').inputValue(),'recentes');
   assert.equal(await page.locator('#lista-solicitacoes > article').count(),0);
   assert.equal(chamadas,1);
