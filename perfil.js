@@ -260,6 +260,16 @@ alternarDisponibilidade.addEventListener('click',async()=>{
 });
 
 
+const horarioRevisao = new Intl.DateTimeFormat('pt-BR', {
+  dateStyle:'short', timeStyle:'short', timeZone:'America/Sao_Paulo',
+});
+function criarDataRevisao(rotulo, valor) {
+  const instante = new Date(valor);
+  const data = texto('time', rotulo + ': ' + horarioRevisao.format(instante) + ' (horário de Brasília).');
+  data.dateTime = instante.toISOString();
+  return data;
+}
+
 // Revisão administrativa: autorização sempre conferida no servidor.
 let versaoRevisao = 0;
 let paginaRevisao = 0;
@@ -320,7 +330,7 @@ async function carregarRevisao(pagina = 0, aviso = '') {
       const p = item.perfil;
       const card = document.createElement('article');
       card.append(texto('h3',p.nome),texto('p',p.servico + ' · ' + p.cidade));
-      card.append(texto('p','Solicitado em: ' + new Date(item.solicitado_em).toLocaleString('pt-BR')));
+      card.append(criarDataRevisao('Solicitado em', item.solicitado_em));
       if (p.descricao) card.append(texto('p',p.descricao));
       const modalidades = {pessoa_fisica:'Pessoa física (CPF)',mei:'MEI',empresa:'Empresa (CNPJ)'};
       card.append(texto('p',(modalidades[p.tipo_prestador] || 'Modalidade não informada') + ' · ' +
@@ -339,9 +349,12 @@ async function carregarRevisao(pagina = 0, aviso = '') {
       }
       rotulo.append(motivo);
       card.append(rotulo,botaoAcao('Pedir ajuste de ' + p.nome, () => pedirAjusteRevisao(item,motivo.value)));
-      if (item.recusa) card.append(texto('p','Última recusa registrada: ' +
-        motivosRecusaPublicacao[item.recusa.motivo] + '. ' +
-        (item.recusa.perfil_alterado ? 'O cadastro mudou desde essa decisão e pode ser reavaliado.' : 'Uma nova decisão pode ser registrada após a revisão.')));
+      if (item.recusa) {
+        card.append(texto('p','Última recusa registrada: ' +
+          motivosRecusaPublicacao[item.recusa.motivo] + '. ' +
+          (item.recusa.perfil_alterado ? 'O cadastro mudou desde essa decisão e pode ser reavaliado.' : 'Uma nova decisão pode ser registrada após a revisão.')));
+        card.append(criarDataRevisao('Recusa registrada em', item.recusa.criado_em));
+      }
       const rotuloRecusa = document.createElement('label');
       rotuloRecusa.append(texto('span','Motivo da recusa'));
       const motivoRecusa = document.createElement('select');
@@ -467,6 +480,7 @@ async function consultarOrientacaoProfissional() {
       (orientacao.perfil_alterado
         ? 'Seu cadastro foi alterado desde esta orientação. A administração ainda precisa analisar os dados salvos.'
         : 'Revise os campos indicados e salve seu cadastro. A alteração não publica o perfil automaticamente.');
+    status.append(' ', criarDataRevisao('Orientação registrada em', orientacao.criado_em));
   } catch {
     if (atual()) status.textContent = 'Não foi possível consultar a orientação. Tente novamente.';
   } finally {
@@ -535,6 +549,7 @@ async function consultarRecusaProfissional() {
     status.textContent='Última recusa de publicação: ' + motivosRecusaPublicacao[recusa.motivo] + '. ' +
       (recusa.perfil_alterado?'Seu cadastro mudou desde essa decisão. A administração pode reavaliar os dados salvos.':
         'Revise e salve seu cadastro para nova análise. A conta e os contratos existentes continuam disponíveis.');
+    status.append(' ', criarDataRevisao('Recusa registrada em', recusa.criado_em));
   }catch{if(atual())status.textContent='Não foi possível consultar a decisão. Tente novamente.';}
   finally{if(atual()){carregandoPerfil=false;bloquear(secaoPerfil,false);}}
 }
