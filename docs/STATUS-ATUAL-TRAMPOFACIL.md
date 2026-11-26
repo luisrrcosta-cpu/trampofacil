@@ -341,3 +341,12 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - NÃO PUBLICADO: ambiente local indisponível, exec_command retornou No usable execution environment is available. Alteração validada e salva no GitHub, mas ainda não sincronizada com a fonte Sites. Prévia privada permanece na fonte c901b840a226f08576aed724081f6229a274d1c2, deployment ac0ed81dd0d881919426a94a7e9cfa2a já confirmado no cabeçalho.
 - Próxima ação concreta quando o ambiente voltar: abrir fonte Sites pelo helper, comparar e copiar servicos.js do commit 0452d8f68a360a1814aad6daafaa31087e2d331c para dist/servicos.js; empacotar/push e publicar mantendo proprietário como único público. Não refazer testes manuais nem reenviar checkout.
 - Sem alterações de banco, produção, permissões ou pagamentos. PagBank continua adiado.
+
+
+## Revisão administrativa e datas de decisões — 26/11/2026
+- Revisados código da autorização administrativa, aprovação, recusa e consulta privada. Controles de revisor ativo, autoavaliação, versão e consulta própria observados; não houve inspeção ou alteração das configurações remotas do banco nesta etapa.
+- Melhoria de interface: datas de solicitação, orientação e recusa em Brasília com time/datetime. Limpeza após falha ou troca de conta. Sem novas consultas, permissões ou mudanças de regras.
+- Código 0b5d95e27a8654c2b4550d44a11c38fa136b0852; testes ac0b91b449d9f036b67a73fb863ad538f8a66e5d. CI geral/interface/regressões 45833974781, financeiro 45833974971 e concorrência 45833974850 success; prévia 45833971649 success na implementação.
+- Evidências e limites: docs/REVISAO-PAINEL-ADMINISTRATIVO-2026-11-26.md.
+- NÃO PUBLICADO: ambiente local indisponível. Na retomada sincronizar tanto servicos.js pendente da preservação automática como perfil.js desta entrega. Prévia continua na fonte c901b840a226f08576aed724081f6229a274d1c2; não repetir ensaios manuais sem necessidade.
+- Sem alteração de produção, SQL, banco, acesso ou pagamento. PagBank continua adiado.
