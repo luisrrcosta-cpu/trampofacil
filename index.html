@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'sha256-Z76uBSBgqOFgXNFRST6BTkcRwKqWHs7+rglWYjBdHfE='; connect-src https://asdszqtpydiowgerxwee.supabase.co; img-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'sha256-yQNrSbLwCwi7TwmIfdpH8PK5EYuQ5m5pIYUtkFa1OIE='; connect-src https://asdszqtpydiowgerxwee.supabase.co; img-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <title>TrampoFácil</title>
@@ -77,6 +77,7 @@ label input,label select,label textarea{font-weight:400}
 .profissional-detalhes{margin:12px 0}
 .profissional-detalhes summary{cursor:pointer;color:#12345b;font-weight:700;text-decoration:underline;text-decoration-color:#ff7900;text-underline-offset:4px;padding:10px 0;overflow-wrap:anywhere}
 .profissional-detalhes summary:focus-visible{outline:3px solid #12345b;outline-offset:3px;border-radius:4px}
+.reclamacao-servico{border:1px solid #d7dfe9;border-left:4px solid #ff7900;border-radius:8px;padding:12px;margin-top:16px}.reclamacao-servico summary{cursor:pointer;min-height:44px;padding:10px 0;font-weight:bold;color:#12345b}.reclamacao-servico p,#lista-reclamacoes-admin p{white-space:pre-wrap;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -100,6 +101,7 @@ label input,label select,label textarea{font-weight:400}
 <button type="button" id="abrir-perfil">Meu cadastro</button>
 <button type="button" id="abrir-solicitacoes">Minhas solicitações</button>
 <button type="button" id="abrir-revisao">Área de revisão de profissionais</button>
+<button type="button" id="abrir-reclamacoes-admin">Reclamações de serviços</button>
 <button type="button" id="sair" hidden>Sair da conta</button>
 </div>
 <button type="button" data-pagina="cliente">Sou Cliente</button>
@@ -429,6 +431,16 @@ label input,label select,label textarea{font-weight:400}
 <p>Pix, débito, impostos e tarifas fixas aguardam definição. Sua comissão exibida é anterior a impostos. Esta tela não cria pagamentos e não altera o orçamento salvo.</p>
 <button type="button" data-pagina="inicio">Página inicial</button>
 </section>
+<section id="reclamacoes-admin" class="card" hidden>
+<h2>Reclamações de serviços</h2>
+<p>Consulta reservada ao atendimento autorizado. Os relatos e as respostas ficam disponíveis para análise; esta tela não aprova reembolso nem bloqueia, libera ou movimenta dinheiro.</p>
+<button type="button" id="atualizar-reclamacoes-admin">Atualizar casos</button>
+<p id="status-reclamacoes-admin" role="status"></p>
+<div id="lista-reclamacoes-admin"></div>
+<button type="button" id="anterior-reclamacoes-admin" hidden>Página anterior</button>
+<button type="button" id="proxima-reclamacoes-admin" hidden>Próxima página</button>
+<button type="button" data-pagina="inicio">Página inicial</button>
+</section>
 </main>
 <footer>© 2026 TrampoFácil</footer>
 <script src="config.js" defer></script>
@@ -440,6 +452,7 @@ label input,label select,label textarea{font-weight:400}
 <script src="transicoes-contratacao.js" defer></script>
     <script src="servicos.js" defer></script>
 <script src="avaliacoes.js" defer></script>
+<script src="reclamacoes.js" defer></script>
 <script src="conversa.js" defer></script>
 <script src="simulador.js" defer></script>
 <script src="pagamentos.js" defer></script>

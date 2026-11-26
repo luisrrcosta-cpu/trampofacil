@@ -126,6 +126,7 @@ function iniciarSessao(sessao) {
     tentativa = undefined;
   }
   if (sessao && profissionalEscolhido) titularPedido = sessao.usuario;
+  if (typeof limparReclamacoesAdmin === 'function') limparReclamacoesAdmin();
   limparRevisao();
   limparPreparacao();
   limparPerfil();
@@ -344,6 +345,7 @@ function proteger(destino) {
   if (destino === 'conversa') carregarConversa();
   if (destino === 'perfil') carregarPerfil();
   if (destino === 'revisao') carregarRevisao();
+  if (destino === 'reclamacoes-admin') carregarReclamacoesAdmin();
 }
 
 async function retornarParaSolicitacoes(id) {
@@ -680,6 +682,7 @@ function mostrarPedido(pedido) {
   }
   adicionarPedidoNotaFiscal(card, pedido, cliente);
   adicionarAvaliacaoServico(card, pedido, cliente);
+  if (typeof adicionarReclamacaoServico === 'function') adicionarReclamacaoServico(card, pedido, cliente);
   card.dataset.direcao = cliente ? 'enviada' : 'recebida';
   card.dataset.busca = normalizarBuscaPedido(pedido.titulo + ' ' + pedido.descricao);
   card.append(botaoAcao('Ver histórico e mensagens', () => abrirConversa(pedido.id)));
