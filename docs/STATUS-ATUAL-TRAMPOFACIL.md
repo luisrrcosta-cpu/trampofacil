@@ -6,9 +6,9 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `e701d488ac93af084a4e2f25a32a038b730bd2a6`.
-- Fonte hospedada atual: `333965503c027496e20c25c8a3864f068370316c`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5600da86293c8191ae3f88f227b8111f`.
+- Último código de interface validado: `670457fd3dcb588dac3a156f69c5f0520fff2028`.
+- Fonte hospedada atual: `74d7f208d51520698622601a86bfe346d64a9838`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3600bc2a2a3081919469a62a20d41c45`.
 - CI da interface publicada: geral/interface 45835566499, financeiro 45835566317, concorrência 45835566367 e prévia 45835420641, todos success. Preservação de propostas validada também em 45832183670, 45832183722, 45832183567 e 45832181764.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
@@ -434,3 +434,8 @@ Tela acessível na página inicial, sem login ou consultas ao banco. Explica con
 Testes verificam abertura, foco no título, retorno à página inicial e zero chamadas API; guia incluído nas verificações de largura 320/360/390/768px. CI success: geral/interface 45863359047, financeiro 45863359051, concorrência 45863359054. git diff --check aprovado; CSS e CSP preservados.
 
 Fonte privada 74d7f208d51520698622601a86bfe346d64a9838. Versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_6dee5b17655881918bf1f6f8c1e411c9; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3600bc2a2a3081919469a62a20d41c45: pending/publishing. Confirmar na próxima retomada; não afirmar publicada antes de succeeded. Produção e pagamentos inalterados.
+
+
+## 26/11 — Guia confirmado como publicado
+
+Publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3600bc2a2a3081919469a62a20d41c45 confirmada succeeded/ready. Fonte 74d7f208d51520698622601a86bfe346d64a9838. Guia Como funciona disponível pela página inicial privada; pending anterior superado. CI geral/interface 45863359047, financeiro 45863359051 e concorrência 45863359054 aprovados conforme registro anterior. Nenhuma operação financeira ou alteração de produção nesta confirmação.
