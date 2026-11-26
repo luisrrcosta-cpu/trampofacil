@@ -6,10 +6,10 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `50cfdecd64d8c3d8b9f579b9b0b453b7aa299c33`.
-- Fonte hospedada atual: `c901b840a226f08576aed724081f6229a274d1c2`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_ac0ed81dd0d881919426a94a7e9cfa2a`.
-- CI da interface publicada: geral/interface 45829502830, financeiro 45829502640, concorrência 45829502628 e prévia 45829198052, todos success.
+- Último código de interface validado: `02b9aa082c7de58ba67d78b0c733069d8638df41`.
+- Fonte hospedada atual: `0342e21c7db4480104ca738acb09cb9559f6820c`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_2f6d2b938f78819189acc918ba8c601b`.
+- CI da interface publicada: geral/interface 45835566499, financeiro 45835566317, concorrência 45835566367 e prévia 45835420641, todos success. Preservação de propostas validada também em 45832183670, 45832183722, 45832183567 e 45832181764.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
 ## Entregas atuais na homologação
@@ -376,3 +376,8 @@ Auditoria somente de leitura em TrampoFacil-Homologacao (asdszqtpydiowgerxwee): 
 Sincronizados os três arquivos já testados: index.html (4897677e3b48c74c378e6ee733d18c4d4a3ce0f2), perfil.js (76f0ca09a7e74ad9b30202920fbb41056f90566a) e servicos.js (b354a265dbe3e458f7c66111b6b12c0f9c03110a). Busca local no painel, datas de revisão, limpeza por acesso negado e preservação de proposta em atualização automática incluídas. Verificação de sintaxe JavaScript e git diff --check aprovadas; testes anteriores permanecem aplicáveis aos mesmos blobs.
 
 Fonte privada enviada: 0342e21c7db4480104ca738acb09cb9559f6820c. Versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_b7dfb6fd84d08191ac5315e7a7f02a2d. Publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_2f6d2b938f78819189acc918ba8c601b: pending/publishing no retorno inicial. Ainda não confirmada como publicada. URL: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site. Confirmar estado na próxima retomada, sem iniciar outra publicação. Produção e pagamentos reais permanecem inalterados; tentativa PagBank incerta não repetida.
+
+
+## 26/11 — Publicação das melhorias confirmada
+
+Consulta posterior confirmou succeeded/ready da publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_2f6d2b938f78819189acc918ba8c601b, versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_b7dfb6fd84d08191ac5315e7a7f02a2d. Busca na página de revisão, datas, tratamento de acesso negado e preservação de propostas nas atualizações automáticas estão incluídos na fonte privada 0342e21c7db4480104ca738acb09cb9559f6820c. Estado pending anterior superado. Não foi realizado novo teste manual autenticado de ponta a ponta nesta confirmação.
