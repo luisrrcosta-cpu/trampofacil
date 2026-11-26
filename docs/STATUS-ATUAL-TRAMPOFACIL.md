@@ -442,3 +442,8 @@ Fonte privada 74d7f208d51520698622601a86bfe346d64a9838. Versão appgprj_6afeee18
 ## 26/11 — Guia confirmado como publicado
 
 Publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3600bc2a2a3081919469a62a20d41c45 confirmada succeeded/ready. Fonte 74d7f208d51520698622601a86bfe346d64a9838. Guia Como funciona disponível pela página inicial privada; pending anterior superado. CI geral/interface 45863359047, financeiro 45863359051 e concorrência 45863359054 aprovados conforme registro anterior. Nenhuma operação financeira ou alteração de produção nesta confirmação.
+
+
+## 26/11 — Ensaio privado preparado, sem abertura de acesso
+
+Roteiro salvo em docs/ROTEIRO-ENSAIO-PRIVADO-SEM-PAGAMENTOS.md, cobrindo cliente/profissional, revisão autorizada de perfil fictício, contratação, mensagens, conclusão, isolamento entre contas e recuperação no celular. Preparação documental apenas; nenhum convite, ampliação de audiência, ensaio com novos participantes ou operação financeira executado. Acesso continua somente do proprietário. Seleção do grupo e autorização concreta de acesso ficam para antes da execução externa.
