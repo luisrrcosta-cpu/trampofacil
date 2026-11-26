@@ -235,7 +235,7 @@ for (const botao of document.querySelectorAll('[data-pagina]')) {
   botao.addEventListener('click', () => {
     if (ocupado) return;
     const secao = botao.closest('section');
-    const formulario = secao.querySelector('[data-cadastro]');
+    const formulario = secao.querySelector('[data-cadastro], #form-solicitacao');
     const preenchido = formulario && Array.from(formulario.querySelectorAll('input,textarea,select')).some(campo => {
       if (campo.tagName === 'SELECT') {
         const padrao = Array.from(campo.options).findIndex(opcao => opcao.defaultSelected);
@@ -243,10 +243,19 @@ for (const botao of document.querySelectorAll('[data-pagina]')) {
       }
       return campo.value !== campo.defaultValue;
     });
-    if (preenchido && !window.confirm('Sair do cadastro e descartar os dados preenchidos?')) return;
+    const novaSolicitacao = formulario?.id === 'form-solicitacao';
+    const avisoSaida = novaSolicitacao
+      ? 'Voltar à busca e descartar o título e a descrição deste pedido?'
+      : 'Sair do cadastro e descartar os dados preenchidos?';
+    if (preenchido && !window.confirm(avisoSaida)) return;
     formulario?.reset();
+    if (novaSolicitacao) {
+      tentativa = undefined;
+      atualizarContadorDescricaoPedido();
+      elemento('status-envio').textContent = '';
+    }
     atualizarContadorPerfilProfissional();
-    formulario?.querySelector('[role="alert"]').replaceChildren();
+    formulario?.querySelector('[role="alert"]')?.replaceChildren();
     mostrar(botao.dataset.pagina);
   });
 }
