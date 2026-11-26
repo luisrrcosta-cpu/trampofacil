@@ -52,3 +52,10 @@ PagBank adiado. Nenhum checkout reenviado, pagamento real ativado ou alteração
 - Código 80297aa5ba9edaed1dcb623cab7c7f553ccec678; testes f5f4278e980f1857e0e7c7ed5425207fec66d090.
 - CI geral/interface/regressões 45834717676, financeiro 45834717900, concorrência 45834717773 e pacote 45834715042: success. As verificações financeiras e de concorrência não demonstram execução financeira real ou alteração do banco remoto.
 - Salvo e validado no GitHub, ainda não publicado. Na sincronização futura usar perfil.js atual da branch para incluir também esta correção, além das datas; servicos.js pendente da preservação automática deve ser incluído. Preservar acesso privado e não modificar produção.
+
+
+## Busca dos perfis carregados
+- Busca local por nome, serviço e cidade com acentos normalizados e termos combinados. Escopo explicitamente restrito à página; sem nova consulta, índice remoto, acesso ou leitura de perfis fora dos cards autorizados.
+- Mesmos cards ocultados/exibidos, mantendo seletores e handlers. Busca apagada em carga/paginação, logout, 403 e limpeza por falha. Controles ocultos sem cards autorizados.
+- CI final no commit 02b9aa082c7de58ba67d78b0c733069d8638df41: geral/interface/regressões 45835566499, financeiro 45835566317, concorrência 45835566367 success. Pacote 45835420641 success em e0f360ca9163ef1efb93965e6bf09c38a74a6ea1.
+- Ainda não publicado. Checklist de sincronização passa a incluir index.html, além de perfil.js e servicos.js atuais da branch. Não copiar versões antigas sobre correções posteriores.
