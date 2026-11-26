@@ -11,7 +11,8 @@ test('andamento na tela recupera envio incerto, conclui atendimento e isola hist
  const pedido={id,titulo:'Pedido fictício',cliente_usuario_id:cliente,profissional_usuario_id:prof};
  const item={solicitacao_id:id,titulo:pedido.titulo,motivo:'qualidade',descricao:'O serviço apresentou um problema.',criado_em:'2026-11-26T12:00:00Z',resposta:null};
  await page.route('https://teste.invalid/**',async route=>{
-  const req=route.request(),path=new URL(req.url()).pathname,dados=req.postDataJSON();
+  const req=route.request();if(req.method()==='GET')return route.fulfill({contentType:'text/html',body:'<!doctype html><html><body></body></html>'});
+  const path=new URL(req.url()).pathname,dados=req.postDataJSON();
   if(path.endsWith('/listar_reclamacoes_administrativas'))return route.fulfill({json:[{...item,versao:eventos[0]?.versao||0,status:eventos[0]?.status||'aguardando_analise'}]});
   if(path.endsWith('/atualizar_acompanhamento_reclamacao')){
    posts++;assert.equal(dados.pedido_id,id);assert.equal(dados.versao_esperada,eventos[0]?.versao||0);assert.match(dados.operacao_id,/^[0-9a-f-]{36}$/);
@@ -23,6 +24,7 @@ test('andamento na tela recupera envio incerto, conclui atendimento e isola hist
   if(segurar){iniciou();await new Promise(resolve=>liberar=resolve);}
   return route.fulfill({json:resultado});
  });
+ await page.goto('https://teste.invalid/fixture');
  await page.setContent('<div id="solicitacoes"><div id="card"></div></div><button id="abrir-reclamacoes-admin"></button><section id="reclamacoes-admin"><button id="atualizar-reclamacoes-admin">Atualizar casos</button><div id="lista-reclamacoes-admin"></div><p id="status-reclamacoes-admin"></p><button id="anterior-reclamacoes-admin"></button><button id="proxima-reclamacoes-admin"></button></section>');
  await page.addScriptTag({content:`let sessaoServicos={usuario:'${cliente}',token:'ficticio'},versaoPedidos=1,ocupado=false;
  const elemento=id=>document.getElementById(id);const texto=(tag,valor)=>{const n=document.createElement(tag);n.textContent=valor;return n;};
