@@ -1473,3 +1473,34 @@ test('telas e catálogo permanecem utilizáveis em celulares com nomes longos',a
   }
   assert.deepEqual(erros,[]);
 });
+
+test('catálogo encerra paginação no limite mesmo quando a última página está completa',async t=>{
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const server=createServer(async(req,res)=>{
+    const arquivo=req.url==='/'?'index.html':req.url.slice(1);
+    if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',arquivo.endsWith('.js')?'application/javascript':'text/html; charset=utf-8');
+    res.end(await readFile(new URL('../'+arquivo,import.meta.url)));
+  }).listen(0,'127.0.0.1');
+  await once(server,'listening');t.after(()=>server.close());
+  const browser=await chromium.launch({executablePath:process.env.TRAMPOFACIL_CHROMIUM||'/usr/bin/chromium'});
+  t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
+  const paginas=[];
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',route=>{
+    const pagina=route.request().postDataJSON().pagina;paginas.push(pagina);
+    assert.ok(pagina<=10000);
+    return route.fulfill({json:Array.from({length:20},(_,n)=>({
+      id:'00000000-0000-4000-8000-'+String((pagina===0?0:100)+n+1).padStart(12,'0'),
+      nome:'Profissional fictício '+n,cidade:'Cidade',servico:'Pintura',descricao:'Teste'
+    }))});
+  });
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  await page.evaluate(()=>{mostrar('catalogo');return procurar({termo_servico:'Pintura',termo_cidade:''},0);});
+  assert.equal(await page.locator('#mais-profissionais').isVisible(),true);
+  await page.evaluate(()=>procurar({termo_servico:'Pintura',termo_cidade:''},10000));
+  assert.equal(await page.locator('#resultados-busca article').count(),40);
+  assert.equal(await page.locator('#mais-profissionais').isVisible(),false);
+  assert.doesNotMatch(await page.locator('#status-busca').textContent(),/Use Ver mais/);
+  await page.evaluate(()=>procurar({termo_servico:'Pintura',termo_cidade:''},10001));
+  assert.deepEqual(paginas,[0,10000],'nenhuma chamada acima do limite');
+});
