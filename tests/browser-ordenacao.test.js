@@ -35,7 +35,7 @@ test('ordena solicitações carregadas sem rede, preserva proposta e reinicia ao
   await page.getByRole('heading',{name:'Orçamento antigo',exact:true}).waitFor();
   const titulos=()=>page.locator('#lista-solicitacoes > article > h3').allTextContents();
   assert.deepEqual(await titulos(),['Serviço recente','Serviço concluído','Orçamento antigo']);
-  const campo=page.locator('#lista-solicitacoes > article').filter({has:page.getByRole('heading',{name:'Serviço recente',exact:true})}).getByLabel('Valor da proposta (R$)');
+  const campo=page.locator('#lista-solicitacoes > article[data-solicitacao-id="33333333-3333-4333-8333-333333333333"] [data-valor-inicial-proposta]');
   await campo.fill('123');
   await page.getByLabel('Ordenar solicitações carregadas',{exact:true}).selectOption('minha_acao');
   assert.deepEqual(await titulos(),['Serviço recente','Orçamento antigo','Serviço concluído']);
