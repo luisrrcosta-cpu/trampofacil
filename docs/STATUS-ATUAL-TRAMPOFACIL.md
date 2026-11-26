@@ -6,9 +6,9 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `c3d894f8fdf577f787c439a571a18b265ed79f31`.
-- Fonte hospedada atual: `8c4497fa2ad0d25e5cad3731e2f8714a7d89e91b`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_953a2bb3e398819195fadc48ed2847b4`.
+- Último código de interface validado: `825a491e5fdab3216f0692928eee017a614c66d2`.
+- Fonte hospedada atual: `4bfc4b983adc3d77d39bd21901f048b5a858a493`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_79a8bf9f5cec8191b7bf2e0873714494`.
 - CI da interface publicada: geral/interface 45863359047, financeiro 45863359051 e concorrência 45863359054, todos success. Verificações móveis anteriores: geral 45862641623 e prévia 45862641479 success.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
@@ -482,3 +482,10 @@ Primeira paleta confirmada succeeded/ready na publicação 953a2bb3e398819195fad
 Nova alteração CSS em 825a491e5fdab3216f0692928eee017a614c66d2: botões #12345b com texto branco e bordas de 2px #ff7900; Voltar preserva fundo claro/texto azul e borda discreta. Cabeçalho azul e acentos laranja preservados. Hash CSP atualizado sem relaxamento. Contraste branco/azul já calculado em 12,59:1. Inspeção visual da prévia confirmou o modelo. CI geral/interface 45886474111, financeiro 45886474195, concorrência 45886474168 e prévia 45886474286 success; git diff --check aprovado.
 
 Fonte privada nova 4bfc4b983adc3d77d39bd21901f048b5a858a493. Versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_d0d902754e5c819192357c251be7a14c; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_79a8bf9f5cec8191b7bf2e0873714494: pending/publishing. Confirmar na próxima retomada; cabeçalho permanece com última publicação confirmada até succeeded. Sem alterações funcionais, dados, acesso ou pagamentos.
+
+
+## 26/11 — Destaque laranja no título de boas-vindas
+
+Modelo de botões azul/branco confirmado succeeded/ready antes desta edição. A pedido do proprietário, título inicial mantém Bem-vindo ao em azul e destaca TrampoFácil! em #c45100, com faixa decorativa #ff7900 abaixo. Texto acessível do heading preservado; alteração somente visual. CSS/CSP conferidos, git diff --check aprovado. Código ac73b16377917222fb0b8c170c2d6f7f967e77a6; CI geral/interface 45886924354, financeiro 45886924175, concorrência 45886924201 e prévia 45886924405 success.
+
+Fonte nova aa7b8e231434e9ccf91adf62416a58f66ae769fb, versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_941e7e704f4c8191bc0886e101f05409, publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_f0cf740c31d08191b6aa55974e8bad53: pending/publishing. Confirmar na próxima retomada; ainda não presumir publicada. Sem mudanças de dados, permissões, funcionalidade ou pagamentos.
