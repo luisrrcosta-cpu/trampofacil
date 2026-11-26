@@ -70,6 +70,22 @@ test('ordena solicitações carregadas sem rede, preserva proposta e reinicia ao
   await page.locator('#recarregar-solicitacoes').click();await respostaSemEdicao;
   await page.waitForFunction(()=>!document.getElementById('recarregar-solicitacoes').disabled);
   page.removeListener('dialog',dialogoInesperado);
+  // Abrir histórico ou sair da lista também deve proteger a edição.
+  await campo.fill('321');
+  const cardRecente=page.locator('#lista-solicitacoes > article').filter({has:page.getByRole('heading',{name:'Serviço recente',exact:true})});
+  page.once('dialog',dialog=>dialog.dismiss());
+  await cardRecente.getByRole('button',{name:'Ver histórico e mensagens',exact:true}).click();
+  assert.equal(await page.locator('#solicitacoes').isVisible(),true);
+  assert.equal(await campo.inputValue(),'321');assert.equal(chamadas,4);
+  const inicio=page.locator('#solicitacoes [data-pagina="inicio"]');
+  page.once('dialog',dialog=>dialog.dismiss());
+  await inicio.click();
+  assert.equal(await page.locator('#solicitacoes').isVisible(),true);
+  assert.equal(await campo.inputValue(),'321');assert.equal(chamadas,4);
+  page.once('dialog',dialog=>dialog.accept());
+  await inicio.click();
+  assert.equal(await page.locator('#inicio').isVisible(),true);
+  assert.equal(await campo.inputValue(),'');assert.equal(chamadas,4);
   await page.locator('#ordem-solicitacoes').selectOption('antigas');
   await page.evaluate(()=>iniciarSessao(undefined));
   assert.equal(await page.locator('#ordem-solicitacoes').inputValue(),'recentes');
