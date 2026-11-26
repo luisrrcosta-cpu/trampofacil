@@ -1,6 +1,6 @@
 # Estado atual recuperável — TrampoFácil
 
-Atualização: 25/11/2026. Este resumo é o ponto de retomada atual; as entradas posteriores preservam o histórico e podem conter estados intermediários já superados.
+Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas posteriores preservam o histórico e podem conter estados intermediários já superados.
 
 - Repositório: luisrrcosta-cpu/trampofacil.
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
@@ -30,7 +30,7 @@ Atualização: 25/11/2026. Este resumo é o ponto de retomada atual; as entradas
 | Área | Estado comprovado | Próxima ação necessária |
 | --- | --- | --- |
 | Checkout sandbox | Tentativa de R$ 1,00 com resultado incerto, sem CHEC_id recuperado | Obter CHEC_id ou evidência da rejeição no provedor antes de qualquer novo POST |
-| Suporte PagBank | Formulário acionado uma vez; envio não confirmado, sem protocolo observado | Conferir se chegou confirmação ao contato do proprietário antes de duplicar o chamado |
+| Suporte PagBank | Caso de atendimento geral 75359297 confirmado pelo atendente em 25/11; não encaminhado às Integrações. Formulário técnico sem envio confirmado | Etapa adiada a pedido do proprietário; continuar desenvolvimento independente, sem exigir ligação ou repetir formulários |
 | Notificação autêntica | Receptor e proteção testados, mas integração externa completa não demonstrada | Confirmar contrato de assinatura/payload e validar evento autêntico no sandbox |
 | Documentos/habilitações | Escopo privado planejado | Definir e validar procedimento antes de coletar documentos ou exibir selo de verificação |
 | Lançamento/financeiro real | Não autorizado | Entregar evidências e definir operação antes de solicitar ativação específica |
@@ -271,3 +271,11 @@ Atualização: 25/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_f902ffe516988191878a1788a4f10800 confirmado succeeded/ready; fonte 9d1c466fa58400f2fa1670b53999f32b6bb815ef. As anotações pending anteriores são históricas.
 - Revisão de prontidão consultada: a próxima ação do checkout depende de confirmação do suporte/provedor, sem novo CHEC_id ou evidência de rejeição disponível nesta conversa. Necessário obter do proprietário eventual confirmação/protocolo recebido antes de duplicar o chamado.
 - Nenhum novo ensaio, repetição de login, coleta documental ou POST de checkout executado. Sem nova funcionalidade ou resolução financeira nesta conferência.
+
+
+## Retomada do aplicativo sem dependência do PagBank — 26/11/2026
+- Proprietário solicitou adiar o suporte externo após desgaste com formulários, CAPTCHA e transferências. Não exigir ligação ou novos ensaios manuais para continuar o aplicativo. Caso geral 75359297 registrado, sem evidência de encaminhamento técnico. O checkout incerto permanece preservado; não repetir POST nem habilitar pagamentos reais.
+- Implementado pedido de confirmação ao Voltar à busca de nova solicitação com título, descrição ou modelo alterado. Cancelar conserva campos, contador, aviso e tentativa em memória; confirmar descarta e volta à busca. Pedido vazio sai sem confirmação, operação pendente não navega. Logout continua limpando dados, sem confirmação adicional.
+- Não há persistência após recarga/fechamento. Nenhuma alteração de banco, permissões ou fluxo financeiro.
+- Commits de código 106b12e90245ef646cc1ef36e7e78e566a5a3c1e e testes 361f8605031be3c42ebada58ea881ce83fb785b1. Quatro testes locais passaram; CI geral/interface/regressões 45805601078, financeiro 45805601112 e concorrência 45805601314 concluídos success; prévia 45805582596 e cadastro inclusivo 45805582511 success no commit de implementação.
+- Fonte hospedada 6db09b549bd002fb97cff8ebfdcd750ddfc46af2. Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_7298bffaa5d481918330219eac14e745; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_d15a422f75c88191b5ee1d114f592d06. Confirmar status antes de afirmar disponibilidade. Acesso somente ao proprietário preservado.
