@@ -130,14 +130,9 @@ assert.match(servicos, /\.test\(atualizado_em\)/);
 assert.match(servicos, /\.test\(p\.atualizado_em\)/);
 assert.match(servicos, /Você pode carregar mais solicitações ou escolher outro filtro/);
 assert.match(servicos, /Nenhuma solicitação carregada para filtrar/);
-assert.match(servicos, /typeof p\.cliente_usuario_id === 'string'/);
 assert.match(servicos, /id,cliente_usuario_id,profissional_usuario_id,titulo,descricao,status,valor_centavos,atualizado_em/);
-assert.match(servicos, /typeof p\.profissional_usuario_id === 'string'/);
-assert.match(servicos, /papelNaContratacao\(p, sessaoDaBusca\.usuario\)/);
-assert.match(servicos, /papelNaContratacao\(p, sessaoDaBusca\.usuario\)/);
 assert.match(servicos, /p\.titulo\.trim\(\)\.length >= 3/);
 assert.match(servicos, /p\.descricao\.length <= 3000/);
-assert.match(servicos, /Object\.prototype\.hasOwnProperty\.call\(nomesStatus, p\.status\)/);
 assert.match(servicos, /p\.valor_centavos <= 100000000/);
 assert.match(servicos, /registros\.length > 1/);
 assert.match(servicos, /registro\.id === pedido\.id/);
@@ -194,4 +189,22 @@ assert.match(html, /Nenhuma cobrança está habilitada/);
 assert.doesNotMatch(html, /<script[^>]+src="https?:\/\//i, 'Não carregar scripts externos sem revisão.');
 assert.match(servicos, /Esta ação não realiza pagamento nem reserva dinheiro/);
 assert.match(servicos, /nenhum pagamento foi processado/i);
+
+// Exercita a validação compartilhada pela lista e pelo atalho pontual.
+const vm = require('node:vm');
+const inicioValidador = servicos.indexOf('function pedidoValidoParaConta(');
+const fimValidador = servicos.indexOf('\nasync function carregarPedidos', inicioValidador);
+assert.ok(inicioValidador >= 0 && fimValidador > inicioValidador);
+const validarPedido = vm.runInNewContext(
+  fs.readFileSync('transicoes-contratacao.js','utf8') +
+  '\nconst nomesStatus={solicitada:1,proposta:1,aceita:1,em_andamento:1,entregue:1,concluida:1,cancelada:1};\n' +
+  servicos.slice(inicioValidador,fimValidador) + '\npedidoValidoParaConta;'
+);
+const conta='11111111-1111-4111-8111-111111111111';
+const outro='22222222-2222-4222-8222-222222222222';
+const exemplo={id:'33333333-3333-4333-8333-333333333333',cliente_usuario_id:conta,profissional_usuario_id:outro,titulo:'Serviço de teste',descricao:'Descrição fictícia válida',status:'aceita',valor_centavos:10000,atualizado_em:'2026-11-26T12:00:00.123456Z'};
+assert.ok(validarPedido(exemplo,conta));
+for(const alteracao of [{cliente_usuario_id:12},{profissional_usuario_id:null},{cliente_usuario_id:'inválido'},{profissional_usuario_id:conta},{id:'inválido'},{atualizado_em:'ontem'},{status:'desconhecido'},{valor_centavos:99},{valor_centavos:100000001},{valor_centavos:1.5},{titulo:'a'},{descricao:'curto'}])assert.ok(!validarPedido({...exemplo,...alteracao},conta));
+assert.ok(!validarPedido(exemplo,'44444444-4444-4444-8444-444444444444'));
+
 console.log('Verificacoes de regressao da interface aprovadas.');
