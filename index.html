@@ -303,6 +303,13 @@ label input,label select,label textarea{font-weight:400}
 <p>Área reservada à conta revisora autorizada. Analise os dados antes de aprovar a publicação. A aprovação não comprova identidade, documentos ou habilitação profissional.</p>
 <p id="status-revisao" role="status"></p>
 <button type="button" id="atualizar-revisao">Atualizar fila de análise</button>
+<div id="filtros-revisao" hidden>
+<label for="busca-revisao">Buscar nos perfis desta página</label>
+<input id="busca-revisao" type="search" maxlength="120" placeholder="Nome, serviço ou cidade" aria-describedby="escopo-busca-revisao">
+<p id="escopo-busca-revisao">A busca considera somente os perfis carregados nesta página. Use a paginação para consultar os demais.</p>
+<button type="button" id="limpar-busca-revisao">Limpar busca de perfis</button>
+<p id="resultado-busca-revisao" role="status"></p>
+</div>
 <div id="lista-revisao"></div>
 <button type="button" id="anterior-revisao" hidden>Página anterior</button>
 <button type="button" id="proxima-revisao" hidden>Próxima página</button>
