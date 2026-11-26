@@ -9,7 +9,7 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Último código de interface validado: `670457fd3dcb588dac3a156f69c5f0520fff2028`.
 - Fonte hospedada atual: `74d7f208d51520698622601a86bfe346d64a9838`.
 - Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3600bc2a2a3081919469a62a20d41c45`.
-- CI da interface publicada: geral/interface 45835566499, financeiro 45835566317, concorrência 45835566367 e prévia 45835420641, todos success. Preservação de propostas validada também em 45832183670, 45832183722, 45832183567 e 45832181764.
+- CI da interface publicada: geral/interface 45863359047, financeiro 45863359051 e concorrência 45863359054, todos success. Verificações móveis anteriores: geral 45862641623 e prévia 45862641479 success.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
 ## Entregas atuais na homologação
@@ -24,6 +24,9 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 9. Confirmação antes de descartar cadastro preenchido e edição de perfil ao atualizar/trocar tipo; logout limpa os dados privados.
 10. Aviso de perda/retorno de conexão, sem reenvio automático. Não há persistência offline nem garantia de recuperação após fechar/recarregar a página.
 11. Preparação financeira de teste e consulta autenticada da tentativa salva, sem cobrança ou repasse real.
+12. Guia Como funciona pela página inicial, sem login; orientações para clientes e profissionais.
+13. Pedido não enviado isolado por conta após expiração de sessão; formulário desbloqueado ao retornar do login.
+14. Layout verificado em 320/360/390/768px, incluindo nomes longos e botões renderizados.
 
 ## Bloqueios reais e próxima ação
 
@@ -44,7 +47,7 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Contratação, nota e consulta da tentativa já tiveram verificações autenticadas registradas; não pedir repetição manual sem falha ou alteração relevante.
 - Avaliações: RLS/grants verificados, ensaio com identidades fictícias e ROLLBACK concluído; nenhuma avaliação criada em nome das contas existentes.
 - Os números de registros em entradas históricas são fotografias datadas, não contagens permanentemente atualizadas.
-- Última consulta de advisors em 25/11 manteve os avisos preexistentes: INFO RLS sem políticas em tabelas privadas intencionalmente bloqueadas e WARN de proteção contra senhas vazadas. Nenhuma política reduzida.
+- Última consulta de advisors em 26/11 manteve os avisos preexistentes: INFO RLS sem políticas em tabelas privadas intencionalmente bloqueadas e WARN de proteção contra senhas vazadas. Nenhuma política reduzida.
 
 ## Limites obrigatórios
 - Não alterar produção/main, excluir dados ou reduzir RLS/grants.
