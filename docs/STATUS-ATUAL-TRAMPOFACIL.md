@@ -6,10 +6,10 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `8efe3a249cb9c16215ed5f7c3ca681027d3c2130`.
-- Fonte hospedada atual: `f7cdd8113ab117d24ec729997c569baa398c73be`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_336c9392e73c81919ac691db9389d163`.
-- CI da interface publicada: geral/interface 45828513461, financeiro 45828513486, concorrência 45828513474 e prévia 45828512991, todos success.
+- Último código de interface validado: `50cfdecd64d8c3d8b9f579b9b0b453b7aa299c33`.
+- Fonte hospedada atual: `c901b840a226f08576aed724081f6229a274d1c2`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_ac0ed81dd0d881919426a94a7e9cfa2a`.
+- CI da interface publicada: geral/interface 45829502830, financeiro 45829502640, concorrência 45829502628 e prévia 45829198052, todos success.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
 ## Entregas atuais na homologação
@@ -323,3 +323,10 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Teste móvel cobre cancelamento de histórico e saída sem consulta/sem perder valor, saída confirmada com descarte, além dos cenários de atualização anteriores.
 - Fonte hospedada c901b840a226f08576aed724081f6229a274d1c2. Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_ac0ed81dd0d881919426a94a7e9cfa2a; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_6899381ade488191863393f579838e35. Conferir status no próximo turno antes de afirmar disponibilidade.
 - Nenhuma alteração de banco, RLS, produção ou pagamentos; PagBank segue adiado.
+
+
+## Navegação protegida publicada — 26/11/2026
+- Deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_ac0ed81dd0d881919426a94a7e9cfa2a confirmado succeeded/ready; fonte c901b840a226f08576aed724081f6229a274d1c2. Cabeçalho consolidado; pending anterior é histórico.
+- Nesta retomada foi concluída a conferência de publicação. Sem nova implementação, reexecução manual de testes ou operação financeira.
+- Próxima lacuna conhecida de propostas: recarga automática após concluir uma ação pode substituir edições não enviadas de outros cards. Antes de corrigir, definir preservação em memória condicionada ao mesmo titular, pedido, estado e versão do orçamento; nunca restaurar sobre estado atualizado de outra parte, nem manter dados após logout. Validar resposta tardia e falha sem alterar regras financeiras.
+- Ambiente de execução informado indisponível nesta retomada. Não presumir nova alteração ou teste local concluído.
