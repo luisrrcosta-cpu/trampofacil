@@ -576,6 +576,7 @@ function mostrarPedido(pedido) {
     if (pedido.status === 'proposta' && Number.isSafeInteger(pedido.valor_centavos)) {
       campo.value = (pedido.valor_centavos / 100).toFixed(2);
     }
+    campo.dataset.valorInicialProposta = campo.value;
     label.append(campo);
     const erro = texto('p', '');
     erro.setAttribute('role', 'alert');
@@ -832,7 +833,13 @@ async function atualizarPedido(pedido, dados) {
   if (sessaoServicos === sessaoOriginal) await carregarPedidos(aviso);
 }
 
-elemento('recarregar-solicitacoes').addEventListener('click', () => carregarPedidos());
+elemento('recarregar-solicitacoes').addEventListener('click', () => {
+  if (ocupado) return;
+  const propostaAlterada = Array.from(listaPedidos.querySelectorAll('[data-valor-inicial-proposta]'))
+    .some(campo => campo.value !== campo.dataset.valorInicialProposta || campo.validity.badInput);
+  if (propostaAlterada && !window.confirm('Há um valor de proposta ainda não enviado. Atualizar a lista descarta essa edição. Deseja continuar?')) return;
+  carregarPedidos();
+});
 
 maisPedidos.addEventListener('click', () => carregarPedidos('', true));
 
