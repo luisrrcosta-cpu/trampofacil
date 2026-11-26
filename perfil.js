@@ -278,7 +278,36 @@ const listaRevisao = elemento('lista-revisao');
 const statusRevisao = elemento('status-revisao');
 const anteriorRevisao = elemento('anterior-revisao');
 const proximaRevisao = elemento('proxima-revisao');
+const buscaRevisao = elemento('busca-revisao');
+const filtrosRevisao = elemento('filtros-revisao');
+const resultadoBuscaRevisao = elemento('resultado-busca-revisao');
+function limparBuscaRevisao() {
+  buscaRevisao.value = '';
+  resultadoBuscaRevisao.textContent = '';
+  filtrosRevisao.hidden = true;
+}
+function normalizarBuscaRevisao(valor) {
+  return String(valor ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+function filtrarRevisao() {
+  const termos = normalizarBuscaRevisao(buscaRevisao.value).split(/\s+/).filter(Boolean);
+  let exibidos = 0;
+  for (const card of listaRevisao.children) {
+    card.hidden = !termos.every(termo => (card.dataset.buscaRevisao ?? '').includes(termo));
+    if (!card.hidden) exibidos++;
+  }
+  resultadoBuscaRevisao.textContent = exibidos
+    ? exibidos + ' de ' + listaRevisao.childElementCount + ' perfis exibidos nesta página.'
+    : 'Nenhum perfil corresponde à busca nesta página. Limpe a busca ou consulte outra página.';
+}
+buscaRevisao.addEventListener('input', filtrarRevisao);
+elemento('limpar-busca-revisao').addEventListener('click', () => {
+  buscaRevisao.value = '';
+  filtrarRevisao();
+  buscaRevisao.focus();
+});
 function limparRevisao() {
+  limparBuscaRevisao();
   versaoRevisao++;
   paginaRevisao = 0;
   listaRevisao.replaceChildren();
@@ -288,6 +317,7 @@ function limparRevisao() {
   bloquear(secaoRevisao, false);
 }
 function informarAcessoRevisaoNegado() {
+  limparBuscaRevisao();
   listaRevisao.replaceChildren();
   anteriorRevisao.hidden = true;
   proximaRevisao.hidden = true;
@@ -311,6 +341,7 @@ function perfilRevisaoValido(item) {
 }
 async function carregarRevisao(pagina = 0, aviso = '') {
   if (ocupado || !sessaoServicos || !Number.isInteger(pagina) || pagina < 0 || pagina > 10000) return;
+  limparBuscaRevisao();
   const sessaoOriginal = sessaoServicos;
   const versao = ++versaoRevisao;
   const atual = () => sessaoServicos === sessaoOriginal && versaoRevisao === versao;
@@ -332,6 +363,7 @@ async function carregarRevisao(pagina = 0, aviso = '') {
     for (const item of fila.slice(0,50)) {
       const p = item.perfil;
       const card = document.createElement('article');
+      card.dataset.buscaRevisao = normalizarBuscaRevisao(p.nome + ' ' + p.servico + ' ' + p.cidade);
       card.append(texto('h3',p.nome),texto('p',p.servico + ' · ' + p.cidade));
       card.append(criarDataRevisao('Solicitado em', item.solicitado_em));
       if (p.descricao) card.append(texto('p',p.descricao));
@@ -370,6 +402,8 @@ async function carregarRevisao(pagina = 0, aviso = '') {
       card.append(rotuloRecusa,botaoAcao('Recusar publicação de ' + p.nome,()=>recusarPublicacao(item,motivoRecusa.value)));
       listaRevisao.append(card);
     }
+    filtrosRevisao.hidden = listaRevisao.childElementCount === 0;
+    if (!filtrosRevisao.hidden) filtrarRevisao();
     paginaRevisao = pagina;
     anteriorRevisao.hidden = pagina === 0;
     proximaRevisao.hidden = fila.length <= 50 || pagina === 10000;
