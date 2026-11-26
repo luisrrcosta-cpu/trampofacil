@@ -126,6 +126,7 @@ function iniciarSessao(sessao) {
     tentativa = undefined;
   }
   if (sessao && profissionalEscolhido) titularPedido = sessao.usuario;
+  if (typeof limparAvisosAtendimento === 'function') limparAvisosAtendimento();
   if (typeof limparReclamacoesAdmin === 'function') limparReclamacoesAdmin();
   limparRevisao();
   limparPreparacao();
@@ -346,6 +347,7 @@ function proteger(destino) {
   if (destino === 'perfil') carregarPerfil();
   if (destino === 'revisao') carregarRevisao();
   if (destino === 'reclamacoes-admin') carregarReclamacoesAdmin();
+  if (destino === 'avisos-atendimento') carregarAvisosAtendimento();
 }
 
 async function retornarParaSolicitacoes(id) {

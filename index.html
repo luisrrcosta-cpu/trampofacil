@@ -101,6 +101,7 @@ label input,label select,label textarea{font-weight:400}
 <button type="button" id="abrir-perfil">Meu cadastro</button>
 <button type="button" id="abrir-solicitacoes">Minhas solicitações</button>
 <button type="button" id="abrir-revisao">Área de revisão de profissionais</button>
+<button type="button" id="abrir-avisos-atendimento">Meus avisos</button>
 <button type="button" id="abrir-reclamacoes-admin">Reclamações de serviços</button>
 <button type="button" id="sair" hidden>Sair da conta</button>
 </div>
@@ -441,6 +442,17 @@ label input,label select,label textarea{font-weight:400}
 <button type="button" id="proxima-reclamacoes-admin" hidden>Próxima página</button>
 <button type="button" data-pagina="inicio">Página inicial</button>
 </section>
+<section id="avisos-atendimento" class="card" hidden>
+<h2>Meus avisos de atendimento</h2>
+<p>Acompanhe respostas do profissional e atualizações da administração sobre suas reclamações. Consulte esta área para ver novidades; estes avisos ficam dentro do aplicativo.</p>
+<p>Ler um aviso não altera o atendimento nem aprova reembolso.</p>
+<button type="button" id="atualizar-avisos-atendimento">Atualizar avisos</button>
+<p id="status-avisos-atendimento" role="status"></p>
+<p id="resumo-avisos-atendimento" aria-live="polite"></p>
+<div id="lista-avisos-atendimento"></div>
+<button type="button" id="mais-avisos-atendimento" hidden>Ver avisos anteriores</button>
+<button type="button" data-pagina="inicio">Página inicial</button>
+</section>
 </main>
 <footer>© 2026 TrampoFácil</footer>
 <script src="config.js" defer></script>
@@ -453,6 +465,7 @@ label input,label select,label textarea{font-weight:400}
     <script src="servicos.js" defer></script>
 <script src="avaliacoes.js" defer></script>
 <script src="reclamacoes.js" defer></script>
+<script src="avisos.js" defer></script>
 <script src="conversa.js" defer></script>
 <script src="simulador.js" defer></script>
 <script src="pagamentos.js" defer></script>

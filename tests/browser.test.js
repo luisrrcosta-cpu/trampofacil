@@ -8,7 +8,7 @@ import { chromium } from 'playwright-core';
 test('busca, autenticação e solicitação com repetição segura', async (t) => {
   let autenticacaoProntaTeste = true;
   const server = createServer(async (req, res) => {
-    const arquivos = ['index.html', 'config.js', 'ambiente.js', 'cadastro.js', 'valores.js', 'simulacao.js', 'simulador.js', 'sessao.js', 'servicos.js', 'avaliacoes.js','reclamacoes.js', 'conversa.js', 'transicoes-contratacao.js', 'pagamentos.js', 'perfil.js'];
+    const arquivos = ['index.html', 'config.js', 'ambiente.js', 'cadastro.js', 'valores.js', 'simulacao.js', 'simulador.js', 'sessao.js', 'servicos.js', 'avaliacoes.js','reclamacoes.js','avisos.js', 'conversa.js', 'transicoes-contratacao.js', 'pagamentos.js', 'perfil.js'];
     const arquivo = req.url === '/' ? 'index.html' : req.url.slice(1);
     if (!arquivos.includes(arquivo)) {
       res.writeHead(404).end();
@@ -518,7 +518,7 @@ test('busca, autenticação e solicitação com repetição segura', async (t) =
 
 
 test('cadastro com oito dígitos retoma gravação incerta sem consumir outro código', async t => {
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -565,7 +565,7 @@ test('cadastro com oito dígitos retoma gravação incerta sem consumir outro c�
 });
 
 test('cadastro profissional aceita CPF, MEI e empresa em atividade regular ou ocasional', async t => {
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -610,7 +610,7 @@ test('cadastro profissional aceita CPF, MEI e empresa em atividade regular ou oc
 });
 
 test('pedido de nota confirma leitura após envio incerto e não vaza após troca de sessão', async t => {
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -665,7 +665,7 @@ test('pedido de nota confirma leitura após envio incerto e não vaza após troc
 });
 
 test('nota fiscal mantém consulta cancelada, acesso profissional e exige novo login ao expirar', async t => {
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -717,7 +717,7 @@ test('nota fiscal mantém consulta cancelada, acesso profissional e exige novo l
 });
 
 test('profissional completa cadastro, pede análise sem publicar e recupera envio incerto',async t=>{
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -784,7 +784,7 @@ test('profissional completa cadastro, pede análise sem publicar e recupera envi
 });
 
 test('edição material de perfil publicado informa nova análise com estado confirmado pelo banco',async t=>{
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -824,7 +824,7 @@ test('edição material de perfil publicado informa nova análise com estado con
 });
 
 test('negociar proposta abre rascunho sem enviar, preserva edição e isola outra conta',async t=>{
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -872,7 +872,7 @@ test('negociar proposta abre rascunho sem enviar, preserva edição e isola outr
 });
 
 test('conversa atualiza orçamento e situação sem apagar rascunho nem mostrar resposta inválida',async t=>{
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -919,7 +919,7 @@ test('conversa atualiza orçamento e situação sem apagar rascunho nem mostrar 
 });
 
 test('conversa indisponível libera controles, permite tentar novamente e voltar sem expor dados anteriores',async t=>{
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -969,7 +969,7 @@ test('conversa indisponível libera controles, permite tentar novamente e voltar
 });
 
 test('profissional pausa e retoma sem publicar perfil pendente nem alterar outros campos',async t=>{
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -1020,7 +1020,7 @@ test('profissional pausa e retoma sem publicar perfil pendente nem alterar outro
 });
 
 test('profissional confirma atendimento fiscal com recuperação segura e cliente vê confirmação sem emissão',async t=>{
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -1125,7 +1125,7 @@ test('profissional confirma atendimento fiscal com recuperação segura e client
 });
 
 test('painel de revisão nega acesso comum, não repete aprovação incerta e limpa dados ao trocar conta',async t=>{
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -1226,7 +1226,7 @@ test('painel de revisão nega acesso comum, não repete aprovação incerta e li
 });
 
 test('revisor pede ajuste com recuperação e somente profissional titular consulta orientação',async t=>{
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -1295,7 +1295,7 @@ test('revisor pede ajuste com recuperação e somente profissional titular consu
 });
 
 test('recusa administrativa exige motivo, recupera resposta perdida e permite consulta privada',async t=>{
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -1371,7 +1371,7 @@ test('recusa administrativa exige motivo, recupera resposta perdida e permite co
 });
 
 test('pedido não enviado conserva texto após novo login do titular e limpa na troca de conta', async t => {
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -1421,7 +1421,7 @@ test('pedido não enviado conserva texto após novo login do titular e limpa na 
 });
 
 test('telas e catálogo permanecem utilizáveis em celulares com nomes longos',async t=>{
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -1482,7 +1482,7 @@ test('telas e catálogo permanecem utilizáveis em celulares com nomes longos',a
 });
 
 test('catálogo encerra paginação no limite mesmo quando a última página está completa',async t=>{
-  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','reclamacoes.js','avisos.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
   const server=createServer(async(req,res)=>{
     const arquivo=req.url==='/'?'index.html':req.url.slice(1);
     if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
@@ -1511,3 +1511,4 @@ test('catálogo encerra paginação no limite mesmo quando a última página est
   await page.evaluate(()=>procurar({termo_servico:'Pintura',termo_cidade:''},10001));
   assert.deepEqual(paginas,[0,10000],'nenhuma chamada acima do limite');
 });
+
