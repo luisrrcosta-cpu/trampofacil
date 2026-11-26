@@ -225,11 +225,27 @@ async function procurar(filtros, pagina) {
       servico.className = 'profissional-servico';
       const local = texto('p', `Atende em: ${profissional.cidade}`);
       local.className = 'profissional-local';
-      card.append(texto('h3', profissional.nome), servico, local);
+      const cabecalho = document.createElement('div');
+      cabecalho.className = 'profissional-cabecalho';
+      const iniciais = profissional.nome.trim().split(/\s+/u).map(parte => Array.from(parte)[0]).slice(0,2).join('').toLocaleUpperCase('pt-BR');
+      const avatar = texto('span', iniciais);
+      avatar.className = 'profissional-iniciais';
+      avatar.setAttribute('aria-hidden', 'true');
+      cabecalho.append(avatar, texto('h3', profissional.nome));
+      card.append(cabecalho, servico, local);
       if (typeof profissional.descricao === 'string' && profissional.descricao.trim()) {
         const descricao = texto('p', profissional.descricao.trim());
         descricao.className = 'profissional-descricao';
-        card.append(descricao);
+        if (profissional.descricao.trim().length > 220) {
+          const resumo = texto('p', profissional.descricao.trim().slice(0,180) + '…');
+          resumo.className = 'profissional-resumo';
+          const detalhes = document.createElement('details');
+          detalhes.className = 'profissional-detalhes';
+          detalhes.append(texto('summary', 'Ler descrição completa'), descricao);
+          card.append(resumo, detalhes);
+        } else {
+          card.append(descricao);
+        }
       }
       card.append(botaoAcao('Solicitar serviço', () => {
         if (ocupado) return;
