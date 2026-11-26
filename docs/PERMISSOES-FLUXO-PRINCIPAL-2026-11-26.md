@@ -35,3 +35,16 @@ Conferidos quatro triggers ativos e seus corpos de função no schema private, t
 Grants por coluna em profissionais: authenticated não pode inserir/atualizar publicado, id ou criado_em; pode editar campos do perfil e atualizar pausado. A titularidade de usuario_id continua sujeita a USING/WITH CHECK das políticas anteriormente examinadas. A aprovação é feita pelo fluxo de revisão autorizado, não por UPDATE direto do profissional em publicado.
 
 As funções de validação de pedido, histórico e sincronização de catálogo são SECURITY DEFINER; reavaliação é invoker. São funções trigger sem execução direta concedida aos papéis do cliente. Esta leitura não as executou e não testou identidades reais. Nenhum trigger, grant, política ou dado alterado.
+
+
+## Complemento — avaliação privada e acompanhamento fiscal
+
+Cinco tabelas examinadas por metadados: avaliacoes_servico, pedidos_nota_fiscal, atendimentos_pedido_nota, entregas_pedido_nota e recebimentos_pedido_nota. Todas com RLS ativa, SELECT anon negado e UPDATE/DELETE authenticated negados. Todas possuem política RESTRICTIVE exigindo identidade e rejeitando sessão anônima. As políticas de leitura exigem participação no pedido associado.
+
+- Avaliação: INSERT pelo cliente titular, somente com pedido concluído e participantes distintos.
+- Pedido fiscal: INSERT pelo cliente titular em pedido aceito, em andamento, entregue ou concluído.
+- Atendimento: INSERT pelo profissional titular após existir pedido fiscal.
+- Declaração de entrega: INSERT pelo profissional titular após existir atendimento.
+- Confirmação de recebimento: INSERT pelo cliente titular após existir entrega.
+
+São condições das políticas implantadas, verificadas em transação somente de leitura. Não foram enviados registros fictícios nem executadas chamadas como participantes nesta revisão. Não se presume emissão/validade de documento fiscal. A revisão de permissões deste conjunto foi concluída sem necessidade de alteração; produção, audiência e pagamentos permanecem intactos.
