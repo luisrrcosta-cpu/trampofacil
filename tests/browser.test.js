@@ -1129,7 +1129,7 @@ test('painel de revisão nega acesso comum, não repete aprovação incerta e li
   const revisor='44444444-4444-4444-8444-444444444444';
   const alvo='22222222-2222-4222-8222-222222222222';
   const perfil={nome:'<img src=x onerror=alert(1)>',cidade:'Cidade',servico:'Costura',descricao:'Perfil de teste',tipo_prestador:'pessoa_fisica',tipo_atividade:'ocasional'};
-  let negado=true,aprovado=false,escritas=0,perderResposta=true,negadas=0;
+  let negado=true,aprovado=false,escritas=0,perderResposta=true,negadas=0,leituras=0;
   await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
     const req=route.request(),url=new URL(req.url());
     assert.equal(req.headers().authorization,'Bearer revisor');
@@ -1139,7 +1139,12 @@ test('painel de revisão nega acesso comum, não repete aprovação incerta e li
     }
     if(url.pathname==='/rest/v1/rpc/listar_perfis_revisao'){
       assert.deepEqual(req.postDataJSON(),{pagina:0});
-      return route.fulfill({json:aprovado?[]:[{usuario_id:alvo,solicitado_em:'2026-11-23T18:00:00Z',perfil}]});
+      leituras++;
+      return route.fulfill({json:aprovado?[]:[
+        {usuario_id:alvo,solicitado_em:'2026-11-23T18:00:00Z',perfil},
+        {usuario_id:'33333333-3333-4333-8333-333333333333',solicitado_em:'2026-11-23T18:01:00Z',
+          perfil:{...perfil,nome:'Renée',cidade:'São João',servico:'Pintura'}},
+      ]});
     }
     assert.equal(url.pathname,'/rest/v1/rpc/aprovar_perfil_administrativo');
     assert.deepEqual(req.postDataJSON(),{alvo,esperado:perfil});
@@ -1156,6 +1161,15 @@ test('painel de revisão nega acesso comum, não repete aprovação incerta e li
   await page.getByRole('button',{name:'Atualizar fila de análise',exact:true}).click();
   await page.getByRole('heading',{name:perfil.nome,exact:true}).waitFor();
   assert.equal(await page.locator('#lista-revisao img').count(),0);
+  const consultasAntesDaBusca=leituras;
+  await page.getByLabel('Buscar nos perfis desta página',{exact:true}).fill('renee sao joao');
+  assert.equal(await page.locator('#lista-revisao article:visible').count(),1);
+  await page.getByLabel('Buscar nos perfis desta página',{exact:true}).fill('inexistente');
+  assert.equal(await page.locator('#lista-revisao article:visible').count(),0);
+  await page.getByText('Nenhum perfil corresponde à busca nesta página.',{exact:false}).waitFor();
+  await page.getByRole('button',{name:'Limpar busca de perfis',exact:true}).click();
+  assert.equal(await page.locator('#lista-revisao article:visible').count(),2);
+  assert.equal(leituras,consultasAntesDaBusca,'busca e limpeza não consultam o servidor');
   page.on('dialog',dialog=>dialog.accept());
   await page.getByRole('button',{name:'Aprovar publicação de '+perfil.nome,exact:true}).click();
   await page.getByText('Não foi possível confirmar a aprovação.',{exact:false}).waitFor();
@@ -1188,10 +1202,15 @@ test('painel de revisão nega acesso comum, não repete aprovação incerta e li
     assert.equal(await page.locator('#proxima-revisao').isVisible(),false);
     assert.equal(await page.getByRole('button',{name:'Atualizar fila de análise',exact:true}).isEnabled(),true);
     assert.equal(escritas,2);assert.equal(negadas,i+1,'uma tentativa negada, sem repetição automática');
+    assert.equal(await page.locator('#filtros-revisao').isVisible(),false);
+    assert.equal(await page.locator('#busca-revisao').inputValue(),'');
+    assert.equal(await page.locator('#resultado-busca-revisao').textContent(),'');
   }
   await page.evaluate(()=>iniciarSessao(undefined));
   assert.equal(await page.locator('#lista-revisao article').count(),0);
   assert.equal(await page.locator('#status-revisao').textContent(),'');
+  assert.equal(await page.locator('#filtros-revisao').isVisible(),false);
+  assert.equal(await page.locator('#busca-revisao').inputValue(),'');
 });
 
 test('revisor pede ajuste com recuperação e somente profissional titular consulta orientação',async t=>{
