@@ -411,3 +411,12 @@ Fonte privada 4af74b7956611d21ac24e8b789bc57c33db3cb15. Versão appgprj_6afeee18
 ## 26/11 — Correção de sessão e privacidade publicada
 
 Confirmado succeeded/ready para appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_e9333b5fc4c0819189e4ef1fc16a09fd, fonte 4af74b7956611d21ac24e8b789bc57c33db3cb15. Preservação do texto para o titular, limpeza ao trocar de conta e desbloqueio do formulário após sessão expirada incluídos. CI geral/interface 45860446844, financeiro 45860446935 e concorrência 45860446808 success. Estado pending anterior superado. Sem novo teste manual autenticado nesta confirmação.
+
+
+## 26/11 — Telas estreitas e nomes longos
+
+CSS permite quebra de palavras em h1/h2/h3/h4, botões e labels; hash CSP recalculado sem relaxar a política. Código e701d488ac93af084a4e2f25a32a038b730bd2a6. Teste automatizado em Chromium com viewport móvel/toque verifica 320, 360, 390 e 768px: telas inicial, cadastro cliente/profissional, login, novo pedido, lista e simulador sem overflow horizontal; botões renderizados dentro da tela e altura >=40px. Catálogo simulado inclui nome sem espaços com 120 caracteres. Não representa teste em aparelho físico nem todos os estados autenticados.
+
+Primeira execução 45862366634 detectou falha no teste ao medir botões de grupos ocultos; filtro corrigido para elementos renderizados no commit 42be85ede5d9e10e89a79200877b9e4bd1821e0f. Execução final geral/interface 45862641623 success, financeiro 45862641565 success, concorrência 45862641467 success, prévia 45862641479 success. git diff --check aprovado.
+
+Fonte privada 333965503c027496e20c25c8a3864f068370316c; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_1c362985f314819183917ba3a176cb86; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5600da86293c8191ae3f88f227b8111f: pending/publishing no retorno inicial. Confirmar na próxima retomada. Nenhuma alteração de dados, segurança de acesso, produção ou pagamentos.
