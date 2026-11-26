@@ -303,3 +303,13 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Deployment appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_7556be11a7748191b1cfc698261d3cf2 confirmado succeeded/ready. Fonte cad0f39d7b2536a88b829c7ca42718fab4102e2c. Cabeçalho atualizado; anotações pending anteriores são históricas.
 - Nesta retomada apenas foi conferida a publicação e atualizado o ponto de continuidade. Nenhuma nova funcionalidade, teste manual repetido, alteração de banco ou operação financeira.
 - PagBank segue adiado, com tentativa incerta preservada. O aplicativo não está autorizado para pagamentos reais nem lançamento em produção.
+
+
+## Proteção de orçamento ao atualizar a lista — 26/11/2026
+- Identificada perda de valor de proposta ainda não enviado ao usar o botão Atualizar. Campo registra somente seu valor inicial no próprio DOM; clique manual verifica diferença ou entrada numérica incompleta antes de consultar.
+- Cancelar confirmação preserva valor e cards, sem consulta. Confirmar autoriza atualização; erro de consulta conserva os cards e a edição. Campo sem alteração atualiza sem confirmação. Operação ocupada não abre nova confirmação.
+- Escopo desta proteção: botão Atualizar das solicitações. Não cobre outras ações que recarregam a lista, retorno do histórico, fechamento/recarregamento do navegador ou persistência offline. Logout continua limpando os dados privados.
+- Código ef29948486fcba2ec3bdf65aad2b0e08abf4eb5f; teste 8efe3a249cb9c16215ed5f7c3ca681027d3c2130. Sintaxe validada; CI geral/interface/regressões 45828513461, financeiro 45828513486 e concorrência 45828513474 concluídos success. Pacote da prévia 45828512991 aprovado na implementação.
+- Teste no navegador com API fictícia: cancelamento sem GET adicional; confirmação com erro HTTP 500 conserva proposta; confirmação com consulta bem-sucedida descarta; campo vazio atualiza sem diálogo; encerramento limpa a lista.
+- Fonte hospedada f7cdd8113ab117d24ec729997c569baa398c73be. Publicação privada solicitada pending/publishing: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_336c9392e73c81919ac691db9389d163; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_690739d9f1648191a8a91801a4d16c9b. Confirmar status no próximo turno antes de afirmar disponibilidade. Cabeçalho ainda identifica a última publicação confirmada.
+- Nenhuma alteração de banco, acesso, produção ou pagamento. PagBank permanece adiado.
