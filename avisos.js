@@ -28,15 +28,15 @@ async function carregarAvisosAtendimento(anteriores=false){
   if(!r.ok)throw Error();
   const itens=await r.json();if(!atual())return;
   const chave=x=>x.tipo+':'+x.evento_id;
-  if(!Array.isArray(itens)||itens.length>51||new Set(itens.map(chave)).size!==itens.length||!itens.every(x=>x&&uuidAviso(x.evento_id)&&uuidAviso(x.solicitacao_id)&&['administracao','resposta_profissional','contratacao'].includes(x.tipo)&&typeof x.titulo==='string'&&x.titulo.length<=120&&typeof x.mensagem==='string'&&x.mensagem.trim().length>=10&&x.mensagem.length<=2000&&dataAvisoValida(x.criado_em)&&(x.lido_em===null||dataAvisoValida(x.lido_em))&&(x.tipo==='administracao'?['em_analise','concluida'].includes(x.status):x.tipo==='contratacao'?Object.hasOwn(titulosAvisoContratacao,x.status):x.status===null)))throw Error();
+  if(!Array.isArray(itens)||itens.length>51||new Set(itens.map(chave)).size!==itens.length||!itens.every(x=>x&&uuidAviso(x.evento_id)&&uuidAviso(x.solicitacao_id)&&['administracao','resposta_profissional','contratacao','mensagem'].includes(x.tipo)&&typeof x.titulo==='string'&&x.titulo.length<=120&&typeof x.mensagem==='string'&&x.mensagem.trim().length>=10&&x.mensagem.length<=2000&&dataAvisoValida(x.criado_em)&&(x.lido_em===null||dataAvisoValida(x.lido_em))&&(x.tipo==='administracao'?['em_analise','concluida'].includes(x.status):x.tipo==='contratacao'?Object.hasOwn(titulosAvisoContratacao,x.status):x.status===null)))throw Error();
   for(const item of itens.slice(0,50)){
    if(Array.from(lista.children).some(c=>c.dataset.aviso===chave(item)))throw Error();
    const card=document.createElement('article');card.dataset.aviso=chave(item);card.dataset.lido=String(Boolean(item.lido_em));
-   const titulo=item.tipo==='contratacao'?titulosAvisoContratacao[item.status]:item.tipo==='resposta_profissional'?'Resposta do profissional':item.status==='concluida'?'Atendimento concluído':'Atualização da administração';
+   const titulo=item.tipo==='mensagem'?'Nova mensagem':item.tipo==='contratacao'?titulosAvisoContratacao[item.status]:item.tipo==='resposta_profissional'?'Resposta do profissional':item.status==='concluida'?'Atendimento concluído':'Atualização da administração';
    const leitura=texto('p',item.lido_em?'Lido':'Não lido');
    const marcar=botaoAcao('Marcar como lido',()=>marcarLido(item,card,leitura,marcar));marcar.hidden=Boolean(item.lido_em);
    const mensagem=texto('p',item.mensagem);mensagem.className='texto-mensagem';
-   card.append(texto('h3',titulo+' — '+item.titulo),horarioAviso(item.criado_em),mensagem,leitura,marcar,botaoAcao('Ver solicitação',()=>retornarParaSolicitacoes(item.solicitacao_id)));lista.append(card);
+   card.append(texto('h3',titulo+' — '+item.titulo),horarioAviso(item.criado_em),mensagem,leitura,marcar,botaoAcao(item.tipo==='mensagem'?'Abrir conversa':'Ver solicitação',()=>item.tipo==='mensagem'?abrirConversa(item.solicitacao_id):retornarParaSolicitacoes(item.solicitacao_id)));lista.append(card);
   }
   const ultimo=itens[Math.min(itens.length,50)-1];cursorAvisosAtendimento=ultimo?{antes_em:ultimo.criado_em,antes_tipo:ultimo.tipo,antes_id:ultimo.evento_id}:null;
   mais.hidden=itens.length<=50;estado.textContent=lista.children.length?'Avisos consultados. Use Atualizar avisos para buscar novidades.':'Você ainda não tem avisos de atendimento.';atualizarResumoAvisos();
