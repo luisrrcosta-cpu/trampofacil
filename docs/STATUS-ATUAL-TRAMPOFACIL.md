@@ -6,9 +6,9 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
 - Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
 - Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `dd111bb6f9b2c0378332d1dc03100e8d9e9ce82c`.
-- Fonte hospedada atual: `4af74b7956611d21ac24e8b789bc57c33db3cb15`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_e9333b5fc4c0819189e4ef1fc16a09fd`.
+- Último código de interface validado: `e701d488ac93af084a4e2f25a32a038b730bd2a6`.
+- Fonte hospedada atual: `333965503c027496e20c25c8a3864f068370316c`.
+- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5600da86293c8191ae3f88f227b8111f`.
 - CI da interface publicada: geral/interface 45835566499, financeiro 45835566317, concorrência 45835566367 e prévia 45835420641, todos success. Preservação de propostas validada também em 45832183670, 45832183722, 45832183567 e 45832181764.
 - Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
 
@@ -420,3 +420,8 @@ CSS permite quebra de palavras em h1/h2/h3/h4, botões e labels; hash CSP recalc
 Primeira execução 45862366634 detectou falha no teste ao medir botões de grupos ocultos; filtro corrigido para elementos renderizados no commit 42be85ede5d9e10e89a79200877b9e4bd1821e0f. Execução final geral/interface 45862641623 success, financeiro 45862641565 success, concorrência 45862641467 success, prévia 45862641479 success. git diff --check aprovado.
 
 Fonte privada 333965503c027496e20c25c8a3864f068370316c; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_1c362985f314819183917ba3a176cb86; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5600da86293c8191ae3f88f227b8111f: pending/publishing no retorno inicial. Confirmar na próxima retomada. Nenhuma alteração de dados, segurança de acesso, produção ou pagamentos.
+
+
+## 26/11 — Ajuste para celular publicado
+
+Publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5600da86293c8191ae3f88f227b8111f confirmada succeeded/ready. Fonte 333965503c027496e20c25c8a3864f068370316c. Estado pending anterior superado. Testes móveis automatizados e regressões aprovados conforme evidência anterior; sem novo teste em aparelho físico nesta confirmação.
