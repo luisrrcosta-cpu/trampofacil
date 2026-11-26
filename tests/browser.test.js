@@ -1439,7 +1439,7 @@ test('telas e catálogo permanecem utilizáveis em celulares com nomes longos',a
     consultas++;
     assert.ok(route.request().url().includes('/rpc/buscar_profissionais'));
     return route.fulfill({json:[{id:'77777777-7777-4777-8777-777777777777',
-      nome:'N'.repeat(120),cidade:'Cidade de teste',servico:'Pintura',descricao:('Descrição de serviço fictício com detalhes.\n').repeat(22)}]});
+      nome:'N'.repeat(120),cidade:'Cidade de teste',servico:'Pintura',descricao:('Descrição de serviço fictício com detalhes.'+String.fromCharCode(10)).repeat(22)}]});
   });
   await page.goto(`http://127.0.0.1:${server.address().port}/`);
   await page.getByRole('button',{name:'Como funciona',exact:true}).click();
@@ -1474,7 +1474,7 @@ test('telas e catálogo permanecem utilizáveis em celulares com nomes longos',a
     assert.equal(await page.locator('.profissional-detalhes').getAttribute('open'),null);
     await page.getByText('Ler descrição completa',{exact:true}).click();
     assert.notEqual(await page.locator('.profissional-detalhes').getAttribute('open'),null);
-    assert.equal(await page.locator('.profissional-detalhes .profissional-descricao').textContent(),('Descrição de serviço fictício com detalhes.\\n').repeat(22).trim());
+    assert.equal(await page.locator('.profissional-detalhes .profissional-descricao').textContent(),('Descrição de serviço fictício com detalhes.'+String.fromCharCode(10)).repeat(22).trim());
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1),true);
     await page.getByText('Ler descrição completa',{exact:true}).click();
   }
