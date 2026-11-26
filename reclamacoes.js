@@ -84,7 +84,7 @@ function adicionarReclamacaoServico(card,pedido,cliente) {
       registro.append(texto('h4','Relato do cliente'),texto('p','Referência do caso: '+pedido.id),texto('p',motivosReclamacao[item.motivo]),texto('p',item.descricao),dataReclamacao(item.criado_em));
       if(resposta)registro.append(texto('h4','Resposta do profissional'),texto('p',resposta.descricao),dataReclamacao(resposta.criado_em));
       adicionarHistoricoReclamacao(registro,pedido.id);
-      estado.textContent='Registro recebido para análise. Ainda não há decisão de reembolso ou confirmação de bloqueio bancário.';
+      estado.textContent='Registro recebido para análise. Consulte o acompanhamento para atualizações. O registro não comprova reembolso ou bloqueio bancário.';
       if(dados){relato.value='';categoria.value='';}
       form.hidden=cliente||respostaRegistrada;
     }catch{
