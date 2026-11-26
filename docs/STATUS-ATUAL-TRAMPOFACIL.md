@@ -350,3 +350,12 @@ Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas
 - Evidências e limites: docs/REVISAO-PAINEL-ADMINISTRATIVO-2026-11-26.md.
 - NÃO PUBLICADO: ambiente local indisponível. Na retomada sincronizar tanto servicos.js pendente da preservação automática como perfil.js desta entrega. Prévia continua na fonte c901b840a226f08576aed724081f6229a274d1c2; não repetir ensaios manuais sem necessidade.
 - Sem alteração de produção, SQL, banco, acesso ou pagamento. PagBank continua adiado.
+
+
+## Acesso negado em decisões administrativas — 26/11/2026
+- Corrigida apresentação de HTTP 403 após carregar a fila: aprovação, ajuste e recusa limpam dados/paginação e mostram área reservada, sem repetir decisão. Backend e permissões não foram alterados; a negativa já ocorria no servidor.
+- Código 80297aa5ba9edaed1dcb623cab7c7f553ccec678; testes f5f4278e980f1857e0e7c7ed5425207fec66d090. CI geral/interface/regressões 45834717676, financeiro 45834717900, concorrência 45834717773 e prévia 45834715042 success.
+- Testes usam API fictícia e confirmam cada uma das três decisões após negativa de acesso, limpeza da fila, controle liberado e ausência de repetição. Sem revisor ou perfil real modificado.
+- Evidência atualizada: docs/REVISAO-PAINEL-ADMINISTRATIVO-2026-11-26.md.
+- NÃO PUBLICADO: ambiente local indisponível. A sincronização futura deve incluir servicos.js (preservação de propostas) e perfil.js atual (datas mais tratamento de 403). A prévia continua na fonte c901b840a226f08576aed724081f6229a274d1c2; cabeçalho identifica a publicação confirmada.
+- Sem alteração de banco, RLS, produção ou pagamentos. PagBank adiado.
