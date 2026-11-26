@@ -1228,9 +1228,12 @@ test('revisor pede ajuste com recuperação e somente profissional titular consu
   await abrirPerfil(alvo,'profissional');
   await page.getByRole('button',{name:'Consultar orientação da revisão',exact:true}).click();
   await page.getByText('Orientação da revisão: Detalhar o serviço oferecido e sua descrição.',{exact:false}).waitFor();
+  assert.equal(await page.locator('#status-orientacao-profissional time').getAttribute('datetime'),'2026-11-23T18:00:00.000Z');
+  assert.match(await page.locator('#status-orientacao-profissional time').textContent(),/23\/11\/2026.*15:00.*Brasília/);
   invalida=true;
   await page.getByRole('button',{name:'Consultar orientação da revisão',exact:true}).click();
   await page.getByText('Não foi possível consultar a orientação. Tente novamente.',{exact:true}).waitFor();
+  assert.equal(await page.locator('#status-orientacao-profissional time').count(),0);
   await abrirPerfil('33333333-3333-4333-8333-333333333333','terceiro');
   assert.equal(await page.locator('#status-orientacao-profissional').textContent(),'');
   await page.getByRole('button',{name:'Consultar orientação da revisão',exact:true}).click();
@@ -1287,6 +1290,9 @@ test('recusa administrativa exige motivo, recupera resposta perdida e permite co
   assert.equal(await page.locator('#lista-revisao article').count(),0);
   await page.getByRole('button',{name:'Atualizar fila de análise',exact:true}).click();
   await page.getByText('Última recusa registrada:',{exact:false}).waitFor();
+  assert.equal(await page.locator('#lista-revisao time').count(),2);
+  assert.equal(await page.locator('#lista-revisao time').last().getAttribute('datetime'),'2026-11-24T18:00:00.000Z');
+  assert.match(await page.locator('#lista-revisao time').last().textContent(),/24\/11\/2026.*15:00.*Brasília/);
   assert.equal(escritas,1,'consultar não repete a decisão');
   await page.getByLabel('Motivo da recusa',{exact:true}).selectOption('servico_nao_identificavel');
   await page.getByRole('button',{name:'Recusar publicação de '+perfil.nome,exact:true}).click();
@@ -1298,11 +1304,14 @@ test('recusa administrativa exige motivo, recupera resposta perdida e permite co
   await abrir(alvo,'profissional');
   await page.getByRole('button',{name:'Consultar decisão de publicação',exact:true}).click();
   await page.getByText('Última recusa de publicação: O serviço oferecido não está claro.',{exact:false}).waitFor();
+  assert.equal(await page.locator('#status-recusa-profissional time').getAttribute('datetime'),'2026-11-24T18:00:00.000Z');
+  assert.match(await page.locator('#status-recusa-profissional time').textContent(),/24\/11\/2026.*15:00.*Brasília/);
   recusa={...recusa,perfil_alterado:true};
   await page.getByRole('button',{name:'Consultar decisão de publicação',exact:true}).click();
   await page.getByText('Seu cadastro mudou desde essa decisão.',{exact:false}).waitFor();
   await abrir('33333333-3333-4333-8333-333333333333','terceiro');
   assert.equal(await page.locator('#status-recusa-profissional').textContent(),'');
+  assert.equal(await page.locator('#status-recusa-profissional time').count(),0);
   await page.getByRole('button',{name:'Consultar decisão de publicação',exact:true}).click();
   await page.getByText('Nenhuma recusa de publicação pendente para seu cadastro.',{exact:true}).waitFor();
 });
