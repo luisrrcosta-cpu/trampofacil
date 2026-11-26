@@ -73,3 +73,17 @@ Migração supabase/migrations/20261126223635_avisos_contratacao_homologacao.sql
 
 
 Aplicada somente no projeto asdszqtpydiowgerxwee. Verificação pós-migração confirmou restrição dos três tipos, RLS ativo, ausência de INSERT direto e execução por anônimos, triggers das solicitações preservados e funções internas com search_path vazio; advisors sem novos achados. Código a28120d71c545b3ce5808c82f876350b6a22d98a. CI geral/interface 45906109802 passou 273 testes e regressões; financeiro 45906109794, concorrência 45906109829 e prévia 45906109804 success. Sem eventos reais criados em testes, exclusão de dados ou efeito financeiro.
+
+
+## Avisos de mensagens — continuação em 26/11
+
+Meus avisos inclui mensagens já existentes em public.mensagens_solicitacoes. O destinatário é somente a contraparte autenticada do pedido; autor não recebe aviso da própria mensagem. Ator fora das partes e pedidos de outras contas são ignorados. Revisores fora do pedido não recebem estes avisos. Mensagens de solicitações encerradas continuam consultáveis, respeitando a leitura já existente da conversa.
+
+O aviso contém apenas título do pedido e texto genérico informando que existe uma mensagem. Não copia o corpo da mensagem nem expõe autor_usuario_id. Abrir conversa usa a navegação existente abrirConversa(solicitacao_id), sem sugestão de texto, envio, marcação automática de leitura ou alteração do pedido. Para mensagens antigas, o usuário pode precisar carregar as páginas anteriores da conversa. Recibo individual refere-se ao aviso, não é confirmação enviada à contraparte e não altera o histórico da conversa.
+
+Feed derivado dos registros existentes, com horário original; mensagens antigas elegíveis também podem aparecer. Consulta manual ao abrir/atualizar Meus avisos, sem polling ou push externo. Tipo mensagem adicionado ao CHECK dos recibos, preservando NOT NULL, PK, tipos anteriores, RLS e privilégios. Somente funções internas de listagem/marcação alteradas, sem mudar assinaturas públicas ou regras da conversa. Índices existentes conferidos, sem índice redundante.
+
+Migração supabase/migrations/20261126224825_avisos_mensagens_homologacao.sql. Testes cobrem contraparte, mensagens próprias e de terceiros excluídas, corpo não exposto, privacidade, leitura idempotente, recibos anteriores preservados após migração, paginação, abertura de conversa sem envio e saída/troca de sessão. Nenhum estado financeiro acionado.
+
+
+Aplicada somente no projeto asdszqtpydiowgerxwee. Pós-migração confirmou CHECK dos quatro tipos, RLS ativo, ausência de INSERT direto/executar por anon, duas políticas originais da conversa e nenhum trigger novo de mensagem. Funções definer com search_path vazio. Advisors sem novos achados. Código a024900325d499de65b89a36c2ca6a67e2b2839b. CI geral/interface 45907287567 passou 275 testes e regressões; financeiro 45907287531, concorrência 45907287511 e prévia 45907287470 success. Nenhuma mensagem real criada, dado existente excluído ou movimentação financeira executada.
