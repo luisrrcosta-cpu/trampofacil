@@ -447,3 +447,8 @@ Publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_3600bc2a2a30819194
 ## 26/11 — Ensaio privado preparado, sem abertura de acesso
 
 Roteiro salvo em docs/ROTEIRO-ENSAIO-PRIVADO-SEM-PAGAMENTOS.md, cobrindo cliente/profissional, revisão autorizada de perfil fictício, contratação, mensagens, conclusão, isolamento entre contas e recuperação no celular. Preparação documental apenas; nenhum convite, ampliação de audiência, ensaio com novos participantes ou operação financeira executado. Acesso continua somente do proprietário. Seleção do grupo e autorização concreta de acesso ficam para antes da execução externa.
+
+
+## 26/11 — Permissões do fluxo principal conferidas
+
+Revisão somente de leitura de clientes, profissionais, solicitações, mensagens e histórico: RLS ativa; anon sem SELECT direto; authenticated sem DELETE. Predicados de titularidade/participação e políticas restritivas de autenticação conferidos. Catálogo ativo separado e busca invoker limitada a campos públicos. Evidência em docs/PERMISSOES-FLUXO-PRINCIPAL-2026-11-26.md. Não é teste autenticado completo nem auditoria de produção. Nenhum dado, grant, política, convite ou pagamento alterado.
