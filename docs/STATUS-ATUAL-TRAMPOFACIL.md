@@ -500,3 +500,14 @@ Melhoria autorizada do catálogo: iniciais decorativas sem foto inventada; nome,
 Fonte nova 057b11c1c8ef0f15e31ee173fb949e5a7fa5bdb4. Versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_6fd76a28df0481919147dc2ace788e07; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_b314f55a4c688191a625eaa32bb19978: pending/publishing. Confirmar na próxima retomada. Sem mudança de banco, audiência ou pagamentos.
 
 Durante esta entrega, proprietário perguntou sobre garantia/reclamação/reembolso. Foi consultado CDC arts.20/24/26/49 e orientação Procon-SP. Nenhuma política de disputa, retenção, repasse ou estorno implementada automaticamente; isso depende de definição operacional e revisão jurídica aplicável. Prazo legal de reclamar não equivale a reembolso automático ou prazo de repasse.
+
+
+## 26/11 — Reclamações privadas e risco de repasse
+
+Proprietário autorizou implementar atendimento de reclamações e estudar proteção contra reembolso após repasse. Entrega funcional apenas na homologação: relato inicial do cliente por pedido, resposta inicial do profissional e fila administrativa para revisor ativo já existente. Partes não alteram/apagam relatos, autoria e data protegidas; sem anexos. Nenhuma decisão, notificação, SLA, bloqueio bancário, liberação, repasse ou reembolso automático implementado. Consultar docs/RECLAMACOES-REPASSES-HOMOLOGACAO.md para escopo e pendências de custódia/reserva/contrato.
+
+Migração supabase/migrations/20261126214707_reclamacoes_servico_homologacao.sql aplicada somente no projeto asdszqtpydiowgerxwee. Verificação: RLS nas duas tabelas, seis políticas, sem autoria inserível pelo cliente, sem UPDATE ou leitura anônima; advisors sem novos achados. Nenhum pedido ou valor alterado e nenhum relato real criado em testes. PagBank sandbox incerto intocado.
+
+Código d1f91ace8515ae0c368ea6bb58fe57e8921f11c1; ajuste da validação de scripts 25ab0359d953e3687e5eec7ee995f9256281722b. CI geral/interface 45901158169, financeiro 45901158142, concorrência 45901158084 e prévia 45901158158 success; suíte anterior mesmo código funcional passou 267 testes e regressões. Browser local indisponível por binário ausente/download bloqueado; testes reais Chromium com API simulada executados e aprovados no CI. Arquivos publicados comparados byte a byte com os testados; git diff --check aprovado.
+
+Catálogo anterior confirmado succeeded/ready antes desta entrega. Nova fonte privada b4a62886df49a799fa742f453024cd0485de7de6; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_dfb34035681c8191bc456f940e0f9ad3; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_5eb7d79f3bdc8191b48e2a818798997d: pending/publishing. Publicação ainda não confirmada; verificar uma vez na próxima retomada, sem presumir publicada. Audiência owner-only preservada. Sem alterações na produção ou pagamentos reais.
