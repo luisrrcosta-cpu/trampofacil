@@ -536,6 +536,7 @@ function mostrarPedido(pedido) {
     return card;
   }
   card.dataset.status = pedido.status;
+  card.dataset.propostaVersao = pedido.atualizado_em;
   const cliente = pedido.cliente_usuario_id === sessaoServicos.usuario;
   card.dataset.direcao = cliente ? 'enviada' : 'recebida';
   card.dataset.busca = normalizarBuscaPedido(pedido.titulo + ' ' + pedido.descricao);
@@ -657,7 +658,22 @@ function mostrarPedido(pedido) {
   return card;
 }
 
-async function carregarPedidos(aviso = '', anexar = false) {
+function restaurarEdicoesProposta(cards) {
+  const anteriores = new Map(Array.from(listaPedidos.children, card => [card.dataset.solicitacaoId, card]));
+  for (const card of cards) {
+    const anterior = anteriores.get(card.dataset.solicitacaoId);
+    if (!anterior || anterior.dataset.status !== card.dataset.status ||
+        anterior.dataset.propostaVersao !== card.dataset.propostaVersao) continue;
+    const origem = anterior.querySelector('[data-valor-inicial-proposta]');
+    const destino = card.querySelector('[data-valor-inicial-proposta]');
+    if (!origem || !destino || origem.validity.badInput ||
+        origem.dataset.valorInicialProposta !== destino.dataset.valorInicialProposta) continue;
+    // Somente o valor em edição, sem transportar handlers ou autorização antigos.
+    destino.value = origem.value;
+  }
+}
+
+async function carregarPedidos(aviso = '', anexar = false, preservarEdicoes = true) {
   if (ocupado || !sessaoServicos || (anexar && !cursorPedidos)) return;
   const secao = elemento('solicitacoes');
   const status = elemento('status-solicitacoes');
@@ -723,6 +739,7 @@ async function carregarPedidos(aviso = '', anexar = false) {
       card.dataset.solicitacaoId = novosPedidos[i].id;
       card.dataset.ordemCarregamento = String((anexar ? listaPedidos.childElementCount : 0) + i);
     });
+    if (!anexar && preservarEdicoes) restaurarEdicoesProposta(cards);
     if (anexar) listaPedidos.append(...cards);
     else listaPedidos.replaceChildren(...cards);
     cursorPedidos = pagina.at(-1);
@@ -851,7 +868,7 @@ elemento('recarregar-solicitacoes').addEventListener('click', () => {
   if (ocupado) return;
   const propostaAlterada = camposPropostaAlterados().length > 0;
   if (propostaAlterada && !window.confirm('Há um valor de proposta ainda não enviado. Atualizar a lista descarta essa edição. Deseja continuar?')) return;
-  carregarPedidos();
+  carregarPedidos('', false, false);
 });
 
 maisPedidos.addEventListener('click', () => carregarPedidos('', true));
