@@ -1369,3 +1369,51 @@ test('recusa administrativa exige motivo, recupera resposta perdida e permite co
   await page.getByRole('button',{name:'Consultar decisão de publicação',exact:true}).click();
   await page.getByText('Nenhuma recusa de publicação pendente para seu cadastro.',{exact:true}).waitFor();
 });
+
+test('pedido não enviado conserva texto após novo login do titular e limpa na troca de conta', async t => {
+  const arquivos=['index.html','config.js','ambiente.js','cadastro.js','valores.js','simulacao.js','simulador.js','sessao.js','servicos.js','avaliacoes.js','conversa.js','transicoes-contratacao.js','pagamentos.js','perfil.js'];
+  const server=createServer(async(req,res)=>{
+    const arquivo=req.url==='/'?'index.html':req.url.slice(1);
+    if(!arquivos.includes(arquivo)){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',arquivo.endsWith('.js')?'application/javascript':'text/html; charset=utf-8');
+    res.end(await readFile(new URL('../'+arquivo,import.meta.url)));
+  }).listen(0,'127.0.0.1');
+  await once(server,'listening');t.after(()=>server.close());
+  const browser=await chromium.launch({executablePath:process.env.TRAMPOFACIL_CHROMIUM||'/usr/bin/chromium'});
+  t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(5000);
+  let escritas=0;
+  await page.route('https://asdszqtpydiowgerxwee.supabase.co/**',async route=>{
+    if(route.request().url().includes('/rpc/buscar_profissionais'))return route.fulfill({json:[{
+      id:'77777777-7777-4777-8777-777777777777',nome:'Profissional fictício',cidade:'Cidade',servico:'Pintura',descricao:'Teste'
+    }]});
+    escritas++;return route.fulfill({status:400,json:{}});
+  });
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  await page.evaluate(()=>{
+    iniciarSessao({usuario:'11111111-1111-4111-8111-111111111111',token:'ficticio-a'});
+    mostrar('catalogo');procurar({termo_servico:'Pintura',termo_cidade:''},0);
+  });
+  await page.getByRole('button',{name:'Solicitar serviço',exact:true}).click();
+  const titulo=page.locator('#form-solicitacao input[name="titulo"]');
+  const descricao=page.locator('#form-solicitacao textarea[name="descricao"]');
+  await titulo.fill('Pedido privado da conta A');
+  await descricao.fill('Descrição privada que pertence somente à conta A.');
+  await page.evaluate(()=>{
+    exigirNovoLogin('nova-solicitacao');
+    iniciarSessao({usuario:'11111111-1111-4111-8111-111111111111',token:'ficticio-a-renovado'});
+    proteger('nova-solicitacao');
+  });
+  assert.equal(await titulo.inputValue(),'Pedido privado da conta A');
+  assert.equal(await descricao.inputValue(),'Descrição privada que pertence somente à conta A.');
+  await page.evaluate(()=>{
+    tentativa={chave:'tentativa fictícia da conta A',id:'88888888-8888-4888-8888-888888888888'};
+    exigirNovoLogin('nova-solicitacao');
+    iniciarSessao({usuario:'33333333-3333-4333-8333-333333333333',token:'ficticio-b'});
+    proteger('nova-solicitacao');
+  });
+  assert.equal(await titulo.inputValue(),'');
+  assert.equal(await descricao.inputValue(),'');
+  assert.equal(await page.locator('#contador-descricao').textContent(),'0/3000 caracteres');
+  assert.equal(await page.evaluate(()=>tentativa===undefined),true,'chave da conta anterior removida');
+  assert.equal(escritas,0,'troca de conta não envia pedidos nem autentica automaticamente');
+});
