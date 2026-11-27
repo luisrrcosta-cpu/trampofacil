@@ -303,12 +303,119 @@ for (const atalho of document.querySelectorAll('[data-servico-popular]')) {
   atalho.addEventListener('click', () => {
     if (ocupado) return;
     busca.elements.servico.value = atalho.dataset.servicoPopular;
+    sugerirServicoBusca();
     procurar({
       termo_servico: atalho.dataset.servicoPopular,
       termo_cidade: busca.elements.cidade.value.trim(),
     }, 0);
   });
 }
+
+// Sugestões explícitas: nunca substituir silenciosamente o termo livre do cliente.
+const equivalenciasBusca = new Map([
+  [
+    "conserto de geladeira",
+    "Técnico de geladeiras"
+  ],
+  [
+    "geladeira quebrada",
+    "Técnico de geladeiras"
+  ],
+  [
+    "conserto de maquina de lavar",
+    "Técnico de máquinas de lavar"
+  ],
+  [
+    "vazamento de agua",
+    "Encanador"
+  ],
+  [
+    "cano entupido",
+    "Desentupidor"
+  ],
+  [
+    "tomada queimada",
+    "Eletricista"
+  ],
+  [
+    "pintura de casa",
+    "Pintor"
+  ],
+  [
+    "limpeza de casa",
+    "Diarista"
+  ],
+  [
+    "cortar grama",
+    "Jardineiro"
+  ],
+  [
+    "montagem de moveis",
+    "Montador de móveis"
+  ],
+  [
+    "conserto de celular",
+    "Técnico de celulares"
+  ],
+  [
+    "conserto de computador",
+    "Técnico de computadores"
+  ],
+  [
+    "instalacao de ar condicionado",
+    "Instalador de ar-condicionado"
+  ],
+  [
+    "banho e tosa",
+    "Tosador"
+  ],
+  [
+    "corte de cabelo masculino",
+    "Barbeiro"
+  ],
+  [
+    "cuidar de idosos",
+    "Cuidador de idosos"
+  ],
+  [
+    "fazer mudanca",
+    "Frete e mudanças"
+  ],
+  [
+    "conserto de moto",
+    "Mecânico de motocicletas"
+  ],
+  [
+    "limpeza de piscina",
+    "Piscineiro"
+  ],
+  [
+    "festa infantil",
+    "Recreador"
+  ]
+]);
+const campoServicoBusca = busca.elements.servico;
+const sugestaoServicoBusca = document.createElement('button');
+sugestaoServicoBusca.type = 'button';
+sugestaoServicoBusca.hidden = true;
+campoServicoBusca.closest('label').after(sugestaoServicoBusca);
+function sugerirServicoBusca() {
+  const chave = campoServicoBusca.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const sugestao = equivalenciasBusca.get(chave);
+  sugestaoServicoBusca.hidden = !sugestao;
+  sugestaoServicoBusca.textContent = sugestao ? 'Buscar por: ' + sugestao : '';
+  return sugestao;
+}
+campoServicoBusca.addEventListener('input', sugerirServicoBusca);
+sugestaoServicoBusca.addEventListener('click', () => {
+  if (ocupado) return;
+  const sugestao = sugerirServicoBusca();
+  if (!sugestao) return;
+  campoServicoBusca.value = sugestao;
+  sugerirServicoBusca();
+  procurar({ termo_servico: sugestao, termo_cidade: busca.elements.cidade.value.trim() }, 0);
+});
+busca.addEventListener('reset', () => { sugestaoServicoBusca.hidden = true; });
 
 busca.addEventListener('submit', (evento) => {
   evento.preventDefault();
