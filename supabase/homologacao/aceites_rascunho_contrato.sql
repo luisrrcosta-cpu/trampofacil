@@ -45,6 +45,10 @@ begin
  or pedido.cliente_usuario_id is null or pedido.profissional_usuario_id is null
  or pedido.cliente_usuario_id=pedido.profissional_usuario_id then
  raise exception 'Contrato indisponível' using errcode='42501';end if;
+ -- Revalidar o tempo depois de uma eventual espera no lock do pedido.
+ if (claims->>'exp')::numeric <= extract(epoch from clock_timestamp())
+ or (prazo is not null and prazo<=clock_timestamp()) then
+ raise exception 'Sessão expirada durante o aceite' using errcode='42501';end if;
  if pedido.status is null or pedido.status not in ('proposta','aceita')
  or pedido.valor_centavos is distinct from (versao.snapshot->>'total_centavos')::integer
  or pedido.atualizado_em is distinct from versao.orcamento_em

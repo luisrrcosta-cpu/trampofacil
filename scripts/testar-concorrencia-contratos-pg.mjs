@@ -76,6 +76,15 @@ try {
  assert.equal((await pendente).error?.code,'42501');
  assert.equal((await admin`select count(*)::int n from private.aceites_rascunho_contrato where versao_id=${f.versao.id}`)[0].n,0);
  console.log('PASS sessão revogada durante disputa impede aceite');
+ await admin`insert into auth.sessions values(${sessao},${cliente},null)`;
+ const exp=Math.floor(Date.now()/1000)+2;
+ await b`select set_config('request.jwt.claims',${JSON.stringify({...JSON.parse(claims),exp})},false)`;
+ f=await criar();await a`begin`;await a`select id from solicitacoes where id=${f.pedido} for update`;
+ pendente=resultado(f.aceitar(b));await esperarLock();
+ await new Promise(r=>setTimeout(r,Math.max(0,exp*1000-Date.now()+30)));await a`commit`;
+ assert.equal((await pendente).error?.code,'42501');
+ assert.equal((await admin`select count(*)::int n from private.aceites_rascunho_contrato where versao_id=${f.versao.id}`)[0].n,0);
+ console.log('PASS token que expira durante espera impede aceite');
 }finally{
  await Promise.allSettled([a.unsafe('rollback'),b.unsafe('rollback')]);
  await Promise.all([admin.end(),a.end(),b.end()]);
