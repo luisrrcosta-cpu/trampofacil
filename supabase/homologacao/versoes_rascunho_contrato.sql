@@ -32,9 +32,10 @@ begin
  raise exception 'Entre em uma conta autenticada' using errcode='42501';end if;
  -- Mesmo lock do pedido: serializa revisões e confere o orçamento atual.
  select * into pedido from public.solicitacoes s where s.id=new.solicitacao_id for update;
- if not found or uid not in(pedido.cliente_usuario_id,pedido.profissional_usuario_id) then
+ if not found or pedido.cliente_usuario_id is null or pedido.profissional_usuario_id is null
+ or (uid is distinct from pedido.cliente_usuario_id and uid is distinct from pedido.profissional_usuario_id) then
  raise exception 'Pedido indisponível' using errcode='42501';end if;
- if pedido.status not in('proposta','aceita') or pedido.valor_centavos is null then
+ if pedido.status is null or pedido.status not in('proposta','aceita') or pedido.valor_centavos is null then
  raise exception 'Orçamento completo obrigatório' using errcode='22023';end if;
  if new.orcamento_em is distinct from pedido.atualizado_em then
  raise exception 'Orçamento mudou; consulte novamente' using errcode='40001';end if;
@@ -92,3 +93,4 @@ create trigger preservar_versao_rascunho before update or delete on private.vers
 revoke all on function private.registrar_versao_rascunho(),private.impedir_alteracao_rascunho()
  from public,anon,authenticated,service_role;
 commit;
+
