@@ -1,7 +1,9 @@
 # Estado atual recuperável — TrampoFácil
 
-Atualização: 27/11/2026, após múltiplas especialidades e base de rascunhos contratuais. As entradas históricas posteriores podem descrever versões já superadas.
+Atualização: 27/11/2026, após persistência de aceites contratuais de ensaio e concorrência testada. As entradas históricas posteriores podem descrever versões já superadas.
 
+- Última fonte contratual 358f29fa0d14b9c1e83d661499456110a0ac12a6: versões e aceites privados candidatos, ainda não aplicados ou ligados à interface. CI 46028997667: 296/296 e regressões aprovadas; cinco disputas PostgreSQL 46028997862 aprovadas. Próximo: conteúdo confiável de minutas, API idempotente e telas de aceite.
+- Pendências financeiras integrais: docs/PENDENCIAS-FINANCEIRAS-LANCAMENTO.md. Nenhuma cobrança/repasse real autorizada.
 - Repositório luisrrcosta-cpu/trampofacil; branch codex/v16-seguranca-integracoes. Não alterar main/produção.
 - Banco autorizado: TrampoFacil-Homologacao, asdszqtpydiowgerxwee.
 - Base de rascunhos contratuais e91eaec4db60f899334fa1b2e45e12a1f0b5642b: validação de escopo, materiais, valores e prazos, ainda sem integração à interface ou gravação de contratos.
@@ -648,3 +650,13 @@ CI 46025053481: 289/289 e regressões aprovadas; financeiro 46025053516, concorr
 - Pendências: registro confiável de minutas, API autenticada/idempotente e leitura pelas partes, aceites, PDF e guarda de início. Gerar migração pelo CLI quando executor disponível, completar validação e só então aplicar em homologação. Não executar o candidato manualmente como atalho.
 - Esclarecimento financeiro ao proprietário: cobrança antecipada pela plataforma e repasse pós-conclusão são proposta operacional, dependente de confirmação dos recursos do PagBank; retenção, liberação e devolução automáticas não estão implementadas. Pix/crédito/débito precisam de homologação. Dinheiro direto ao profissional não passa pela plataforma e não permite estorno automático por ela. Recomendação de adiar dinheiro no lançamento ainda não é decisão aprovada nem funcionalidade implementada.
 - Chamado técnico PagBank 1484168775 recebido; nenhuma resolução técnica inferida. Tentativa incerta preservada e pagamentos/repasses reais bloqueados.
+
+## 27/11/2026 — persistência privada de aceites de ensaio e concorrência
+
+- Retomada conferiu head bb412c2167f0a86631dc4e1d36bc0b8378ac54f8, documento e homologação asdszqtpydiowgerxwee. Consulta somente leitura confirmou ausência de tabelas de contratos/aceites. Não reaplicar especialidades nem repetir checkout incerto.
+- Commits 33fc0626b7c345f5b578a569d4c252162b726715 e 48275da822f9f5f1877b0b94e15e6460a749a381; última fonte testada 358f29fa0d14b9c1e83d661499456110a0ac12a6. SQL candidato aceites_rascunho_contrato.sql registra cliente e profissional separadamente, deriva ator/papel/sessão/data e exige confirmação positiva do hash exibido da revisão atual. Sem RPC pública ou acesso direto de anon/authenticated/service_role; RLS habilitada e versões/aceites imutáveis.
+- Validação de sessão: claim autenticado não anônimo, expiração, session_id existente para o mesmo usuário, not_after e lock da sessão. Tempo conferido novamente após aguardar lock do pedido. Mudança de valor, data, participantes, estado ou revisão impede aceite. Nova revisão não herda aceite anterior; evidência antiga permanece. Corrigido tratamento de participantes/status NULL no candidato de versões.
+- Sete testes locais de contratos/storage aprovados; CI geral 46028997667: 296/296 testes, zero falhas e regressões aprovadas; concorrência contratual 46028997862 comprova cinco disputas em conexões PostgreSQL independentes: revisão vence aceite; aceite anterior preservado sem herança; envio concorrente sem duplicação; revogação; expiração durante espera. Financeiro 46028997832 e concorrência anterior 46028997771 success.
+- Executor voltou nesta retomada; testes locais executados. CLI Supabase não instalado. Nenhuma migração gerada/aplicada: os SQLs continuam candidatos, isolados dos dados hospedados, até completar API e critérios de ativação. Não usar aplicação manual como atalho.
+- Pendências contratuais: registro confiável e conteúdo integral das minutas, API autenticada de criação/leitura e aceite com retorno idempotente por operação, UI de exibição e confirmação individual, PDF verificável, guarda de início e regra explícita para pedidos históricos. Unicidade no banco evita duplicação, mas não equivale a API idempotente concluída. Estes aceites de ensaio não são assinatura disponível ao público nem contrato vigente.
+- Todas as pendências financeiras solicitadas estão em docs/PENDENCIAS-FINANCEIRAS-LANCAMENTO.md: pagamento antecipado, repasse após conclusão, comissão, dinheiro/misto, etapas, reclamações/garantias/reembolsos. Sem decisão financeira implícita ou ativação. PagBank 1484168775 segue aguardando retorno técnico; sem reenvio da tentativa incerta, comunicações externas ou alteração de produção.
