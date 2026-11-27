@@ -1,0 +1,59 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {PGlite} from '@electric-sql/pglite';
+import {prepararRascunhoContrato,serializarRascunhoContrato} from '../contratos-core.js';
+
+test('storage contratual privado: versões encadeadas, integridade e orçamento atual',async t=>{
+ const db=new PGlite();t.after(()=>db.close());
+ const id=n=>'00000000-0000-4000-8000-'+String(n).padStart(12,'0');
+ await db.exec(`create role anon;create role authenticated;create role service_role;
+ create schema auth;create schema private;grant usage on schema auth,private to anon,authenticated,service_role;
+ create table auth.users(id uuid primary key);
+ create function auth.jwt() returns jsonb language sql stable as $$select current_setting('request.jwt.claims',true)::jsonb$$;
+ create function auth.uid() returns uuid language sql stable as $$select (auth.jwt()->>'sub')::uuid$$;
+ create table public.solicitacoes(id uuid primary key,cliente_usuario_id uuid,profissional_usuario_id uuid,status text,valor_centavos integer,atualizado_em timestamptz);
+ `);
+ for(let n=1;n<=4;n++)await db.query('insert into auth.users values($1)',[id(n)]);
+ const horario='2026-11-27T15:00:00Z';
+ await db.query("insert into solicitacoes values($1,$2,$3,'proposta',10000,$4)",[id(1),id(2),id(3),horario]);
+ await db.exec(await readFile(new URL('../supabase/homologacao/versoes_rascunho_contrato.sql',import.meta.url),'utf8'));
+ const assumir=(n,extra={})=>db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:id(n),is_anonymous:false,...extra})]);
+ const dados=()=>({solicitacao_id:id(1),cliente_usuario_id:id(2),profissional_usuario_id:id(3),versao_minuta:'ensaio-v1',escopo:'Pintura de parede interna conforme orçamento.',materiais_descricao:'Materiais do cliente.',mao_obra_centavos:10000,materiais_centavos:0,total_centavos:10000,inicio_previsto:'2026-12-01',fim_previsto:'2026-12-03',condicoes:'Condições de ensaio ainda sem aceite.'});
+ const inserir=(snapshot=prepararRascunhoContrato(dados()),texto=serializarRascunhoContrato(dados()),anterior=null,em=horario)=>db.query(
+  'insert into private.versoes_rascunho_contrato(solicitacao_id,orcamento_em,snapshot,conteudo_serializado,anterior_id,autor_usuario_id,criado_em,hash_sha256) values($1,$2,$3::jsonb,$4,$5,$6,$7,$8) returning *',
+  [id(1),em,snapshot,texto,anterior,id(4),'2000-01-01T00:00:00Z','0'.repeat(64)]);
+ await assumir(4);await assert.rejects(inserir(),/Pedido indisponível/);
+ await assumir(2,{is_anonymous:true});await assert.rejects(inserir(),/autenticada/);
+ await assumir(2);
+ for(const role of ['anon','authenticated','service_role']){
+  await db.exec('set role '+role);
+  await assert.rejects(db.exec('select * from private.versoes_rascunho_contrato'),/permission denied/);
+  await assert.rejects(inserir(),/permission denied/);
+  await db.exec('reset role');
+ }
+ const primeiro=(await inserir()).rows[0];
+ assert.equal(primeiro.revisao,1);assert.equal(primeiro.anterior_id,null);
+ assert.equal(primeiro.autor_usuario_id,id(2),'ator fornecido não substitui identidade da sessão');
+ assert.notEqual(new Date(primeiro.criado_em).getUTCFullYear(),2000);
+ assert.equal(primeiro.hash_sha256,createHash('sha256').update(primeiro.conteudo_serializado,'utf8').digest('hex'));
+ const divergente={...prepararRascunhoContrato(dados()),cliente_usuario_id:id(4)};
+ await assert.rejects(inserir(divergente,JSON.stringify(divergente),primeiro.id),/Partes/);
+ await assert.rejects(inserir(primeiro.snapshot,'{}',primeiro.id),/Conteúdo/);
+ await assert.rejects(inserir(),/Revisão mudou/);
+ await assert.rejects(inserir(primeiro.snapshot,primeiro.conteudo_serializado,primeiro.id,'2026-11-26T15:00:00Z'),/Orçamento mudou/);
+ const novo={...dados(),condicoes:'Segunda revisão com condições atualizadas.'};
+ await assumir(3);
+ const segundo=(await inserir(prepararRascunhoContrato(novo),serializarRascunhoContrato(novo),primeiro.id)).rows[0];
+ assert.equal(segundo.revisao,2);assert.equal(segundo.revisao_anterior,1);assert.equal(segundo.anterior_id,primeiro.id);
+ assert.notEqual(segundo.hash_sha256,primeiro.hash_sha256);
+ await assert.rejects(inserir(prepararRascunhoContrato(novo),serializarRascunhoContrato(novo),primeiro.id),/Revisão mudou/);
+ await assert.rejects(db.query('update private.versoes_rascunho_contrato set conteudo_serializado=$1 where id=$2',['{}',primeiro.id]),/imutáveis/);
+ await assert.rejects(db.query('delete from private.versoes_rascunho_contrato where id=$1',[primeiro.id]),/imutáveis/);
+ await db.query("update solicitacoes set valor_centavos=11000,atualizado_em='2026-11-27T16:00:00Z' where id=$1",[id(1)]);
+ await assert.rejects(inserir(segundo.snapshot,segundo.conteudo_serializado,segundo.id,'2026-11-27T16:00:00Z'),/Valores divergem/);
+ assert.equal((await db.query('select count(*)::int n from private.versoes_rascunho_contrato')).rows[0].n,2);
+ const pol=(await db.query("select relrowsecurity from pg_class where oid='private.versoes_rascunho_contrato'::regclass")).rows[0];
+ assert.equal(pol.relrowsecurity,true);
+});
