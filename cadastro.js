@@ -1,5 +1,21 @@
 'use strict';
 
+function validarEspecialidades(lista, principal) {
+  if (!Array.isArray(lista) || lista.length > 10) throw new Error('Informe até dez especialidades, uma por linha.');
+  const usadas = new Set([String(principal ?? '').trim().normalize('NFC').toLocaleLowerCase('pt-BR')]);
+  return lista.map(item => {
+    if (typeof item !== 'string' || /[\u0000-\u001f\u007f-\u009f]/.test(item)) throw new Error('Informe especialidades válidas, uma por linha.');
+    const nome = item.trim().normalize('NFC');
+    if (Array.from(nome).length < 2 || Array.from(nome).length > 120) throw new Error('Cada especialidade deve ter de 2 a 120 caracteres.');
+    const chave = nome.toLocaleLowerCase('pt-BR');
+    if (usadas.has(chave)) throw new Error('Não repita especialidades nem o serviço principal.');
+    usadas.add(chave);
+    return nome;
+  });
+}
+
+'use strict';
+
 const config = window.TRAMPOFACIL_SUPABASE;
 const { integrado, autenticacaoPronta } = validarAmbiente(config);
 const avisoAutenticacao = 'O acesso por e-mail está em preparação neste ambiente de testes. A busca e o simulador continuam disponíveis.';
@@ -87,6 +103,8 @@ function lerPerfil(formulario, tipo, validarEmail = true) {
       throw new Error('Escolha se sua atividade é regular ou ocasional.');
     }
     perfil.servico = ler('servico');
+    const adicionais = ler('especialidades');
+    if (adicionais) perfil.especialidades = validarEspecialidades(adicionais.split(/\r?\n/).map(s=>s.trim()).filter(Boolean), perfil.servico);
     perfil.descricao = ler('descricao') || null;
     if (perfil.descricao && perfil.descricao.length > 1000) {
       throw new Error('A descrição deve ter no máximo 1.000 caracteres.');

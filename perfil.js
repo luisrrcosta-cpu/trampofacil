@@ -49,7 +49,7 @@ function limparPerfil() {
 
 function apiPerfil(tipo, usuario, dados) {
   const colunas = tipo === 'cliente' ? 'usuario_id,nome,email,telefone,cidade'
-    : 'usuario_id,nome,telefone,cidade,servico,descricao,publicado,tipo_prestador,tipo_atividade,pausado';
+    : 'usuario_id,nome,telefone,cidade,servico,descricao,publicado,tipo_prestador,tipo_atividade,pausado,especialidades';
   const filtros = new URLSearchParams({usuario_id:'eq.' + usuario, select:dados ? (tipo === 'profissional' ? 'usuario_id,publicado,pausado' : 'usuario_id') : colunas});
   return controleSessao.requisitar(token => enviar(`/rest/v1/${tabelas[tipo]}?${filtros}`, dados,
     token, dados ? 'return=representation' : undefined, dados ? 'PATCH' : 'GET'));
@@ -57,7 +57,7 @@ function apiPerfil(tipo, usuario, dados) {
 
 function camposPerfilEmEdicao(tipo) {
   const campos = tipo === 'profissional'
-    ? ['nome','telefone','cidade','servico','descricao','tipo_prestador','tipo_atividade']
+    ? ['nome','telefone','cidade','servico','descricao','tipo_prestador','tipo_atividade','especialidades']
     : ['nome','telefone','cidade'];
   return campos.map(campo => formPerfil.elements[campo].value);
 }
@@ -99,6 +99,8 @@ async function carregarPerfil() {
     for (const campo of ['nome','email','telefone','cidade','servico','descricao','tipo_prestador','tipo_atividade']) {
       formPerfil.elements[campo].value = typeof registro[campo] === 'string' ? registro[campo] : '';
     }
+    const especialidades = tipo === 'profissional' ? validarEspecialidades(registro.especialidades ?? [], registro.servico) : [];
+    formPerfil.elements.especialidades.value = especialidades.join('\n');
     elemento('email-perfil').hidden = tipo !== 'cliente';
     elemento('campos-profissional').hidden = tipo !== 'profissional';
     formPerfil.elements.servico.required = tipo === 'profissional';
@@ -107,9 +109,9 @@ async function carregarPerfil() {
       formPerfil.elements[campo].disabled = tipo !== 'profissional';
     }
     elemento('visibilidade-perfil').textContent = tipo === 'profissional'
-      ? registro.publicado ? 'Seu perfil está visível na busca. Alterações em nome, cidade, serviço, descrição ou modalidade exigirão nova análise antes de voltar à busca.' : 'Seu perfil ainda não está publicado na busca. A publicação depende de análise.' : '';
+      ? registro.publicado ? 'Seu perfil está visível na busca. Alterações em nome, cidade, serviço, especialidades, descrição ou modalidade exigirão nova análise antes de voltar à busca.' : 'Seu perfil ainda não está publicado na busca. A publicação depende de análise.' : '';
     if (tipo === 'profissional') atualizarDisponibilidade(registro);
-    perfilEmTela = {usuario, tipo, publicado:registro.publicado === true, pausado:registro.pausado, campos:camposPerfilEmEdicao(tipo)}; formPerfil.hidden = false;
+    perfilEmTela = {usuario, tipo, especialidades, publicado:registro.publicado === true, pausado:registro.pausado, campos:camposPerfilEmEdicao(tipo)}; formPerfil.hidden = false;
     areaAnaliseProfissional.hidden = tipo !== 'profissional' || registro.publicado === true;
     statusPerfil.textContent = 'Edite seus dados e salve. O e-mail de acesso não é alterado nesta tela.';
   } catch {
@@ -124,7 +126,10 @@ formPerfil.addEventListener('submit', async evento => {
   const atual = perfilEmTela;
   if (ocupado || carregandoPerfil || !atual || atual.usuario !== sessaoServicos?.usuario) return;
   let dados;
-  try {dados = lerPerfil(formPerfil, atual.tipo, atual.tipo === 'cliente').perfil;}
+  try {
+    dados = lerPerfil(formPerfil, atual.tipo, atual.tipo === 'cliente').perfil;
+    if (atual.tipo === 'profissional' && atual.especialidades?.length && !dados.especialidades) dados.especialidades = [];
+  }
   catch (erro) {statusPerfil.textContent = erro.message; return;}
   const versao = versaoPerfil;
   carregandoPerfil = true; bloquear(secaoPerfil, true);
@@ -140,11 +145,11 @@ formPerfil.addEventListener('submit', async evento => {
     if (atual.tipo === 'profissional') {
       if (typeof registros[0].publicado !== 'boolean') throw new Error();
       if (typeof registros[0].pausado !== 'boolean') throw new Error();
-      perfilEmTela = {...atual,publicado:registros[0].publicado,pausado:registros[0].pausado};
+      perfilEmTela = {...atual,especialidades:dados.especialidades ?? [],publicado:registros[0].publicado,pausado:registros[0].pausado};
       limparAnaliseProfissional();
       areaAnaliseProfissional.hidden = registros[0].publicado;
       elemento('visibilidade-perfil').textContent = registros[0].publicado
-        ? 'Seu perfil está visível na busca. Alterações em nome, cidade, serviço, descrição ou modalidade exigirão nova análise antes de voltar à busca.'
+        ? 'Seu perfil está visível na busca. Alterações em nome, cidade, serviço, especialidades, descrição ou modalidade exigirão nova análise antes de voltar à busca.'
         : 'Seu perfil ainda não está publicado na busca. A publicação depende de análise.';
       atualizarDisponibilidade(registros[0]);
     }
@@ -326,13 +331,20 @@ function informarAcessoRevisaoNegado() {
 function apiRevisao(nome, dados) {
   return controleSessao.requisitar(token => enviar('/rest/v1/rpc/' + nome, dados, token));
 }
+function especialidadesRevisaoValidas(p) {
+  try {
+    return p.especialidades === undefined || p.especialidades.length > 0 &&
+      JSON.stringify(validarEspecialidades(p.especialidades,p.servico)) === JSON.stringify(p.especialidades);
+  } catch { return false; }
+}
 function perfilRevisaoValido(item) {
   const p = item?.perfil;
   return item && typeof item.usuario_id === 'string' &&
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(item.usuario_id) &&
     typeof item.solicitado_em === 'string' && Number.isFinite(Date.parse(item.solicitado_em)) &&
     p && typeof p === 'object' && !Array.isArray(p) &&
-    Object.keys(p).sort().join(',') === 'cidade,descricao,nome,servico,tipo_atividade,tipo_prestador' &&
+    Object.keys(p).filter(c=>c !== 'especialidades').sort().join(',') === 'cidade,descricao,nome,servico,tipo_atividade,tipo_prestador' &&
+    especialidadesRevisaoValidas(p) &&
     ['nome','cidade','servico'].every(c => typeof p[c] === 'string' && p[c].length >= 2 && p[c].length <= 120) &&
     (p.descricao === null || typeof p.descricao === 'string' && p.descricao.length <= 1000) &&
     (p.tipo_prestador === null || ['pessoa_fisica','mei','empresa'].includes(p.tipo_prestador)) &&
@@ -363,8 +375,9 @@ async function carregarRevisao(pagina = 0, aviso = '') {
     for (const item of fila.slice(0,50)) {
       const p = item.perfil;
       const card = document.createElement('article');
-      card.dataset.buscaRevisao = normalizarBuscaRevisao(p.nome + ' ' + p.servico + ' ' + p.cidade);
+      card.dataset.buscaRevisao = normalizarBuscaRevisao(p.nome + ' ' + p.servico + ' ' + (p.especialidades ?? []).join(' ') + ' ' + p.cidade);
       card.append(texto('h3',p.nome),texto('p',p.servico + ' · ' + p.cidade));
+      if (p.especialidades?.length) card.append(texto('p','Especialidades: ' + p.especialidades.join(' · ')));
       card.append(criarDataRevisao('Solicitado em', item.solicitado_em));
       if (p.descricao) card.append(texto('p',p.descricao));
       const modalidades = {pessoa_fisica:'Pessoa física (CPF)',mei:'MEI',empresa:'Empresa (CNPJ)'};

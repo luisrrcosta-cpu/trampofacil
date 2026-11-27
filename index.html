@@ -441,6 +441,8 @@ label input,label select,label textarea{font-weight:400}
 <label>Cidade<input name="cidade" autocomplete="address-level2" minlength="2" maxlength="120" required></label>
 <label>Profissão ou serviço oferecido<input name="servico" list="sugestoes-profissoes" minlength="2" maxlength="120" placeholder="Ex.: Pedreiro, eletricista, costureira..." required></label>
 <p>Não encontrou sua profissão? Digite livremente o serviço que você oferece. A lista é apenas uma sugestão.</p>
+<label>Especialidades adicionais (opcional)<textarea name="especialidades" rows="3" maxlength="1210" placeholder="Uma especialidade por linha, até 10"></textarea></label>
+<p>Mantenha o serviço principal acima. As especialidades também passam por análise antes de aparecer na busca. Não informe documentos ou dados pessoais.</p>
 <label>Descrição do serviço (opcional)<textarea name="descricao" maxlength="1000" aria-describedby="ajuda-perfil-profissional" placeholder="Descreva sua experiência, tipos de trabalho e região atendida."></textarea></label>
 <p id="ajuda-perfil-profissional">Explique o que você faz e onde atende. Não coloque CPF, endereço completo ou dados bancários. <span id="contador-perfil-profissional">0/1000 caracteres</span></p>
 <button class="verde" type="submit">Continuar</button>
@@ -677,6 +679,8 @@ label input,label select,label textarea{font-weight:400}
 </select>
 <p>Você pode oferecer serviços com CPF, MEI ou CNPJ, inclusive de forma ocasional. Esta escolha é uma declaração e não comprova documentos nem habilita emissão de nota fiscal. Não informe números de documentos nesta tela.</p>
 <label>Serviço oferecido<input name="servico" minlength="2" maxlength="120"></label>
+<label>Especialidades adicionais (opcional)<textarea name="especialidades" rows="3" maxlength="1210" placeholder="Uma especialidade por linha, até 10"></textarea></label>
+<p>Mantenha o serviço principal acima. As especialidades também passam por análise antes de aparecer na busca. Não informe documentos ou dados pessoais.</p>
 <label>Descrição profissional<textarea name="descricao" maxlength="1000"></textarea></label>
 </div>
 <button type="submit">Salvar meu cadastro</button>

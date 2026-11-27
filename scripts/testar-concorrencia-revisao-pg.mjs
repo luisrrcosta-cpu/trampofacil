@@ -174,4 +174,32 @@ try {
   assert.equal((await admin`select count(*)::int as n from private.recusas_publicacao_perfil where profissional_usuario_id=${alvos[10]}`)[0].n,0);
   assert.equal((await admin`select count(*)::int as n from private.eventos_revisores_perfil`)[0].n,4);
   console.log('APROVADO: disputa real comprovada em onze cenários de revisão: aprovação duplicada, edição antes/depois, revogação, recusa duplicada, edição durante recusa e decisão concorrente nos dois sentidos, edição após recusa, motivos concorrentes e revogação antes da recusa. PostgreSQL descartável; nenhum Supabase acessado.');
+
+  // As especialidades devem disputar o mesmo lock já validado para o perfil.
+  await admin.unsafe(`alter table public.profissionais add column id uuid not null default gen_random_uuid();
+    create table public.catalogo_profissionais(id uuid primary key,nome text,cidade text,servico text,descricao text,ativo boolean);
+    alter table public.catalogo_profissionais enable row level security;`);
+  await admin.unsafe(await readFile(new URL('../supabase/migrations/20261127134954_especialidades_profissionais_homologacao.sql',import.meta.url),'utf8'));
+  await admin.unsafe('create trigger sincronizar_catalogo after insert or update on public.profissionais for each row execute function private.sincronizar_catalogo()');
+  await admin`update private.revisores_perfil set ativo=true where usuario_id=${revisor}`;
+  const especAlvos=Array.from({length:3},()=>randomUUID());
+  for(const alvo of especAlvos){
+    await admin`insert into auth.users(id) values(${alvo})`;
+    await admin`insert into public.profissionais(usuario_id,nome,cidade,servico,descricao,tipo_prestador,tipo_atividade,pausado)
+      values(${alvo},'Perfil teste','Cidade','Costura','Inicial','pessoa_fisica','ocasional',false)`;
+    await admin`insert into public.solicitacoes_analise_profissional(usuario_id) values(${alvo})`;
+  }
+  const mudarEspec=async(tx,alvo)=>{await assumir(tx,alvo);return tx`update public.profissionais set especialidades=array['Pintor'] where usuario_id=${alvo}`;};
+  const editouAntes=await disputar(tx=>mudarEspec(tx,especAlvos[0]),tx=>aprovar(tx,especAlvos[0]));
+  assert.equal(editouAntes[0].status,'fulfilled');assert.equal(editouAntes[1].status,'rejected');assert.equal(editouAntes[1].reason.code,'40001');
+  const aprovouAntes=await disputar(tx=>aprovar(tx,especAlvos[1]),tx=>mudarEspec(tx,especAlvos[1]));
+  assert.ok(aprovouAntes.every(r=>r.status==='fulfilled'));
+  assert.equal((await admin`select publicado from public.profissionais where usuario_id=${especAlvos[1]}`)[0].publicado,false);
+  assert.equal((await admin`select ativo from public.catalogo_profissionais c join public.profissionais p using(id) where p.usuario_id=${especAlvos[1]}`)[0].ativo,false);
+  await admin`update public.profissionais set especialidades=array['Pintor'] where usuario_id=${especAlvos[2]}`;
+  const aprovarLista=async tx=>{await assumir(tx,revisor);return (await tx`select public.aprovar_perfil_administrativo(${especAlvos[2]}::uuid,${tx.json({...snapshot,especialidades:['Pintor']})}) id`)[0].id;};
+  const duas=await disputar(aprovarLista,aprovarLista);
+  assert.ok(duas.every(r=>r.status==='fulfilled'));assert.equal(duas[0].value,duas[1].value);
+  console.log('APROVADO: especialidades disputam aprovação em conexões independentes; edição antes rejeita snapshot antigo, edição depois retira publicação e aprovação repetida é idempotente.');
+
 } finally {await Promise.all([a.end({timeout:1}),b.end({timeout:1}),admin.end({timeout:1})]);}
