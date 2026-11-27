@@ -52,7 +52,16 @@ begin
  foreach campo in array array['formato','solicitacao_id','cliente_usuario_id','profissional_usuario_id','versao_minuta','escopo','materiais_descricao','inicio_previsto','fim_previsto','condicoes'] loop
  if jsonb_typeof(dados->campo) is distinct from 'string' then raise exception 'Texto contratual inválido' using errcode='22023';end if;
  end loop;
- if (dados->>'versao_minuta') !~ '^[a-z0-9][a-z0-9._-]{0,63} pela futura RPC; storage não substitui autorização.
+ if (dados->>'versao_minuta') !~ '^[a-z0-9][a-z0-9._-]{0,63}$'
+ or char_length(btrim(dados->>'escopo')) not between 10 and 3000
+ or char_length(btrim(dados->>'materiais_descricao')) not between 2 and 2000
+ or char_length(btrim(dados->>'condicoes')) not between 10 and 3000
+ or (dados->>'inicio_previsto') !~ '^20[0-9]{2}-[0-9]{2}-[0-9]{2}$'
+ or (dados->>'fim_previsto') !~ '^20[0-9]{2}-[0-9]{2}-[0-9]{2}$' then
+ raise exception 'Dados contratuais incompletos' using errcode='22023';end if;
+ if (dados->>'fim_previsto')::date < (dados->>'inicio_previsto')::date then
+ raise exception 'Prazos inválidos' using errcode='22023';end if;
+ -- A futura RPC também executará a validação de rascunho e a autorização.
  if jsonb_typeof(dados->'mao_obra_centavos')<>'number' or jsonb_typeof(dados->'materiais_centavos')<>'number'
  or jsonb_typeof(dados->'total_centavos')<>'number'
  or (dados->>'mao_obra_centavos') !~ '^[0-9]+$' or (dados->>'materiais_centavos') !~ '^[0-9]+$'
