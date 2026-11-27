@@ -1,23 +1,23 @@
 # Estado atual recuperável — TrampoFácil
 
-Atualização: 27/11/2026. Este resumo substitui os estados intermediários nas entradas históricas preservadas abaixo.
+Atualização: 27/11/2026, após múltiplas especialidades. As entradas históricas posteriores podem descrever versões já superadas.
 
-- Repositório: luisrrcosta-cpu/trampofacil.
-- Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
-- Supabase autorizado: TrampoFacil-Homologacao, asdszqtpydiowgerxwee.
-- Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Somente proprietário; acesso conferido em 27/11, zero grupos ou convidados adicionados.
-- Último código funcional: b9efc5eb2a476e2c1479d32ca4617794b8d54978, identidade oficial e empacotamento da logo.
-- Fonte privada 67e6832f01cc2f9c35bec6a8fb5081ed231abecf; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_d94bd45705cc8191b14afd67205055bc; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_385a70aca6588191b6472a3552583f57: pending/publishing. Ainda publicando; confirmar uma vez na próxima retomada, sem presumir concluída. Audiência somente proprietário preservada.
-- CI do código de identidade: geral/interface 46008614206, financeiro 46008614308, concorrência PostgreSQL 46008614311 e prévia 46008614251, todos success.
-- Correção anterior d508ae74a9fd2a04981d9796f519507eb3313dd5: teste do catálogo convertido para ES modules; CI 46008039340 confirmou 280 testes e regressões aprovados. Não reutilizar o número antigo de 231 como contagem atual.
-- Instagram oficial @trampofacil.digital. Slogan: Conectando você ao profissional certo. Lançamento inicial: São João da Boa Vista/SP e região.
-- Logo oficial extraída do PDF aprovado e integrada como assets/logo-oficial.webp, sem perda de pixels. Ver docs/IDENTIDADE-OFICIAL-2026-11-27.md.
-- Estimativa de prontidão: aproximadamente 55% do escopo regional com pagamentos, cálculo ponderado 55,5%, faixa 45–65%. Núcleo de contratação estimado 85%; financeiro e contratos permanecem incompletos. Critérios, evidências e esforço em docs/REVISAO-PRONTIDAO-TRAMPOFACIL.md.
-- Esforço técnico restante estimado 15–30 dias úteis focados (3–6 semanas), além da espera externa não estimável pelo PagBank. Não é data comercial, garantia de prazo ou trabalho em segundo plano.
-- Próxima frente: múltiplas especialidades integradas ao cadastro/revisão/publicação/busca; depois contratos versionados e aceites. Catálogo ampliado já existe. SQL privado de especialidades e minutas são preparação, não funcionalidades disponíveis.
-- Conferência atual somente leitura: 26 tabelas public/private com RLS ativa; advisors mantêm nove INFO e um WARN preexistentes. Não é auditoria completa de produção.
-- Fotografia financeira de 27/11: um checkout incerto, sem identificador; zero flags reais de cobrança/repasse; zero notificações e processamento financeiro. Não reenviar checkout nem alterar o claim.
-- Nenhuma DDL, exclusão, alteração de produção, convite ou habilitação financeira nesta retomada.
+- Repositório luisrrcosta-cpu/trampofacil; branch codex/v16-seguranca-integracoes. Não alterar main/produção.
+- Banco autorizado: TrampoFacil-Homologacao, asdszqtpydiowgerxwee.
+- Código funcional f2fdc90edf66d1f0b59158e8507d340b83dedc8a: múltiplas especialidades em cadastro, edição, revisão administrativa e busca.
+- Migração 20261127134954_especialidades_profissionais_homologacao.sql gerada pelo CLI e aplicada somente na homologação após testes.
+- CI geral/interface 46011312669: 284 testes aprovados, zero falhas e regressões aprovadas. Concorrência PostgreSQL 46011312676, financeiro 46011312736, prévia 46011312885 e cadastro inclusivo 46011312645: success.
+- Três disputas reais adicionais entre edição de especialidades e aprovação comprovadas em conexões independentes; nenhum banco Supabase usado nos testes de concorrência.
+- Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Fonte privada 7e7f7637b918b3fa062212b12f7d5e914d2922fc; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_ec806b92da888191883db233a6cdff1f; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_fc458be0818081919fb26b1a9a3261e2: pending/publishing. Ainda publicando; conferir uma vez na próxima retomada. Acesso somente do proprietário preservado.
+- Publicação anterior da logo oficial confirmada succeeded/ready: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_385a70aca6588191b6472a3552583f57.
+- Instagram @trampofacil.digital; slogan Conectando você ao profissional certo.; região inicial São João da Boa Vista/SP e região.
+- Até dez especialidades adicionais, uma por linha; salvas com o cadastro. Alterar exige nova revisão e retira o perfil da busca. Snapshots completos em aprovação, ajuste e recusa. Busca encontra especialidade sem duplicar perfil, preservando cidade e paginação.
+- Modelo revisado: coluna array na linha profissional e projeção no catálogo, serializadas pelo lock existente. A tabela privada do SQL de preparação não foi criada nem aplicada.
+- Cartão público mantém o serviço principal; a especialidade a contratar deve ser detalhada na descrição do pedido. Não modifica solicitações antigas nem comprova habilitação profissional.
+- RLS preservada, anônimo sem edição e helper privado sem EXECUTE para authenticated; advisors mantêm nove INFO e um WARN preexistentes. Nenhuma lista de especialidades inserida em perfis existentes para teste.
+- Financeiro incerto preservado; pagamentos/repasses reais bloqueados. Sem exclusões, alteração de produção, convites, coleta de documentos ou novo checkout.
+- Estimativa ponderada agora 59%, comunicar aproximadamente 60% do escopo regional com pagamentos; faixa de incerteza 50–70%. Não é autorização de lançamento. Prazo técnico inicial 15–30 dias úteis continua referência provisória, além da espera externa pelo PagBank.
+- Próxima frente: contratos versionados, escopo/materiais/prazos e aceites eletrônicos auditáveis. Minutas ainda não são contratos vigentes.
 
 ## Entregas atuais na homologação
 1. Cadastro de clientes e profissionais CPF, MEI e empresa, atividade regular ou ocasional, sem coletar números de documentos em campos públicos.
@@ -34,6 +34,11 @@ Atualização: 27/11/2026. Este resumo substitui os estados intermediários nas 
 12. Guia Como funciona pela página inicial, sem login; orientações para clientes e profissionais.
 13. Pedido não enviado isolado por conta após expiração de sessão; formulário desbloqueado ao retornar do login.
 14. Layout verificado em 320/360/390/768px, incluindo nomes longos e botões renderizados.
+
+15. Reclamação privada, resposta profissional e acompanhamento administrativo com histórico/reabertura, sem decisão financeira automática.
+16. Avisos internos de contratação, mensagens e reclamações; leitura individual e abertura do pedido, sem push/e-mail externo.
+17. Até dez especialidades adicionais com edição atômica, revisão por versão e busca; profissão principal e pedidos antigos preservados.
+18. Logo oficial azul/laranja, slogan, Instagram e região inicial; arte extraída do PDF aprovado, sem redesenho.
 
 ## Bloqueios reais e próxima ação
 
@@ -610,3 +615,14 @@ Logo aprovada recuperada de TrampoFacil-Logotipo.pdf; imagem extraída e convert
 Código b9efc5eb2a476e2c1479d32ca4617794b8d54978: quatro workflows success (IDs no resumo). Nenhum teste manual em aparelho físico, contrato assinado ou evento financeiro autêntico nesta entrega. Estimativa e pendências consolidadas na revisão de prontidão, com distinção entre código pronto, proposta e dependência externa.
 
 Fonte privada 67e6832f01cc2f9c35bec6a8fb5081ed231abecf; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_d94bd45705cc8191b14afd67205055bc; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_385a70aca6588191b6472a3552583f57: pending/publishing. Ainda publicando; confirmar uma vez na próxima retomada, sem presumir concluída. Audiência somente proprietário preservada.
+
+
+## 27/11 — Múltiplas especialidades integradas
+
+Código f2fdc90edf66d1f0b59158e8507d340b83dedc8a. Campo opcional no cadastro e Meu cadastro, uma especialidade por linha (até dez); validação de tamanho, controles, Unicode, duplicatas e repetição do serviço principal no cliente/servidor. Remoção da lista, confirmação de saída e limpeza de sessão incluídas. Revisão mostra e pesquisa a lista, e aprovação/ajuste/recusa comparam snapshot integral. Alteração exige nova análise, usando o mesmo lock da linha do perfil; catálogo inativo na mesma transação. Busca preserva os cinco campos públicos atuais, cidade, limite 20 e paginação, sem duplicar registros.
+
+Seis verificações locais (incluindo catálogo) aprovadas; CI geral 284/284 e regressões; cinco workflows success. Browser testa cadastro, edição, remoção e aprovação com snapshot integral em 320px. PostgreSQL real prova disputa nos dois sentidos e idempotência. PGlite cobre anon/conta alheia, snapshot antigo, lista inválida, recusa, busca e legado. Sem ensaio em aparelho físico ou participantes reais.
+
+Migração aplicada somente na homologação. Conferência posterior: RLS em profissionais e catálogo, três triggers, grant da coluna apenas para edição autenticada sob RLS, anônimo sem UPDATE, função privada sem EXECUTE comum e consulta sem resultado funcionando. Zero listas não vazias nos perfis existentes. Advisors inalterados. Não reaplicar SQL privado de preparação. Decisão técnica documentada em PLANO-MULTIPLAS-ESPECIALIDADES.md, substituindo a proposta de gravação separada por array na mesma linha para evitar estado parcialmente salvo.
+
+Fonte privada 7e7f7637b918b3fa062212b12f7d5e914d2922fc; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_ec806b92da888191883db233a6cdff1f; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_fc458be0818081919fb26b1a9a3261e2: pending/publishing. Ainda publicando; conferir uma vez na próxima retomada. Acesso somente do proprietário preservado.
