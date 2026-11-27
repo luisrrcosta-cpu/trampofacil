@@ -1,70 +1,65 @@
-# Revisão de prontidão — TrampoFácil
+# Prontidão para lançamento — revisão de 27/11/2026
 
-Atualizada em 26/11/2026, após a entrega da ajuda operacional. Exame da homologação asdszqtpydiowgerxwee; não é aprovação de produção ou lançamento comercial.
+## Base verificada
+Repositório luisrrcosta-cpu/trampofacil, branch codex/v16-seguranca-integracoes. Banco conferido somente em TrampoFacil-Homologacao (asdszqtpydiowgerxwee). Sem alteração de main, produção, registros de usuários, audiência ou dinheiro.
 
-## Versão confirmada
+Últimos commits recuperados incluem catálogo ampliado, atalhos e busca por problemas cotidianos; três documentos de minutas/arquitetura de contratos e preparação privada de especialidades. Preparação não equivale a funcionalidade instalada.
 
-- Branch: codex/v16-seguranca-integracoes. Produção/main não alteradas.
-- Último código funcional: fd363a0f15d6da1a8c36a4a18d0bafb64ba5ee9a.
-- Fonte hospedada: cc2cdaa9ed06fe24879a10384675e22ab50536e4.
-- Publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_567a082bf174819199b830390287e371 confirmada succeeded/ready nesta revisão.
-- Prévia: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Somente o proprietário; nenhum convite ou acesso novo concedido.
-- CI 45911469716: 277 testes aprovados e regressões aprovadas. Financeiro 45911469918, concorrência PostgreSQL 45911469788 e prévia 45911469784: success. São verificações do código com ambientes isolados/API simulada, não pagamento completo no provedor.
+A CI de 6acbfc3 falhou porque tests/catalogo-ampliado.test.js usava require e __dirname em projeto ES modules. Corrigido em d508ae74a9fd2a04981d9796f519507eb3313dd5. Os três casos passaram localmente. CI desse commit: geral/interface 46008039340, financeiro 46008039223 e concorrência PostgreSQL 46008039183, todos success. A execução geral anterior tinha 277 casos passando e um arquivo falhando; o número antigo de 231 testes não representa a suíte atual.
 
-Referências anteriores deste arquivo foram consolidadas; o histórico detalhado permanece no STATUS-ATUAL-TRAMPOFACIL.md e nos documentos de cada entrega.
+Identidade oficial aplicada no código b9efc5eb2a476e2c1479d32ca4617794b8d54978: arte extraída do PDF aprovado, pixels preservados em WebP sem perda, slogan, Instagram e região inicial. Ver IDENTIDADE-OFICIAL-2026-11-27.md. Resultado final de testes/publicação desta alteração deve constar no resumo atual.
 
-## Evidências e limites
+## Estimativa por escopo
+Indicador de planejamento, não medição automática nem autorização de lançamento. Percentuais estimam requisitos entregues e validados para um primeiro lançamento regional com pagamentos. Recursos visuais não compensam bloqueios financeiros.
 
-| Área | Evidência disponível | Limite ou próxima condição |
-| --- | --- | --- |
-| Cadastro e acesso | OTP e identidades validados anteriormente em homologação; testes de saída, recuperação e isolamento | Não repetir acesso manual já validado sem objetivo novo. Auth/produção não auditados por esta revisão |
-| Profissionais e catálogo | Cadastro inclusivo, análise por versão, ajustes, recusa, pausa e publicação de perfil | Publicação não comprova documentos, identidade ou habilitação |
-| Contratação e conversa | Pedido, proposta, aceite, início, entrega, conclusão/cancelamento, histórico e mensagens testados | Aceite/conclusão não comprovam pagamento; não há funcionamento offline ou rascunho persistente após fechar a aba |
-| Atendimento de reclamações | Relato inicial, resposta profissional, análise/resposta administrativa, conclusão e reabertura com histórico | Consulta manual; não atribui atendente ou SLA, não decide/reembolsa automaticamente e não bloqueia dinheiro |
-| Avisos dentro do aplicativo | Pedidos/propostas/etapas, mensagens, resposta profissional e atualizações administrativas; leitura individual e paginação | Consultados ao abrir/atualizar; sem e-mail, WhatsApp, push ou alerta em segundo plano. Marcar aviso não confirma leitura à contraparte |
-| Uso móvel | Navegador com viewports 320/360/390/768px, pedidos antigos a partir de avisos, filtros, foco, ordenação e paginação | Não equivale a ensaio em aparelho físico com novos participantes |
-| Ajuda operacional | Como funciona atualizado, dúvidas expansíveis e atalhos em solicitações/avisos | Descreve o sistema atual; não cria termos jurídicos, prazo de garantia ou promessa financeira |
-| Nota fiscal | Solicitação, declaração de entrega e confirmação de recebimento testadas | Não emite nem verifica documento fiscal |
-| Avaliação | Nota privada de 1 a 5 após conclusão | Não é reputação pública ou selo de verificação |
-| Ensaio privado | Roteiro atualizado com todos os fluxos atuais | Ainda não executado com novos participantes; audiência owner-only preservada |
-| Checkout PagBank | Uma tentativa sandbox incerta, sem CHEC_id local | Resultado externo e resposta técnica do provedor ainda pendentes. Não reenviar |
-| Webhook financeiro | Receptor sandbox e testes de autenticação/unicidade já registrados | Nenhuma notificação recebida na fotografia atual. Sem exemplo autêntico ou confirmação final do método aplicável ao produto |
-| Repasse e reembolso | Flags reais bloqueadas; estudo de custódia e riscos registrado | Confirmar produto/conta, condições de custódia, liberação, saldo e tratamento após repasse antes de implementar operação real |
-| Verificação documental | Plano de escopo privado salvo | Não implementada; não coletar documentos reais nem anunciar selo genérico |
+| Área | Peso | Conclusão estimada | Evidência e lacuna |
+| --- | ---: | ---: | --- |
+| Cadastro, catálogo e contratação | 25% | 85% | Pedido, orçamento, etapas, mensagens, revisão administrativa, reclamações e avisos; falta ensaio integrado com usuários/aparelhos |
+| Financeiro ponta a ponta | 25% | 30% | Preparação, receptor e proteções internas; falta checkout externo confirmado, evento autêntico, conciliação, repasse, estorno e reserva operacional |
+| Contratos e aceites eletrônicos | 15% | 25% | Minutas e arquitetura documentadas; sem versão contratual persistida, assinatura/aceites de ambas as partes, PDF e bloqueio de início |
+| Segurança e privacidade | 15% | 75% | RLS e testes de isolamento existentes; revisão final de Auth, retenção, documentos/habilitações e operação pública pendentes |
+| Categorias e múltiplas especialidades | 10% | 55% | Catálogo ampliado e atalhos presentes; múltiplas especialidades ainda sem cadastro/revisão/publicação/busca integrada |
+| Identidade e informações da empresa | 5% | 85% | Logo oficial, slogan, Instagram e região no código; validação/publicação privada e informações legais da operadora ainda necessárias |
+| Ensaio de lançamento e operação | 5% | 40% | CI e roteiros; falta ensaio regional completo, procedimento de suporte, recuperação operacional e critérios de liberação |
 
-## Conferência de segurança somente de leitura
+Soma ponderada: 55,5%, comunicar aproximadamente 55%, faixa de incerteza 45–65%. O núcleo de contratação isolado está em cerca de 85%; isso não significa 85% do lançamento com dinheiro real. Reavaliar por evidências de cada entrega, não por número de commits/testes.
 
-Nesta revisão, nove tabelas públicas essenciais foram conferidas com RLS ativo: clientes, profissionais, solicitacoes, historico_solicitacoes, mensagens_solicitacoes, avaliacoes_servico, reclamacoes_servico, respostas_reclamacao e acompanhamento_reclamacoes. A tabela privada de leitura dos avisos tem RLS e nenhum SELECT/INSERT direto concedido a authenticated.
+## Esforço restante e calendário
+Estimativa inicial de 15–30 dias úteis de trabalho técnico focado, equivalente a aproximadamente 3–6 semanas, após requisitos financeiros e de operação ficarem esclarecidos. Não é compromisso de prazo, contagem em segundo plano ou garantia de execução contínua fora da conversa.
 
-As cinco RPCs públicas novas de avisos/acompanhamento/listagem administrativa não concedem EXECUTE a anon. Estes metadados não substituem os testes de participação/revogação ou uma auditoria completa de produção; as evidências comportamentais estão nos testes e documentos das implementações.
+- Especialidades completas, revisão e concorrência: 3–5 dias de esforço.
+- Contratos versionados, escopo/materiais/prazos, aceites auditáveis e interface: 4–7 dias.
+- Integração financeira restante e ensaios, após definição do produto/conta: 5–10 dias.
+- Segurança final, correções do ensaio, operação e validação móvel: 3–5 dias.
+- Margem de integração e imprevistos incluída no teto de 30 dias; não somar todas as margens duas vezes.
 
-Advisors mantêm nove INFO de tabelas privadas com RLS sem políticas, bloqueio intencional documentado, e o WARN anterior de proteção contra senhas vazadas desabilitada. Nenhum achado novo ou alteração de Auth/permissões nesta revisão. Avaliar a configuração de Auth antes de produção sem enfraquecer proteções para contornar avisos.
+Tempo do PagBank e confirmação de condições não estimáveis com as evidências atuais; podem ampliar o calendário. Não marcar data comercial antes de cumprir os bloqueios abaixo. A programação pode avançar nas especialidades/contratos sem exigir ligação do proprietário.
 
-Referências dos avisos:
-- https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy
-- https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
+## Bloqueios de lançamento
+1. Resolver a tentativa sandbox incerta sem novo POST: obter CHEC_id ou evidência de rejeição; confirmar produto e método de autenticação do webhook.
+2. Definir e testar taxas, split/custódia/reserva, critérios de liberação, repasses, reembolso/contestação e saldo insuficiente após repasse. Registro de reclamação não segura dinheiro.
+3. Implementar contratos e aceites com versão, snapshot, hash, ator autenticado, data servidor, idempotência e proteção contra edição/início concorrentes. Aceite do orçamento atual não é assinatura contratual.
+4. Consolidar escopo, materiais, prazos, condições, termos, privacidade, dados da operadora e atendimento; minutas não estão vigentes no aplicativo.
+5. Completar múltiplas especialidades em cadastro, revisão administrativa e catálogo sem publicar rascunhos ou dados privados.
+6. Validar requisitos de profissões regulamentadas antes de anunciar verificação/habilitação. Não há selo de identidade verificada.
+7. Executar ensaio ponta a ponta regional em aparelho físico, isolamento entre contas, recuperação de sessão/rede e rotinas operacionais, além da CI.
+8. Revisar Auth/privacidade e somente então propor uma ativação de produção específica. Pagamentos reais permanecem proibidos pela autorização atual.
 
-## Fotografia financeira local em 26/11/2026
+## Fotografia de segurança e financeiro em 27/11
+Todas as 26 tabelas encontradas em public/private mantêm RLS ativa. Isso é uma inspeção de metadados, não auditoria integral nem prova de políticas corretas. Advisors: nove INFO em tabelas privadas intencionalmente bloqueadas, um WARN preexistente de proteção contra senhas vazadas. Não reduzir RLS para remover avisos.
 
-| Contagem | Resultado |
-| --- | ---: |
-| Checkouts registrados | 1 |
-| Checkouts incertos | 1 |
-| Sem identificador externo registrado | 1 |
-| Flags de cobrança real habilitadas | 0 |
-| Flags de repasse habilitadas | 0 |
-| Notificações recebidas no receptor sandbox | 0 |
-| Eventos com processamento financeiro | 0 |
+- [Explicação de RLS sem política](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy).
+- [Proteção de senhas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
 
-Esses números descrevem somente o banco de homologação. Não demonstram que o provedor rejeitou ou não criou o checkout. Preservar a preparação 88cecf6d-cf3b-4112-a8ca-9a33d767a58e e a referência tf-sandbox-89934739-87f9-4c53-b8ca-8b757dd81f53, sem novo POST, limpeza de claim ou reabertura automática.
+Banco local de homologação: um checkout, incerto, sem identificador externo; zero flags de pagamento/repasse real, zero notificações e zero eventos financeiros processados. Não comprova rejeição no provedor. Preservar preparação 88cecf6d-cf3b-4112-a8ca-9a33d767a58e e referência tf-sandbox-89934739-87f9-4c53-b8ca-8b757dd81f53.
 
-## Pendências que realmente mudam a prontidão
+Não há tabela de especialidades aplicada na fotografia atual. SQL especialidades_preparacao.sql é proposta isolada, não migração aplicada. Contratos e aceites também continuam proposta, conforme ARQUITETURA-CONTRATOS-HOMOLOGACAO.md.
 
-1. **Resposta técnica PagBank e sandbox completo.** Proprietário informou envio de e-mail; não há resposta técnica/protocolo novo confirmado. O e-mail Mercado Pago/Fattor mostrado depois foi desconsiderado pelo proprietário e não altera esta pendência. Caso geral 75359297 não representa encaminhamento confirmado às Integrações. Não exigir ligação ou repetir formulários/e-mail automaticamente. Recuperar resultado da tentativa, identificar CHEC_id ou evidência de rejeição e confirmar assinatura/payload do produto antes de novo ensaio financeiro.
-2. **Condições financeiras operacionais.** Confirmar taxas, produto contratado, divisão, custódia/reserva e liberação, reembolso/contestação, saldo insuficiente e responsabilidade após repasse. Registrar uma reclamação no aplicativo não garante que haverá dinheiro disponível. Não escolher prazos, ativar custódia ou repasse por mera continuação do desenvolvimento.
-3. **Ensaio privado do fluxo atual.** Usar ROTEIRO-ENSAIO-PRIVADO-SEM-PAGAMENTOS.md. Selecionar contas e aparelho de teste, sem inventar e-mails nem pedir códigos de terceiros. Sem convites/ampliação da audiência nesta revisão. Resultados de novos participantes e aparelho físico continuam não confirmados.
-4. **Preparação da operação pública.** Consolidar condições de uso/privacidade e atendimento, revisar configuração de Auth, evidências e pendências antes de propor produção. Se houver proposta de conferência documental, definir finalidade, dados mínimos, revisores e retenção antes de pedir arquivos reais. Não há prazo contratual ou jurídico escolhido automaticamente aqui.
+## Continuidade
+Próxima frente técnica: integrar múltiplas especialidades ao fluxo de aprovação por versão, com testes isolados antes de DDL; em seguida contratos versionados e aceites. Não reaplicar cadastro, recusa, avisos ou reclamações já concluídos. Não enviar mensagens a terceiros, não repetir o checkout nem solicitar ligação como condição para continuar desenvolvimento.
 
-## Resultado desta revisão
+Histórico e limites detalhados preservados em STATUS-ATUAL-TRAMPOFACIL.md, documentos das entregas, roteiro de ensaio privado e minutas. Esta avaliação não declara o aplicativo pronto para cobrança.
 
-Ajuda e melhorias internas estão publicadas na prévia privada. A integração financeira externa ainda não está concluída, e nenhuma cobrança real está autorizada. Esta revisão atualiza o diagnóstico e o roteiro; não representa nova funcionalidade, nova execução dos 277 testes ou resolução do bloqueio externo. As verificações atuais foram consultadas; não houve alteração no app, banco, audiência ou transação financeira.
+## Resultado da identidade e publicação desta retomada
+
+Código b9efc5eb2a476e2c1479d32ca4617794b8d54978: geral/interface 46008614206, financeiro 46008614308, concorrência PostgreSQL 46008614311 e prévia 46008614251, todos success. Pacote com 21 arquivos comparados aos blobs da branch testada; arte validada sem perda e CSP íntegra. Fonte privada 67e6832f01cc2f9c35bec6a8fb5081ed231abecf; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_d94bd45705cc8191b14afd67205055bc; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_385a70aca6588191b6472a3552583f57: pending/publishing. Ainda publicando; confirmar uma vez na próxima retomada, sem presumir concluída. Audiência somente proprietário preservada.

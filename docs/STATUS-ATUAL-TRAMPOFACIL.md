@@ -1,16 +1,23 @@
 # Estado atual recuperável — TrampoFácil
 
-Atualização: 26/11/2026. Este resumo é o ponto de retomada atual; as entradas posteriores preservam o histórico e podem conter estados intermediários já superados.
+Atualização: 27/11/2026. Este resumo substitui os estados intermediários nas entradas históricas preservadas abaixo.
 
 - Repositório: luisrrcosta-cpu/trampofacil.
 - Branch autorizada: codex/v16-seguranca-integracoes. Não modificar main/produção.
-- Supabase autorizado: TrampoFacil-Homologacao, `asdszqtpydiowgerxwee`.
-- Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Acesso somente do proprietário.
-- Último código de interface validado: `ac73b16377917222fb0b8c170c2d6f7f967e77a6`.
-- Fonte hospedada atual: `aa7b8e231434e9ccf91adf62416a58f66ae769fb`.
-- Publicação confirmada succeeded/ready: `appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_f0cf740c31d08191b6aa55974e8bad53`.
-- CI da interface publicada: geral/interface 45863359047, financeiro 45863359051 e concorrência 45863359054, todos success. Verificações móveis anteriores: geral 45862641623 e prévia 45862641479 success.
-- Commits posteriores que atualizam apenas evidências/documentação não representam novas funcionalidades.
+- Supabase autorizado: TrampoFacil-Homologacao, asdszqtpydiowgerxwee.
+- Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Somente proprietário; acesso conferido em 27/11, zero grupos ou convidados adicionados.
+- Último código funcional: b9efc5eb2a476e2c1479d32ca4617794b8d54978, identidade oficial e empacotamento da logo.
+- Fonte privada 67e6832f01cc2f9c35bec6a8fb5081ed231abecf; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_d94bd45705cc8191b14afd67205055bc; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_385a70aca6588191b6472a3552583f57: pending/publishing. Ainda publicando; confirmar uma vez na próxima retomada, sem presumir concluída. Audiência somente proprietário preservada.
+- CI do código de identidade: geral/interface 46008614206, financeiro 46008614308, concorrência PostgreSQL 46008614311 e prévia 46008614251, todos success.
+- Correção anterior d508ae74a9fd2a04981d9796f519507eb3313dd5: teste do catálogo convertido para ES modules; CI 46008039340 confirmou 280 testes e regressões aprovados. Não reutilizar o número antigo de 231 como contagem atual.
+- Instagram oficial @trampofacil.digital. Slogan: Conectando você ao profissional certo. Lançamento inicial: São João da Boa Vista/SP e região.
+- Logo oficial extraída do PDF aprovado e integrada como assets/logo-oficial.webp, sem perda de pixels. Ver docs/IDENTIDADE-OFICIAL-2026-11-27.md.
+- Estimativa de prontidão: aproximadamente 55% do escopo regional com pagamentos, cálculo ponderado 55,5%, faixa 45–65%. Núcleo de contratação estimado 85%; financeiro e contratos permanecem incompletos. Critérios, evidências e esforço em docs/REVISAO-PRONTIDAO-TRAMPOFACIL.md.
+- Esforço técnico restante estimado 15–30 dias úteis focados (3–6 semanas), além da espera externa não estimável pelo PagBank. Não é data comercial, garantia de prazo ou trabalho em segundo plano.
+- Próxima frente: múltiplas especialidades integradas ao cadastro/revisão/publicação/busca; depois contratos versionados e aceites. Catálogo ampliado já existe. SQL privado de especialidades e minutas são preparação, não funcionalidades disponíveis.
+- Conferência atual somente leitura: 26 tabelas public/private com RLS ativa; advisors mantêm nove INFO e um WARN preexistentes. Não é auditoria completa de produção.
+- Fotografia financeira de 27/11: um checkout incerto, sem identificador; zero flags reais de cobrança/repasse; zero notificações e processamento financeiro. Não reenviar checkout nem alterar o claim.
+- Nenhuma DDL, exclusão, alteração de produção, convite ou habilitação financeira nesta retomada.
 
 ## Entregas atuais na homologação
 1. Cadastro de clientes e profissionais CPF, MEI e empresa, atividade regular ou ocasional, sem coletar números de documentos em campos públicos.
@@ -592,3 +599,14 @@ Fotografia local financeira de 26/11: um checkout, incerto e sem checkout_id; ze
 Reescrita docs/REVISAO-PRONTIDAO-TRAMPOFACIL.md para consolidar a versão atual, separando avisos internos de webhook financeiro e listando evidências/limites de cada área. Atualizado docs/ROTEIRO-ENSAIO-PRIVADO-SEM-PAGAMENTOS.md com reclamação, resposta, histórico, reabertura, avisos, leitura individual, privacidade e ajuda. Ensaio com novos participantes/aparelho físico não executado; nenhum convite, identidade, decisão administrativa, documento ou pedido criado nesta revisão. Não ampliar audiência sem a autorização aplicável.
 
 Pendências reais: resultado externo do checkout e evento autêntico/assinatura do produto; condições financeiras de custódia/reserva, repasse, reembolso e saldo; ensaio privado do fluxo atual; consolidação operacional de condições/privacidade/Auth antes de propor produção. Verificação documental permanece proposta separada, sem coleta real. Esta entrega é revisão e preparação, não funcionalidade nova, aprovação de lançamento, teste físico ou solução do PagBank. Sem alteração de código do aplicativo, banco, audiência ou operação financeira.
+
+
+## 27/11 — Retomada consolidada, correção de CI e identidade oficial
+
+Recuperados commits das outras conversas sem sobrepor catálogo/minutas/preparação de especialidades. Falha real na CI 45990154775 diagnosticada pelos logs: require em ES modules no teste novo do catálogo. Corrigida, três casos locais passaram; execução geral 46008039340 confirmou 280/280 e regressões. Sem enfraquecer teste ou retirar cobertura.
+
+Logo aprovada recuperada de TrampoFacil-Logotipo.pdf; imagem extraída e convertida sem perda, comparação RGB integral idêntica. Aplicada na interface com tamanho responsivo, slogan, Instagram e região inicial. Hash CSP recalculado, img-src self mantido, asset incluído no empacotador. 21 arquivos do pacote conferidos byte a byte pelo hash Git com os arquivos da branch testada; não reaproveitar scripts antigos da prévia. A comparação de whitespace com a prévia anterior apontou linhas vazias finais já presentes nos arquivos da branch, sem alterar seus bytes para mascarar a diferença.
+
+Código b9efc5eb2a476e2c1479d32ca4617794b8d54978: quatro workflows success (IDs no resumo). Nenhum teste manual em aparelho físico, contrato assinado ou evento financeiro autêntico nesta entrega. Estimativa e pendências consolidadas na revisão de prontidão, com distinção entre código pronto, proposta e dependência externa.
+
+Fonte privada 67e6832f01cc2f9c35bec6a8fb5081ed231abecf; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_d94bd45705cc8191b14afd67205055bc; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_385a70aca6588191b6472a3552583f57: pending/publishing. Ainda publicando; confirmar uma vez na próxima retomada, sem presumir concluída. Audiência somente proprietário preservada.
