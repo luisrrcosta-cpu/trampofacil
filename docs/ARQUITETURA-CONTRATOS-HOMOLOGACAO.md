@@ -22,3 +22,15 @@ O identificador de minuta passado ao módulo não atesta aprovação ou vigênci
 Testes executáveis em tests/contratos-core.test.js cobrem valores fracionários/negativos/excessivos, soma, datas inexistentes e ano bissexto, partes iguais, ausência e campos financeiros extras, normalização, ordem de entrada e mudança de conteúdo. CI deve estar aprovada antes de integrar esse módulo ao servidor ou interface.
 
 Validação confirmada: commit e91eaec4db60f899334fa1b2e45e12a1f0b5642b, CI 46025053481 com 289 testes e regressões aprovados; financeiro 46025053516, concorrência 46025053500 e pacote 46025053450 success. Nenhuma migração ou ativação de aceites nesta etapa.
+
+## Armazenamento privado de versões — preparação executável de 27/11/2026
+
+SQL candidato em supabase/homologacao/versoes_rascunho_contrato.sql; ainda não aplicado à homologação. Sem RPC pública, permissões comuns, aceites ou alteração de fluxo de pedidos. A confirmação somente leitura do banco encontrou ausência de tabelas contratuais/aceites e presença de sha256(bytea).
+
+A tabela de versões de rascunho tem RLS e nenhum acesso direto para anon, authenticated ou service_role. Cada versão se vincula ao pedido, à revisão anterior do mesmo pedido e à versão temporal do orçamento. O trigger de inserção serializa no lock da solicitação, exige parte autenticada/não anônima, orçamento atual e valores correspondentes. A identidade e a data são derivadas no servidor, sobrepondo dados fornecidos ao inserir. Revisões obsoletas falham; UPDATE/DELETE de versões são bloqueados.
+
+O conteúdo JSON serializado é preservado integralmente e comparado ao snapshot jsonb. Hash SHA-256 calculado no banco sobre os bytes UTF-8, sem aceitar um hash fornecido como prova. A futura RPC deverá usar o serializador v1 e validar o módulo contratos-core; equivalência jsonb isolada não comprova formato canônico ou autoria. Não é assinatura eletrônica, aceite, aprovação de minuta ou contrato vigente.
+
+Testes isolados em PGlite comparam o hash a node:crypto e cobrem cadeia de revisões, orçamento alterado, conteúdo divergente, parte alheia/anônima, permissões comuns, ator/data/hash fornecidos pelo chamador e bloqueio de edição/exclusão. Ainda faltam disputa em PostgreSQL de conexões independentes para as novas versões, idempotência da RPC por operação, registro confiável de minutas, autenticação/sessão, leitura pelas partes, aceites, PDF e bloqueio de início. Nada disso é demonstrado apenas pelo sucesso da suíte geral.
+
+Sem executor disponível, não foi gerada nem aplicada uma nova migração. Não executar o SQL candidato manualmente como atalho: gerar a migração pelo CLI quando disponível, terminar a API e os testes de concorrência e só então aplicar em homologação. Produção e dados existentes intactos.
