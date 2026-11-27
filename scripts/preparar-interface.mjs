@@ -10,6 +10,9 @@ const scripts=[...html.matchAll(/<script\s+src="([^"]+)"\s+defer><\/script>/g)].
 if(!scripts.length||scripts.some(s=>!/^[-a-z0-9]+\.js$/.test(s)))throw new Error('Lista de scripts inválida.');
 const pasta=resolve(destino);
 await mkdir(pasta,{recursive:true});
-const arquivos=['index.html',...scripts,'login-teste.html','login-teste.js','login-teste-core.js','login-teste.css'];
-for(const arquivo of arquivos)await writeFile(resolve(pasta,arquivo),await readFile(resolve(raiz,arquivo)));
+const arquivos=['index.html',...scripts,'login-teste.html','login-teste.js','login-teste-core.js','login-teste.css','assets/logo-oficial.webp'];
+for(const arquivo of arquivos){
+  await mkdir(dirname(resolve(pasta,arquivo)),{recursive:true});
+  await writeFile(resolve(pasta,arquivo),await readFile(resolve(raiz,arquivo)));
+}
 console.log(JSON.stringify({directory:pasta,files:arquivos}));

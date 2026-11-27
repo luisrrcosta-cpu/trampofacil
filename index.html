@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'sha256-GE2ORrj+Fm9ABMFlEF/OS4/LgTzTyq5wCKC1M1jN9uI='; connect-src https://asdszqtpydiowgerxwee.supabase.co; img-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'sha256-ICvEsqSOx2Pu1MNJb+tXL8jymlWCNhZzno9EBDe4rf8='; connect-src https://asdszqtpydiowgerxwee.supabase.co; img-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <title>TrampoFácil</title>
@@ -11,6 +11,8 @@
 body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#17243b}
 header{background:#12345b;color:white;text-align:center;padding:25px 15px}
 header h1{margin:0;font-size:30px}
+.marca-oficial{display:block;width:clamp(88px,24vw,128px);height:auto;margin:0 auto 14px;border-radius:18px}
+footer a{color:#12345b;text-underline-offset:3px}footer a:focus-visible{outline:3px solid #12345b;outline-offset:4px}
 header p{margin:8px 0}
 main{max-width:550px;margin:30px auto;padding:15px}
 .card{background:white;padding:25px 20px;border-radius:18px;box-shadow:0 4px 15px #0001;margin-bottom:20px}
@@ -84,8 +86,9 @@ label input,label select,label textarea{font-weight:400}
 </head>
 <body>
 <header>
+<img class="marca-oficial" src="assets/logo-oficial.webp" width="1536" height="1536" alt="" decoding="async">
 <h1>TrampoFácil</h1>
-<p>Conectando clientes e profissionais</p>
+<p>Conectando você ao profissional certo.</p>
 </header>
 <main>
 <p id="status-conexao" role="status" aria-live="polite"></p>
@@ -748,7 +751,7 @@ label input,label select,label textarea{font-weight:400}
 <button type="button" data-pagina="inicio">Página inicial</button>
 </section>
 </main>
-<footer>© 2026 TrampoFácil</footer>
+<footer><p>© 2026 TrampoFácil</p><p>Lançamento inicial em São João da Boa Vista/SP e região.</p><p><a href="https://www.instagram.com/trampofacil.digital/" target="_blank" rel="noopener noreferrer">Instagram oficial: @trampofacil.digital</a></p></footer>
 <script src="config.js" defer></script>
 <script src="ambiente.js" defer></script>
 <script src="cadastro.js" defer></script>
@@ -766,4 +769,5 @@ label input,label select,label textarea{font-weight:400}
 <script src="perfil.js" defer></script>
 </body>
 </html>
+
 
