@@ -1,20 +1,23 @@
 # Estado atual recuperável — TrampoFácil
 
-Atualização: 27/11/2026, após múltiplas especialidades. As entradas históricas posteriores podem descrever versões já superadas.
+Atualização: 27/11/2026, após múltiplas especialidades e base de rascunhos contratuais. As entradas históricas posteriores podem descrever versões já superadas.
 
 - Repositório luisrrcosta-cpu/trampofacil; branch codex/v16-seguranca-integracoes. Não alterar main/produção.
 - Banco autorizado: TrampoFacil-Homologacao, asdszqtpydiowgerxwee.
-- Código funcional f2fdc90edf66d1f0b59158e8507d340b83dedc8a: múltiplas especialidades em cadastro, edição, revisão administrativa e busca.
+- Base de rascunhos contratuais e91eaec4db60f899334fa1b2e45e12a1f0b5642b: validação de escopo, materiais, valores e prazos, ainda sem integração à interface ou gravação de contratos.
+- CI da base contratual 46025053481: 289 testes e regressões aprovados; financeiro 46025053516, concorrência PostgreSQL 46025053500 e pacote 46025053450 success. Isso não comprova assinatura, PDF ou fluxo de aceites ainda inexistentes.
+- Código funcional da interface f2fdc90edf66d1f0b59158e8507d340b83dedc8a: múltiplas especialidades em cadastro, edição, revisão administrativa e busca.
 - Migração 20261127134954_especialidades_profissionais_homologacao.sql gerada pelo CLI e aplicada somente na homologação após testes.
 - CI geral/interface 46011312669: 284 testes aprovados, zero falhas e regressões aprovadas. Concorrência PostgreSQL 46011312676, financeiro 46011312736, prévia 46011312885 e cadastro inclusivo 46011312645: success.
 - Três disputas reais adicionais entre edição de especialidades e aprovação comprovadas em conexões independentes; nenhum banco Supabase usado nos testes de concorrência.
-- Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Fonte privada 7e7f7637b918b3fa062212b12f7d5e914d2922fc; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_ec806b92da888191883db233a6cdff1f; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_fc458be0818081919fb26b1a9a3261e2: pending/publishing. Ainda publicando; conferir uma vez na próxima retomada. Acesso somente do proprietário preservado.
+- Prévia privada: https://trampofacil-homologacao-luis.artfulazure32.chatgpt.site . Fonte privada 7e7f7637b918b3fa062212b12f7d5e914d2922fc; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_ec806b92da888191883db233a6cdff1f; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_fc458be0818081919fb26b1a9a3261e2: succeeded/ready confirmado em 27/11. Acesso somente do proprietário preservado.
 - Publicação anterior da logo oficial confirmada succeeded/ready: appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_385a70aca6588191b6472a3552583f57.
 - Instagram @trampofacil.digital; slogan Conectando você ao profissional certo.; região inicial São João da Boa Vista/SP e região.
 - Até dez especialidades adicionais, uma por linha; salvas com o cadastro. Alterar exige nova revisão e retira o perfil da busca. Snapshots completos em aprovação, ajuste e recusa. Busca encontra especialidade sem duplicar perfil, preservando cidade e paginação.
 - Modelo revisado: coluna array na linha profissional e projeção no catálogo, serializadas pelo lock existente. A tabela privada do SQL de preparação não foi criada nem aplicada.
 - Cartão público mantém o serviço principal; a especialidade a contratar deve ser detalhada na descrição do pedido. Não modifica solicitações antigas nem comprova habilitação profissional.
 - RLS preservada, anônimo sem edição e helper privado sem EXECUTE para authenticated; advisors mantêm nove INFO e um WARN preexistentes. Nenhuma lista de especialidades inserida em perfis existentes para teste.
+- Suporte de Integrações: chamado 1484168775 recebido via formulário em 27/11/2026 às 12:24 (Brasília); e-mail de confirmação encontrado em Spam, prazo informado de até 48 horas úteis. Não confundir com o caso geral anterior 75359297. Recebimento não resolve a tentativa; não reenviar checkout.
 - Financeiro incerto preservado; pagamentos/repasses reais bloqueados. Sem exclusões, alteração de produção, convites, coleta de documentos ou novo checkout.
 - Estimativa ponderada agora 59%, comunicar aproximadamente 60% do escopo regional com pagamentos; faixa de incerteza 50–70%. Não é autorização de lançamento. Prazo técnico inicial 15–30 dias úteis continua referência provisória, além da espera externa pelo PagBank.
 - Próxima frente: contratos versionados, escopo/materiais/prazos e aceites eletrônicos auditáveis. Minutas ainda não são contratos vigentes.
@@ -626,3 +629,14 @@ Seis verificações locais (incluindo catálogo) aprovadas; CI geral 284/284 e r
 Migração aplicada somente na homologação. Conferência posterior: RLS em profissionais e catálogo, três triggers, grant da coluna apenas para edição autenticada sob RLS, anônimo sem UPDATE, função privada sem EXECUTE comum e consulta sem resultado funcionando. Zero listas não vazias nos perfis existentes. Advisors inalterados. Não reaplicar SQL privado de preparação. Decisão técnica documentada em PLANO-MULTIPLAS-ESPECIALIDADES.md, substituindo a proposta de gravação separada por array na mesma linha para evitar estado parcialmente salvo.
 
 Fonte privada 7e7f7637b918b3fa062212b12f7d5e914d2922fc; versão appgprj_6afeee187e488191b1c58ef23f6f0a98~appgver_ec806b92da888191883db233a6cdff1f; publicação appgprj_6afeee187e488191b1c58ef23f6f0a98~appgdep_fc458be0818081919fb26b1a9a3261e2: pending/publishing. Ainda publicando; conferir uma vez na próxima retomada. Acesso somente do proprietário preservado.
+
+
+## 27/11 — Suporte de Integrações recebido e base contratual testada
+
+Formulário novo SIP enviado pelo proprietário em 27/11 às 12:24 (Brasília). Tela de sucesso e e-mail lido confirmam chamado 1484168775, retorno informado de até 48 horas úteis. Mensagem encontrada em Spam. É confirmação de recebimento do suporte, não CHEC_id, rejeição da tentativa ou autorização para novo checkout. Caso geral 75359297 permanece referência histórica; não reenviar formulário/e-mail automaticamente.
+
+Publicação anterior de especialidades confirmada succeeded/ready (deployment no resumo). Nenhum teste manual já concluído repetido nesta retomada.
+
+Implementado contratos-core.js em e91eaec4db60f899334fa1b2e45e12a1f0b5642b, com cinco testes novos. Escopo e condições obrigatórios, materiais discriminados, valores inteiros em centavos com soma exata, datas reais/cronologia, partes distintas e estrutura fechada. Retorno congelado em memória e serialização estável de formato próprio. Não gera autoria, hash criptográfico, assinatura ou contrato vigente. UUIDs/minuta ainda deverão ser derivados/conferidos no servidor autenticado. Módulo não conectado à interface nem às tabelas, sem alteração dos pedidos existentes.
+
+CI 46025053481: 289/289 e regressões aprovadas; financeiro 46025053516, concorrência 46025053500 e pacote 46025053450 success. Ambiente executor indisponível; validação feita pelos workflows do GitHub, sem afirmar execução local. Nenhuma migração, mudança de RLS, implantação de interface, comunicação externa ou movimentação financeira nesta entrega. Próxima etapa continua persistência/versionamento, hash no servidor e aceites individuais com concorrência e autenticação antes da interface.
