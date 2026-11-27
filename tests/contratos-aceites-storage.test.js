@@ -90,3 +90,12 @@ test('mudança de valor, data, partes ou estado do pedido bloqueia aceite sem al
  assert.equal((await db.query('select count(*)::int n from private.aceites_rascunho_contrato')).rows[0].n,0);
  assert.equal((await db.query('select status from solicitacoes')).rows[0].status,'proposta');
 });
+test('versionamento rejeita participantes ou estado ausentes sem desvio por NULL',async t=>{
+ const {db,id,inserir}=await preparar(t);
+ for(const col of ['cliente_usuario_id','profissional_usuario_id','status']){
+  await db.query('update solicitacoes set '+col+'=null where id=$1',[id(1)]);
+  await assert.rejects(inserir(),/Pedido indisponível|Orçamento completo/);
+  await db.query("update solicitacoes set cliente_usuario_id=$1,profissional_usuario_id=$2,status='proposta' where id=$3",[id(2),id(3),id(1)]);
+ }
+ assert.equal((await db.query('select count(*)::int n from private.versoes_rascunho_contrato')).rows[0].n,1);
+});
