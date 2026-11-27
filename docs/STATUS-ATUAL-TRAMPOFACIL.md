@@ -2,7 +2,7 @@
 
 Atualização: 27/11/2026, após persistência de aceites contratuais de ensaio e concorrência testada. As entradas históricas posteriores podem descrever versões já superadas.
 
-- Última fonte contratual 358f29fa0d14b9c1e83d661499456110a0ac12a6: versões e aceites privados candidatos, ainda não aplicados ou ligados à interface. CI 46028997667: 296/296 e regressões aprovadas; cinco disputas PostgreSQL 46028997862 aprovadas. Próximo: conteúdo confiável de minutas, API idempotente e telas de aceite.
+- Última fonte contratual 358f29fa0d14b9c1e83d661499456110a0ac12a6: versões e aceites privados candidatos, ainda não aplicados ou ligados à interface. CI 46028997667: 296/296 e regressões aprovadas; cinco disputas PostgreSQL 46028997862 aprovadas. Registro privado de minutas implementado em candidato isolado nesta etapa. Próximo: API autenticada/idempotente e leitura pelas partes; depois telas de aceite.
 - Pendências financeiras integrais: docs/PENDENCIAS-FINANCEIRAS-LANCAMENTO.md. Nenhuma cobrança/repasse real autorizada.
 - Repositório luisrrcosta-cpu/trampofacil; branch codex/v16-seguranca-integracoes. Não alterar main/produção.
 - Banco autorizado: TrampoFacil-Homologacao, asdszqtpydiowgerxwee.
@@ -660,3 +660,13 @@ CI 46025053481: 289/289 e regressões aprovadas; financeiro 46025053516, concorr
 - Executor voltou nesta retomada; testes locais executados. CLI Supabase não instalado. Nenhuma migração gerada/aplicada: os SQLs continuam candidatos, isolados dos dados hospedados, até completar API e critérios de ativação. Não usar aplicação manual como atalho.
 - Pendências contratuais: registro confiável e conteúdo integral das minutas, API autenticada de criação/leitura e aceite com retorno idempotente por operação, UI de exibição e confirmação individual, PDF verificável, guarda de início e regra explícita para pedidos históricos. Unicidade no banco evita duplicação, mas não equivale a API idempotente concluída. Estes aceites de ensaio não são assinatura disponível ao público nem contrato vigente.
 - Todas as pendências financeiras solicitadas estão em docs/PENDENCIAS-FINANCEIRAS-LANCAMENTO.md: pagamento antecipado, repasse após conclusão, comissão, dinheiro/misto, etapas, reclamações/garantias/reembolsos. Sem decisão financeira implícita ou ativação. PagBank 1484168775 segue aguardando retorno técnico; sem reenvio da tentativa incerta, comunicações externas ou alteração de produção.
+
+
+## 27/11/2026 — registro privado do texto integral das minutas
+
+- Única pendência executada nesta retomada: registro confiável de minutas. Base consultada: último commit 71c13c24bca210b63c751be1b8c2ab4c1825e193 e este documento; sem auditoria de banco ou histórico de commits.
+- Candidato isolado supabase/homologacao/minutas_rascunho_contrato.sql: catálogo privado sem seeds, texto integral exato em UTF-8, versão única, hash SHA-256 e data derivados pelo banco, imutabilidade, RLS e ausência de permissões comuns. Somente o responsável pela implantação pode cadastrar textos; nenhum participante/public RPC pode publicar minuta.
+- Cada versão contratual recebe versão/hash da minuta por trigger, ignorando valores fornecidos pelo chamador, com FK composta para o registro imutável. O hash do snapshot continua com sua semântica anterior; o hash da minuta é evidência separada vinculada à versão, ainda sem exposição pela API. Nova minuta exige identificador novo. Não contém texto jurídico aprovado nem declara contrato vigente.
+- Validação local descartável PGlite: 8/8 testes de storage, minutas e aceites aprovados. Novo teste cobre texto integral/acentos, hash comparado a node:crypto, minuta desconhecida, valores forjados de vínculo, permissões, duplicidade, edição/exclusão e nova versão sem perda da anterior. Não constitui teste de concorrência PostgreSQL da nova extensão.
+- Nenhum SQL aplicado ou migração gerada; candidato pressupõe versões vazias e falha caso haja registros preexistentes sem vínculo. Não fazer backfill automático. Gerar migração pelo CLI e validar integração/concorrência antes da aplicação futura em homologação. Produção, dados hospedados, segurança e bloqueio financeiro preservados.
+- Próxima tarefa: API autenticada/idempotente de criação/leitura e aceite. UI, PDF, guarda de início e decisões financeiras permanecem pendentes; nenhuma dessas tarefas foi iniciada nesta retomada.
