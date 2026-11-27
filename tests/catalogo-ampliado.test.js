@@ -1,8 +1,8 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
-const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const html = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const lista = html.match(/<datalist id="sugestoes-profissoes">[\s\S]*?<\/datalist>/)[0];
 const profissoes = Array.from(lista.matchAll(/value="([^"]+)"/g), m => m[1]);
 test('catálogo ampliado mantém pelo menos 231 profissões distintas', () => {
