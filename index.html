@@ -477,6 +477,84 @@ label input,label select,label textarea{font-weight:400}
 <label>Profissão ou serviço<input name="servico" list="sugestoes-profissoes" maxlength="120" placeholder="Busque qualquer tipo de mão de obra"></label>
 <label>Cidade<input name="cidade" maxlength="120" aria-describedby="ajuda-cidade-busca" placeholder="Ex.: São João da Boa Vista"></label>
 <p id="ajuda-cidade-busca">Informe apenas o nome da cidade, sem a sigla do estado. Você pode buscar com ou sem acento.</p>
+<details id="categorias-busca"><summary>Explorar serviços por categoria</summary><p>Escolha um serviço para pesquisar na cidade informada. Para outras profissões, use o campo de busca acima.</p>
+<details><summary>Construção e reformas</summary>
+<button type="button" data-servico-popular="Pedreiro">Pedreiro</button>
+<button type="button" data-servico-popular="Servente de obras">Servente de obras</button>
+<button type="button" data-servico-popular="Pintor">Pintor</button>
+<button type="button" data-servico-popular="Gesseiro">Gesseiro</button>
+<button type="button" data-servico-popular="Azulejista">Azulejista</button>
+<button type="button" data-servico-popular="Marceneiro">Marceneiro</button>
+<button type="button" data-servico-popular="Telhadista">Telhadista</button>
+</details>
+<details><summary>Instalações e manutenção</summary>
+<button type="button" data-servico-popular="Eletricista">Eletricista</button>
+<button type="button" data-servico-popular="Encanador">Encanador</button>
+<button type="button" data-servico-popular="Instalador de ar-condicionado">Instalador de ar-condicionado</button>
+<button type="button" data-servico-popular="Técnico de eletrodomésticos">Técnico de eletrodomésticos</button>
+<button type="button" data-servico-popular="Chaveiro">Chaveiro</button>
+<button type="button" data-servico-popular="Montador de móveis">Montador de móveis</button>
+</details>
+<details><summary>Limpeza e jardim</summary>
+<button type="button" data-servico-popular="Diarista">Diarista</button>
+<button type="button" data-servico-popular="Faxineiro">Faxineiro</button>
+<button type="button" data-servico-popular="Jardineiro">Jardineiro</button>
+<button type="button" data-servico-popular="Piscineiro">Piscineiro</button>
+<button type="button" data-servico-popular="Limpador de estofados">Limpador de estofados</button>
+</details>
+<details><summary>Automóveis e motos</summary>
+<button type="button" data-servico-popular="Mecânico">Mecânico</button>
+<button type="button" data-servico-popular="Mecânico de motocicletas">Mecânico de motocicletas</button>
+<button type="button" data-servico-popular="Borracheiro">Borracheiro</button>
+<button type="button" data-servico-popular="Funileiro">Funileiro</button>
+</details>
+<details><summary>Beleza e estética</summary>
+<button type="button" data-servico-popular="Barbeiro">Barbeiro</button>
+<button type="button" data-servico-popular="Cabeleireiro">Cabeleireiro</button>
+<button type="button" data-servico-popular="Manicure">Manicure</button>
+<button type="button" data-servico-popular="Maquiador">Maquiador</button>
+<button type="button" data-servico-popular="Esteticista">Esteticista</button>
+</details>
+<details><summary>Tecnologia e comunicação</summary>
+<button type="button" data-servico-popular="Técnico de computadores">Técnico de computadores</button>
+<button type="button" data-servico-popular="Técnico de celulares">Técnico de celulares</button>
+<button type="button" data-servico-popular="Programador">Programador</button>
+<button type="button" data-servico-popular="Designer gráfico">Designer gráfico</button>
+<button type="button" data-servico-popular="Social media">Social media</button>
+</details>
+<details><summary>Eventos e alimentação</summary>
+<button type="button" data-servico-popular="Fotógrafo">Fotógrafo</button>
+<button type="button" data-servico-popular="DJ">DJ</button>
+<button type="button" data-servico-popular="Garçom">Garçom</button>
+<button type="button" data-servico-popular="Cozinheiro">Cozinheiro</button>
+<button type="button" data-servico-popular="Churrasqueiro">Churrasqueiro</button>
+<button type="button" data-servico-popular="Confeiteiro">Confeiteiro</button>
+</details>
+<details><summary>Transporte e serviços gerais</summary>
+<button type="button" data-servico-popular="Entregador">Entregador</button>
+<button type="button" data-servico-popular="Frete e mudanças">Frete e mudanças</button>
+<button type="button" data-servico-popular="Motorista particular">Motorista particular</button>
+<button type="button" data-servico-popular="Ajudante geral">Ajudante geral</button>
+</details>
+<details><summary>Cuidados e animais</summary>
+<button type="button" data-servico-popular="Babá">Babá</button>
+<button type="button" data-servico-popular="Cuidador de idosos">Cuidador de idosos</button>
+<button type="button" data-servico-popular="Tosador">Tosador</button>
+<button type="button" data-servico-popular="Adestrador de cães">Adestrador de cães</button>
+</details>
+<details><summary>Educação e artesanato</summary>
+<button type="button" data-servico-popular="Professor particular">Professor particular</button>
+<button type="button" data-servico-popular="Tradutor">Tradutor</button>
+<button type="button" data-servico-popular="Costureira">Costureira</button>
+<button type="button" data-servico-popular="Sapateiro">Sapateiro</button>
+</details>
+<details><summary>Rural e industrial</summary>
+<button type="button" data-servico-popular="Trabalhador rural">Trabalhador rural</button>
+<button type="button" data-servico-popular="Tratorista">Tratorista</button>
+<button type="button" data-servico-popular="Soldador">Soldador</button>
+<button type="button" data-servico-popular="Operador de máquinas">Operador de máquinas</button>
+</details>
+</details>
 <button type="submit">Buscar</button>
 <button class="voltar" type="reset" id="limpar-busca">Limpar filtros</button>
 </form>
